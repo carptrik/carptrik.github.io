@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Çarptrik - Hızlı ve Eğlenceli Çarpım Tablosu Antrenörü">
+    <meta name="theme-color" content="#0d0d0d">
+    <title>ÇARPTRİK</title>
+    <style>
+        :root {
+            --primary: #00ffaa;
+            --bg: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --text: #e0e0e0;
+            --accent: #a040ff;
+            --danger: #ff4757;
+            --warning: #f1c40f;
+            --panel-border: #333;
+        }
+        
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg); color: var(--text); 
+            margin: 0; padding: 15px;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        /* Dil Seçici */
+        .lang-switch {
+            position: absolute; top: 15px; right: 15px; display: flex; gap: 5px; z-index: 20;
+        }
+        .lang-btn {
+            background: #222; color: #888; border: 1px solid #444; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s;
+        }
+        .lang-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        h1 { 
+            color: var(--primary); margin: 25px 0 15px 0; font-size: 32px; 
+            text-transform: uppercase; letter-spacing: 3px; 
+            text-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+            font-weight: 900; text-align: center;
+        }
+
+        /* --- ÜST KONTROL BAR --- */
+        .global-bar {
+            background: #151515; border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(0, 255, 170, 0.1);
+            padding: 15px 20px; border-radius: 50px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 20px; z-index: 10;
+            width: 100%; max-width: 800px; flex-wrap: wrap; 
+        }
+        .global-bar-title {
+            font-weight: bold; color: var(--primary); border-right: 1px solid #444; padding-right: 20px; margin-right: 0; font-size: 14px; letter-spacing: 1px; white-space: nowrap;
+        }
+        .global-option { display: flex; align-items: center; cursor: pointer; font-size: 14px; transition: 0.2s; white-space: nowrap; }
+        .global-option:hover { color: #fff; }
+        .global-option input { transform: scale(1.3); margin-right: 8px; accent-color: var(--primary); }
+
+        /* --- ANA YAPI --- */
+        .container {
+            display: flex; gap: 20px; align-items: flex-start; justify-content: center; width: 100%; max-width: 950px; flex-grow: 1;
+        }
+        .box {
+            background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 50px rgba(0,0,0,0.5); border: 1px solid var(--panel-border); text-align: center;
+        }
+        
+        #side-box { width: 300px; order: 1; }
+        #main-box { flex: 1; min-width: 0; order: 2; }
+
+        h2 { color: var(--accent); font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+        /* --- AYARLAR --- */
+        .ayarlar { background: #222; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: left; }
+        .section-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 8px; margin-top: 20px;
+        }
+        .section-header:first-child { margin-top: 0; }
+        .section-title { color: #ccc; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Sayı Seçimi */
+        .number-panel { background: #1a1a1a; border: 1px solid #444; padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+        .number-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 5px; }
+        .num-check { display: none; }
+        .num-label { 
+            background: #333; color: #888; padding: 15px 0; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 18px; border: 2px solid transparent; transition: 0.2s; display: flex; justify-content: center; align-items: center;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+        .num-check:checked + .num-label { background: rgba(0, 255, 170, 0.1); color: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px rgba(0,255,170,0.2); }
+        .selection-btns { display: flex; gap: 10px; }
+        .tiny-btn { background: #333; border: none; color: #fff; cursor: pointer; font-size: 11px; padding: 6px 12px; border-radius: 4px; transition: 0.2s; }
+
+        /* Mod Seçimi */
+        .mod-row { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; padding: 12px; border-radius: 8px; transition: 0.2s; background: #2a2a2a; }
+        .mod-row input[type="radio"] { margin-right: 15px; accent-color: var(--primary); transform: scale(1.2); }
+        .mod-text { flex-grow: 1; font-size: 14px; }
+
+        input[type="number"] { 
+            background: #000; color: var(--primary); border: 1px solid #444; border-radius: 6px; padding: 5px; text-align: center; font-weight: bold; font-family: 'Courier New', monospace; outline: none; font-size: 16px; 
+        }
+        .small-input { width: 50px; margin: 0 5px; }
+        .big-input { font-size: 40px; width: 100%; max-width: 200px; margin: 15px 0; border: 2px solid #444; border-radius: 12px; padding: 10px; }
+
+        .btn-start { background: var(--primary); color: #000; width: 100%; font-size: 18px; font-weight: 900; padding: 15px; border-radius: 10px; border: none; cursor: pointer; transition: 0.3s; margin-top: 15px; text-transform: uppercase; }
+        .btn-start:hover { background: #00cc88; transform: translateY(-2px); }
+
+        /* --- OYUN ALANI --- */
+        .stats-bar { font-size: 11px; color: var(--primary); margin-bottom: 15px; display: flex; justify-content: space-between; background: #111; padding: 10px; border-radius: 8px; }
+        #soru-container { position: relative; height: 100px; display:flex; align-items:center; justify-content:center;}
+        #soru { font-size: 70px; margin: 0; color: #fff; font-weight: bold; transition: filter 0.3s; line-height: 1;}
+        .blur { filter: blur(15px); }
+        #pause-overlay { position: absolute; z-index:5; font-size: 20px; font-weight: bold; color: var(--warning); background: rgba(0,0,0,0.9); padding: 10px 20px; border-radius: 10px; display: none; pointer-events: none; border: 1px solid var(--warning); width: 100%; }
+        #sonuc { height: 30px; font-size: 20px; font-weight: bold; margin-top: 5px; letter-spacing: 1px; }
+
+        .game-controls { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; }
+        .ctrl-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; -webkit-tap-highlight-color: transparent;}
+        .btn-pause { background: var(--warning); color: #000; }
+        .btn-stop { background: var(--danger); color: #fff; }
+        .btn-resume { background: var(--primary); color: #000; display: none; }
+
+        /* --- SOL PANEL --- */
+        #raporAlani { text-align: left; background: #111; padding: 15px; border-radius: 10px; margin-top: 10px; max-height: 250px; overflow-y: auto; border: 1px solid #333; }
+        .hata-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; font-size: 14px; }
+        .hata-ayarlar { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; padding: 15px; background: #222; border-radius: 8px; font-size: 14px; text-align: left; }
+        .hata-ayarlar label { cursor: pointer; display: flex; align-items: center; padding: 5px 0; }
+        .hata-ayarlar input { margin-right: 10px; accent-color: var(--accent); transform: scale(1.2); }
+        .footer-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .footer-btns button { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn-hata { background: var(--accent); color: white; }
+        .btn-reset { background: var(--danger); color: white; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 40px;
+            color: #555;
+            font-size: 13px;
+            text-align: center;
+            width: 100%;
+            padding-bottom: 20px;
+        }
+        .footer-contact {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .email-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .email-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .donate-area { margin-top: 15px; }
+
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            #main-box { width: 100%; order: 1; }
+            #side-box { width: 100%; order: 2; margin-top: 20px; }
+            .global-bar { flex-direction: column; gap: 15px; padding: 15px; border-radius: 20px; width: 100%; align-items: flex-start; }
+            .global-bar-title { border-right: none; border-bottom: 1px solid #444; width: 100%; padding-bottom: 10px; margin-bottom: 5px; text-align: center; margin-right: 0; }
+            .global-option { width: 100%; }
+            .number-grid { gap: 6px; }
+            .num-label { font-size: 16px; padding: 12px 0; }
+            .box { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="lang-switch">
+    <button class="lang-btn" id="lang-tr" onclick="setLanguage('tr')">TR</button>
+    <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">EN</button>
+</div>
+
+<h1>ÇARPTRİK</h1>
+
+<div class="global-bar">
+    <div class="global-bar-title" data-i18n="hiz_ayari">HIZ AYARI</div>
+    <label class="global-option">
+        <input type="radio" name="sureModu" value="auto">
+        <span data-i18n="otomatik">OTOMATİK (Ortalama x 1.2)</span>
+    </label>
+    <label class="global-option">
+        <input type="radio" name="sureModu" value="manual" checked>
+        <span><span data-i18n="sabit">SABİT:</span> <input type="number" id="sabitSureInput" value="4" class="small-input" onclick="event.stopPropagation()"> <span data-i18n="sn">SN</span></span>
+    </label>
+</div>
+
+<div class="container">
+    <div id="side-box" class="box">
+        <h2 data-i18n="hata_listesi">HATA LİSTESİ</h2>
+        <div id="raporAlani" data-i18n="liste_temiz">Liste temiz.</div>
+
+        <div class="hata-ayarlar">
+            <div style="color:#888; font-size:12px; margin-bottom:5px;" data-i18n="hata_tekrar">HATA ÇALIŞMA TEKRARI:</div>
+            <label>
+                <input type="radio" name="hataModu" value="tek" checked> <span data-i18n="bir_kez">1 Kez Sor</span>
+            </label>
+            <label>
+                <input type="radio" name="hataModu" value="agirlikli"> <span data-i18n="puan_kadar">Puanı Kadar Sor</span>
+            </label>
+        </div>
+
+        <div class="footer-btns">
+            <button class="btn-hata" onclick="hatalaraCalis()" data-i18n="hatalara_calis">HATALARA ÇALIŞ</button>
+            <button class="btn-reset" onclick="verileriSifirla()" data-i18n="listeyi_temizle">LİSTEYİ TEMİZLE</button>
+        </div>
+    </div>
+
+    <div id="main-box" class="box">
+        <div id="setup">
+            <div class="ayarlar">
+                <div class="section-header">
+                    <span class="section-title" data-i18n="carp_sayilar">ÇARPILACAK SAYILAR</span>
+                    <div class="selection-btns">
+                        <button class="tiny-btn" onclick="hepsiniSec(true)" data-i18n="tumu">TÜMÜ</button>
+                        <button class="tiny-btn" onclick="hepsiniSec(false)" data-i18n="temizle">TEMİZLE</button>
+                    </div>
+                </div>
+                
+                <div class="number-panel">
+                    <div class="number-grid">
+                        <div><input type="checkbox" id="n2" class="num-check" value="2" checked><label for="n2" class="num-label">2</label></div>
+                        <div><input type="checkbox" id="n3" class="num-check" value="3" checked><label for="n3" class="num-label">3</label></div>
+                        <div><input type="checkbox" id="n4" class="num-check" value="4" checked><label for="n4" class="num-label">4</label></div>
+                        <div><input type="checkbox" id="n5" class="num-check" value="5" checked><label for="n5" class="num-label">5</label></div>
+                        <div><input type="checkbox" id="n6" class="num-check" value="6" checked><label for="n6" class="num-label">6</label></div>
+                        <div><input type="checkbox" id="n7" class="num-check" value="7" checked><label for="n7" class="num-label">7</label></div>
+                        <div><input type="checkbox" id="n8" class="num-check" value="8" checked><label for="n8" class="num-label">8</label></div>
+                        <div><input type="checkbox" id="n9" class="num-check" value="9" checked><label for="n9" class="num-label">9</label></div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <span class="section-title" data-i18n="oyun_modu">OYUN MODU</span>
+                </div>
+                
+                <label class="mod-row">
+                    <input type="radio" name="mod" value="tekrar" checked>
+                    <span class="mod-text"><span data-i18n="mod_tekrar_1">Tüm olasılıkları</span> <input type="number" id="tekrarSayisi" value="1" class="small-input" onclick="event.stopPropagation()"> <span data-i18n="mod_tekrar_2">kez sor.</span></span>
+                </label>
+                <label class="mod-row">
+                    <input type="radio" name="mod" value="limit">
+                    <span class="mod-text"><span data-i18n="mod_limit_1">Rastgele toplam</span> <input type="number" id="soruLimiti" value="20" class="small-input" onclick="event.stopPropagation()"> <span data-i18n="mod_limit_2">soru sor.</span></span>
+                </label>
+
+                <button class="btn-start" onclick="baslat()" data-i18n="baslat">BAŞLAT</button>
+            </div>
+        </div>
+
+        <div id="game" style="display:none;">
+            <div id="puanGosterge">PUAN: 100</div>
+            <div class="stats-bar">
+                <span><span data-i18n="soru">SORU</span>: <b id="suankiSoru">0</b> / <b id="toplamSoru">0</b></span>
+                <span><span data-i18n="ort">ORT</span>: <b id="ortHiz">0.0</b>s</span>
+                <span><span data-i18n="limit">LİMİT</span>: <b id="sinirHiz">0.0</b>s</span>
+            </div>
+            
+            <div id="soru-container">
+                <div id="soru">---</div>
+                <div id="pause-overlay" data-i18n="duraklatildi">DURAKLATILDI</div>
+            </div>
+            
+            <input type="number" id="cevap" class="big-input" placeholder="?" autocomplete="off" inputmode="numeric">
+            <div id="sonuc"></div>
+
+            <div class="game-controls">
+                <button class="ctrl-btn btn-pause" id="btnDuraklat" onclick="oyunuDuraklat()" data-i18n="duraklat">DURAKLAT</button>
+                <button class="ctrl-btn btn-resume" id="btnDevam" onclick="oyunuDevamEttir()" data-i18n="devam">DEVAM ET</button>
+                <button class="ctrl-btn btn-stop" onclick="oyunuBitir()" data-i18n="bitir">BİTİR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>© 2026 Çarptrik.</div>
+    
+    <div class="footer-contact">
+        <span data-i18n="iletisim_text">Öneri ve Hata Bildirimi:</span>
+        <a href="mailto:carptrik@gmail.com?subject=Çarptrik Öneri" class="email-link">carptrik@gmail.com</a>
+    </div>
+
+    <div class="donate-area"></div>
+</footer>
+
+<script>
+    const translations = {
+        tr: {
+            hiz_ayari: "HIZ AYARI", otomatik: "OTOMATİK (Ortalama x 1.2)", sabit: "SABİT:", sn: "SN",
+            hata_listesi: "HATA LİSTESİ", liste_temiz: "Liste temiz.", hata_tekrar: "HATA ÇALIŞMA TEKRARI:",
+            bir_kez: "1 Kez Sor", puan_kadar: "Puanı Kadar Sor", hatalara_calis: "HATALARA ÇALIŞ",
+            listeyi_temizle: "LİSTEYİ TEMİZLE", carp_sayilar: "ÇARPILACAK SAYILAR", tumu: "TÜMÜ",
+            temizle: "TEMİZLE", oyun_modu: "OYUN MODU", mod_tekrar_1: "Tüm olasılıkları", mod_tekrar_2: "kez sor.",
+            mod_limit_1: "Rastgele toplam", mod_limit_2: "soru sor.", baslat: "BAŞLAT", soru: "SORU", ort: "ORT",
+            limit: "LİMİT", duraklatildi: "DURAKLATILDI", duraklat: "DURAKLAT", devam: "DEVAM ET", bitir: "BİTİR",
+            iletisim_text: "Öneri ve Hata Bildirimi:",
+            alert_sayi_sec: "Lütfen en az bir sayı grubu seçin!", alert_bitti: "Harika! Seans bitti. Skorun: ",
+            alert_hata_yok: "Listeniz tertemiz! Önce normal antrenman yapın.",
+            confirm_sifirla: "Hata listenizi ve istatistiklerinizi sıfırlamak istediğinize emin misiniz?",
+            confirm_bitir: "Antrenmanı bitirmek istiyor musunuz?", dogru: "DOĞRU!", yanlis: "YANLIŞ!", yavas: "YAVAŞ!",
+            puan: "PUAN: ", hata_yok_html: "<div style='color:#555; text-align:center; margin-top:20px;'>Hata kaydı yok.</div>",
+            puan_label: "Puan: "
+        },
+        en: {
+            hiz_ayari: "SPEED SETTING", otomatik: "AUTO (Average x 1.2)", sabit: "FIXED:", sn: "SEC",
+            hata_listesi: "ERROR LIST", liste_temiz: "List is clean.", hata_tekrar: "ERROR PRACTICE MODE:",
+            bir_kez: "Ask Once", puan_kadar: "Ask by Score (Drill)", hatalara_calis: "PRACTICE ERRORS",
+            listeyi_temizle: "CLEAR LIST", carp_sayilar: "NUMBERS TO MULTIPLY", tumu: "ALL",
+            temizle: "CLEAR", oyun_modu: "GAME MODE", mod_tekrar_1: "Ask all combinations", mod_tekrar_2: "times.",
+            mod_limit_1: "Ask random total of", mod_limit_2: "questions.", baslat: "START", soru: "QUEST", ort: "AVG",
+            limit: "LIMIT", duraklatildi: "PAUSED", duraklat: "PAUSE", devam: "RESUME", bitir: "FINISH",
+            iletisim_text: "Suggestion & Bug Report:",
+            alert_sayi_sec: "Please select at least one number group!", alert_bitti: "Great! Session finished. Score: ",
+            alert_hata_yok: "List is clean! Practice normal mode first.",
+            confirm_sifirla: "Are you sure you want to reset your error list and stats?",
+            confirm_bitir: "Do you want to finish the training?", dogru: "CORRECT!", yanlis: "WRONG!", yavas: "SLOW!",
+            puan: "SCORE: ", hata_yok_html: "<div style='color:#555; text-align:center; margin-top:20px;'>No errors recorded.</div>",
+            puan_label: "Score: "
+        }
+    };
+    let currentLang = 'tr';
+    function initLanguage() {
+        const savedLang = localStorage.getItem('carptrik_lang');
+        const browserLang = navigator.language || navigator.userLanguage;
+        if (savedLang) { currentLang = savedLang; } 
+        else if (browserLang && browserLang.startsWith('en')) { currentLang = 'en'; } 
+        else { currentLang = 'tr'; }
+        applyLanguage(currentLang);
+    }
+    function setLanguage(lang) {
+        currentLang = lang; localStorage.setItem('carptrik_lang', lang); applyLanguage(lang);
+    }
+    function applyLanguage(lang) {
+        document.getElementById('lang-tr').classList.toggle('active', lang === 'tr');
+        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) { el.innerText = translations[lang][key]; }
+        });
+        if(document.getElementById('game').style.display === 'block') {
+            document.getElementById('puanGosterge').innerText = translations[lang].puan + mevcutPuan;
+        }
+        const raporEl = document.getElementById('raporAlani');
+        if (Object.keys(db).length === 0) { raporEl.innerText = translations[lang].liste_temiz; } 
+        else { listeleHatalari(); }
+    }
+    let secilenRakamlar = [];
+    let s1, s2, dogru, basla;
+    let db = JSON.parse(localStorage.getItem('carptrik_data')) || {}; 
+    let aktifSoruListesi = [];
+    let toplamHedef = 0, suankiIndex = 0, seansSureleri = [], mevcutPuan = 100;
+    let secilenSureModu = "manual";
+    let secilenSabitSure = 4;
+    let oyunDuraklatildi = false;
+    let duraklatmaAni = 0;
+    let baslaZamani = 0; 
+    const inputEl = document.getElementById('cevap');
+    inputEl.addEventListener('input', function() { if (!oyunDuraklatildi && this.value.length >= dogru.toString().length) kontrolEt(); });
+    inputEl.addEventListener('keydown', function(e) { if(!oyunDuraklatildi && e.key === 'Enter') kontrolEt(); });
+    function hepsiniSec(durum) { document.querySelectorAll('.num-check').forEach(k => k.checked = durum); }
+    function secilenleriAl() { return Array.from(document.querySelectorAll('.num-check:checked')).map(k => parseInt(k.value)); }
+    function baslat() {
+        secilenSureModu = document.querySelector('input[name="sureModu"]:checked').value;
+        secilenSabitSure = parseFloat(document.getElementById('sabitSureInput').value);
+        secilenRakamlar = secilenleriAl();
+        if (secilenRakamlar.length < 1) { alert(translations[currentLang].alert_sayi_sec); return; }
+        const mod = document.querySelector('input[name="mod"]:checked').value;
+        aktifSoruListesi = [];
+        let tumKombinasyonlar = [];
+        secilenRakamlar.forEach(r1 => secilenRakamlar.forEach(r2 => tumKombinasyonlar.push({s1: r1, s2: r2})));
+        if (mod === "tekrar") {
+            const t = parseInt(document.getElementById('tekrarSayisi').value);
+            for (let i = 0; i < t; i++) tumKombinasyonlar.forEach(item => aktifSoruListesi.push(item));
+        } else {
+            const limit = parseInt(document.getElementById('soruLimiti').value);
+            for (let i = 0; i < limit; i++) aktifSoruListesi.push(tumKombinasyonlar[Math.floor(Math.random() * tumKombinasyonlar.length)]);
+        }
+        aktifSoruListesi.sort(() => Math.random() - 0.5);
+        baslatCommon();
+    }
+    function baslatCommon() {
+        toplamHedef = aktifSoruListesi.length; suankiIndex = 0; seansSureleri = []; mevcutPuan = 100;
+        oyunDuraklatildi = false;
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        document.getElementById('btnDuraklat').style.display = 'block';
+        document.getElementById('btnDevam').style.display = 'none';
+        document.getElementById('pause-overlay').style.display = 'none';
+        document.getElementById('soru').classList.remove('blur');
+        inputEl.disabled = false;
+        guncelleLimitGostergesi();
+        soruUret();
+    }
+    function oyunuDuraklat() {
+        if(oyunDuraklatildi) return;
+        oyunDuraklatildi = true; duraklatmaAni = Date.now();
+        document.getElementById('btnDuraklat').style.display = 'none';
+        document.getElementById('btnDevam').style.display = 'block';
+        document.getElementById('pause-overlay').style.display = 'block';
+        document.getElementById('soru').classList.add('blur');
+        inputEl.disabled = true;
+    }
+    function oyunuDevamEttir() {
+        if(!oyunDuraklatildi) return;
+        let beklemeSuresi = Date.now() - duraklatmaAni;
+        baslaZamani += beklemeSuresi;
+        oyunDuraklatildi = false;
+        document.getElementById('btnDuraklat').style.display = 'block';
+        document.getElementById('btnDevam').style.display = 'none';
+        document.getElementById('pause-overlay').style.display = 'none';
+        document.getElementById('soru').classList.remove('blur');
+        inputEl.disabled = false;
+        inputEl.focus();
+    }
+    function oyunuBitir() {
+        if(confirm(translations[currentLang].confirm_bitir)) { location.reload(); }
+    }
+    function soruUret() {
+        if (suankiIndex >= toplamHedef) { alert(translations[currentLang].alert_bitti + mevcutPuan); location.reload(); return; }
+        const s = aktifSoruListesi[suankiIndex]; s1 = s.s1; s2 = s.s2; dogru = s1 * s2;
+        document.getElementById('suankiSoru').innerText = suankiIndex + 1;
+        document.getElementById('toplamSoru').innerText = toplamHedef;
+        document.getElementById('puanGosterge').innerText = translations[currentLang].puan + mevcutPuan;
+        document.getElementById('soru').innerText = s1 + " x " + s2;
+        document.getElementById('sonuc').innerText = ""; 
+        guncelleLimitGostergesi(); inputEl.value = ""; inputEl.focus(); baslaZamani = Date.now(); 
+    }
+    function guncelleLimitGostergesi() {
+        let gosterilecekLimit = 0;
+        if (secilenSureModu === 'manual') { gosterilecekLimit = secilenSabitSure; } 
+        else {
+            let ort = seansSureleri.length > 0 ? seansSureleri.reduce((a,b)=>a+b,0)/seansSureleri.length : 3;
+            gosterilecekLimit = ort * 1.2;
+        }
+        document.getElementById('sinirHiz').innerText = gosterilecekLimit.toFixed(2);
+        let ortHiz = seansSureleri.length > 0 ? seansSureleri.reduce((a,b)=>a+b,0)/seansSureleri.length : 0;
+        document.getElementById('ortHiz').innerText = ortHiz.toFixed(2);
+    }
+    function kontrolEt() {
+        let val = inputEl.value; if(val === "") return;
+        let userVal = parseInt(val);
+        let sure = (Date.now() - baslaZamani) / 1000;
+        let key = s1 + "x" + s2; if (!db[key]) db[key] = {score: 0};
+        let sinir;
+        if (secilenSureModu === 'manual') { sinir = secilenSabitSure; } 
+        else {
+            let ort = seansSureleri.length > 0 ? seansSureleri.reduce((a,b)=>a+b,0)/seansSureleri.length : 3;
+            sinir = ort * 1.2;
+        }
+        const sonucEl = document.getElementById('sonuc');
+        let toleransVarMi = (secilenSureModu === 'auto' && seansSureleri.length <= 3);
+        if (userVal === dogru) {
+            seansSureleri.push(sure);
+            if (sure > sinir && !toleransVarMi) {
+                sonucEl.innerText = translations[currentLang].yavas; sonucEl.style.color = "#ffa502";
+                db[key].score += 1; mevcutPuan = Math.max(0, mevcutPuan - 2);
+            } else {
+                sonucEl.innerText = translations[currentLang].dogru; sonucEl.style.color = "#00ffaa";
+                if (db[key].score > 0) db[key].score -= 1;
+            }
+            suankiIndex++; setTimeout(soruUret, 500);
+        } else {
+            sonucEl.innerText = translations[currentLang].yanlis + " (" + dogru + ")"; sonucEl.style.color = "#ff4757";
+            db[key].score += 2; mevcutPuan = Math.max(0, mevcutPuan - 5);
+            suankiIndex++; setTimeout(soruUret, 1500);
+        }
+        if (db[key].score <= 0) delete db[key];
+        localStorage.setItem('carptrik_data', JSON.stringify(db));
+        guncelleLimitGostergesi(); listeleHatalari();
+    }
+    function listeleHatalari() {
+        const r = document.getElementById('raporAlani');
+        let html = "";
+        let sorted = Object.keys(db).sort((a,b) => db[b].score - db[a].score);
+        sorted.forEach(key => {
+            html += `<div class="hata-item"><span>${key}</span> <span style="color:#888">${translations[currentLang].puan_label}<b style="color:var(--primary)">${db[key].score}</b></span></div>`;
+        });
+        r.innerHTML = html || translations[currentLang].hata_yok_html;
+    }
+    function hatalaraCalis() {
+        let keys = Object.keys(db);
+        if (keys.length === 0) { alert(translations[currentLang].alert_hata_yok); return; }
+        secilenSureModu = document.querySelector('input[name="sureModu"]:checked').value;
+        secilenSabitSure = parseFloat(document.getElementById('sabitSureInput').value);
+        const hataModu = document.querySelector('input[name="hataModu"]:checked').value;
+        aktifSoruListesi = [];
+        if (hataModu === 'tek') {
+            aktifSoruListesi = keys.map(k => { let p = k.split("x"); return {s1: parseInt(p[0]), s2: parseInt(p[1])}; });
+        } else {
+            keys.forEach(k => {
+                let score = db[k].score; let p = k.split("x");
+                for(let i=0; i < score; i++) { aktifSoruListesi.push({s1: parseInt(p[0]), s2: parseInt(p[1])}); }
+            });
+        }
+        aktifSoruListesi.sort(() => Math.random() - 0.5); baslatCommon();
+    }
+    function verileriSifirla() {
+        if(confirm(translations[currentLang].confirm_sifirla)) { localStorage.removeItem('carptrik_data'); location.reload(); }
+    }
+    initLanguage();
+</script>
+</body>
+</html>
