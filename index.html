@@ -147,15 +147,14 @@
             gap: 5px;
         }
         
-        /* GÜNCELLENEN KISIM: Mail adresi stili */
         .email-link {
-            color: inherit; /* Üstteki gri rengi miras alır */
+            color: inherit;
             text-decoration: none;
-            font-weight: normal; /* Kalınlığı kaldırır */
+            font-weight: normal;
             transition: 0.2s;
         }
         .email-link:hover {
-            color: #fff; /* Üzerine gelince beyaz olur */
+            color: #fff;
             text-decoration: underline;
         }
         
@@ -203,10 +202,10 @@
         <div class="hata-ayarlar">
             <div style="color:#888; font-size:12px; margin-bottom:5px;" data-i18n="hata_tekrar">HATA ÇALIŞMA TEKRARI:</div>
             <label>
-                <input type="radio" name="hataModu" value="tek" checked> <span data-i18n="bir_kez">1 Kez Sor</span>
+                <input type="radio" name="hataModu" value="tek"> <span data-i18n="bir_kez">1 Kez Sor</span>
             </label>
             <label>
-                <input type="radio" name="hataModu" value="agirlikli"> <span data-i18n="puan_kadar">Puanı Kadar Sor</span>
+                <input type="radio" name="hataModu" value="agirlikli" checked> <span data-i18n="puan_kadar">Puanı Kadar Sor</span>
             </label>
         </div>
 
@@ -354,6 +353,53 @@
         if (Object.keys(db).length === 0) { raporEl.innerText = translations[lang].liste_temiz; } 
         else { listeleHatalari(); }
     }
+    
+    // --- YENİ EKLENEN KISIM: AYARLARI KAYDETME VE YÜKLEME ---
+    function saveSettings() {
+        const settings = {
+            sureModu: document.querySelector('input[name="sureModu"]:checked').value,
+            sabitSure: document.getElementById('sabitSureInput').value,
+            secilenRakamlar: secilenleriAl(),
+            oyunModu: document.querySelector('input[name="mod"]:checked').value,
+            tekrarSayisi: document.getElementById('tekrarSayisi').value,
+            soruLimiti: document.getElementById('soruLimiti').value,
+            hataModu: document.querySelector('input[name="hataModu"]:checked').value
+        };
+        localStorage.setItem('carptrik_settings', JSON.stringify(settings));
+    }
+
+    function loadSettings() {
+        const saved = JSON.parse(localStorage.getItem('carptrik_settings'));
+        if (!saved) return; // Kayıt yoksa varsayılanları kullan
+
+        // Hız Ayarları
+        const sureModuEl = document.querySelector(`input[name="sureModu"][value="${saved.sureModu}"]`);
+        if(sureModuEl) sureModuEl.checked = true;
+        document.getElementById('sabitSureInput').value = saved.sabitSure || 4;
+
+        // Sayı Seçimleri
+        if (saved.secilenRakamlar && saved.secilenRakamlar.length > 0) {
+            hepsiniSec(false); // Önce hepsini temizle
+            saved.secilenRakamlar.forEach(num => {
+                const el = document.querySelector(`.num-check[value="${num}"]`);
+                if(el) el.checked = true;
+            });
+        }
+
+        // Oyun Modu
+        const modEl = document.querySelector(`input[name="mod"][value="${saved.oyunModu}"]`);
+        if(modEl) modEl.checked = true;
+        document.getElementById('tekrarSayisi').value = saved.tekrarSayisi || 1;
+        document.getElementById('soruLimiti').value = saved.soruLimiti || 20;
+
+        // Hata Modu
+        if (saved.hataModu) {
+            const hataEl = document.querySelector(`input[name="hataModu"][value="${saved.hataModu}"]`);
+            if(hataEl) hataEl.checked = true;
+        }
+    }
+    // -----------------------------------------------------
+
     let secilenRakamlar = [];
     let s1, s2, dogru, basla;
     let db = JSON.parse(localStorage.getItem('carptrik_data')) || {}; 
@@ -369,7 +415,10 @@
     inputEl.addEventListener('keydown', function(e) { if(!oyunDuraklatildi && e.key === 'Enter') kontrolEt(); });
     function hepsiniSec(durum) { document.querySelectorAll('.num-check').forEach(k => k.checked = durum); }
     function secilenleriAl() { return Array.from(document.querySelectorAll('.num-check:checked')).map(k => parseInt(k.value)); }
+    
     function baslat() {
+        saveSettings(); // Oyuna başlarken ayarları kaydet
+        
         secilenSureModu = document.querySelector('input[name="sureModu"]:checked').value;
         secilenSabitSure = parseFloat(document.getElementById('sabitSureInput').value);
         secilenRakamlar = secilenleriAl();
@@ -490,6 +539,9 @@
     function hatalaraCalis() {
         let keys = Object.keys(db);
         if (keys.length === 0) { alert(translations[currentLang].alert_hata_yok); return; }
+        
+        saveSettings(); // Hata çalışırken de ayarları kaydet
+        
         secilenSureModu = document.querySelector('input[name="sureModu"]:checked').value;
         secilenSabitSure = parseFloat(document.getElementById('sabitSureInput').value);
         const hataModu = document.querySelector('input[name="hataModu"]:checked').value;
@@ -508,6 +560,7 @@
         if(confirm(translations[currentLang].confirm_sifirla)) { localStorage.removeItem('carptrik_data'); location.reload(); }
     }
     initLanguage();
+    loadSettings(); // Sayfa açılınca son ayarları yükle
 </script>
 </body>
 </html>
