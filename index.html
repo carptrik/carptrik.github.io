@@ -146,16 +146,19 @@
             align-items: center;
             gap: 5px;
         }
+        
+        /* GÜNCELLENEN KISIM: Mail adresi stili */
         .email-link {
-            color: var(--primary);
+            color: inherit; /* Üstteki gri rengi miras alır */
             text-decoration: none;
-            font-weight: bold;
+            font-weight: normal; /* Kalınlığı kaldırır */
             transition: 0.2s;
         }
         .email-link:hover {
-            color: #fff;
+            color: #fff; /* Üzerine gelince beyaz olur */
             text-decoration: underline;
         }
+        
         .donate-area { margin-top: 15px; }
 
         @media (max-width: 900px) {
