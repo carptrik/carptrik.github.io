@@ -5,6 +5,9 @@
     <meta name="google-site-verification" content="DbvwD_t2D1ABQ64NDUNPVEbSpcshzLXZ9KIzWLaIF7E" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3E text { fill: %2300ffaa; font-weight: bold; font-family: sans-serif; } %3C/style%3E%3Crect width='100%25' height='100%25' fill='%230d0d0d' rx='20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='80'%3E✖%3C/text%3E%3C/svg%3E">
+    
     <title>ÇARPTRİK - Çarpım Tablosu Ezberleme</title>
     <meta name="description" content="Çarptrik - Hızlı ve Eğlenceli Çarpım Tablosu Antrenörü">
     <meta name="theme-color" content="#0d0d0d">
@@ -52,7 +55,7 @@
         
         #side-box { width: 280px; order: 1; flex-shrink: 0; }
         #main-box { flex: 1; min-width: 300px; order: 2; }
-        #history-box { width: 300px; order: 3; flex-shrink: 0; } /* Genişletildi */
+        #history-box { width: 300px; order: 3; flex-shrink: 0; }
 
         h2 { color: var(--accent); font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -564,16 +567,17 @@
     }
 
     function endSession() {
-        // Puan Kesintisi Mantığı
-        let remaining = toplamHedef - suankiIndex;
-        if (remaining > 0) {
-            // Cevaplanmayan sorular için puan kır (5 puan her soru için)
-            mevcutPuan = Math.max(0, mevcutPuan - (remaining * 5));
-            // Not: db (hata listesi) güncellenmediği için bu sorular hataya eklenmez.
+        let bitenSoru = suankiIndex;
+        
+        // YENİ MANTIK: ORANSAL HESAPLAMA
+        if (toplamHedef > 0) {
+            let tamamlanmaOrani = bitenSoru / toplamHedef;
+            mevcutPuan = Math.round(mevcutPuan * tamamlanmaOrani);
+        } else {
+            mevcutPuan = 0;
         }
 
         let ort = seansSureleri.length > 0 ? seansSureleri.reduce((a,b)=>a+b,0)/seansSureleri.length : 0;
-        let bitenSoru = suankiIndex; 
         
         addToHistory(mevcutPuan, bitenSoru, ort.toFixed(2), sessionErrors);
         
