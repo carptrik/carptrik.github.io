@@ -16,6 +16,7 @@
             --bg-dark: #020617;
             --primary: #10b981;
             --primary-dim: rgba(16, 185, 129, 0.2);
+            --primary-glow: rgba(16, 185, 129, 0.4);
             --accent: #8b5cf6;
             --danger: #ef4444;
             --text-main: #f1f5f9;
@@ -197,7 +198,14 @@
         .q-text { font-size: 110px; font-weight: 900; color: #fff; margin-bottom: 30px; text-shadow: 0 0 30px rgba(255,255,255,0.05); }
         .ans-inp { width: 100%; max-width: 350px; background: #000; border: 3px solid var(--border); color: var(--primary); font-size: 60px; padding: 20px; text-align: center; border-radius: 20px; outline: none; font-family: monospace; }
         .ans-inp:focus { border-color: var(--primary); }
-        .feedback { height: 30px; margin-top: 15px; font-weight: 800; font-size: 18px; text-align: center; }
+        
+        /* FEEDBACK (Fixed for Red/Large/Same Font) */
+        .feedback { 
+            min-height: 80px; margin-top: 20px; 
+            font-weight: 900; font-size: 32px; 
+            text-align: center; line-height: 1.4;
+            display: flex; flex-direction: column; justify-content: center;
+        }
 
         /* Racer */
         #racer-wrap { flex: 1; margin: 20px; background: #111; border-radius: 12px; position: relative; overflow: hidden; border: 2px solid var(--border); }
@@ -236,7 +244,7 @@
             .mode-switch { transform: scale(1); width: 100%; } .m-btn { flex: 1; justify-content: center; }
             .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; gap: 15px; }
             .panel:nth-child(2) { order: 1; min-height: 600px; } .panel:nth-child(1) { order: 2; height: auto; } .panel:nth-child(3) { order: 3; height: auto; }
-            #racer-wrap { margin: 15px; height: 350px; } .mob-ctrl { display: flex; } .q-text { font-size: 70px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
+            #racer-wrap { margin: 15px; height: 350px; } .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
             .ans-inp { font-size: 40px; padding: 15px; }
         }
     </style>
@@ -475,7 +483,7 @@ const TEXT = {
         gecmis_yok:"Kayıt yok.", geri:"GERİ", bitir:"BİTİR", seans_bitti:"SEANS BİTTİ", tamam_btn:"TAMAM",
         alert_sayi:"Lütfen en az bir sayı seçin!", alert_hata:"Hata listeniz temiz.",
         confirm_bitir:"Bitirmek istediğinize emin misiniz?", confirm_sil:"Silmek istiyor musunuz?",
-        tab_klasik:"KLASİK", tab_yaris:"YARIŞ", dogru:"DOĞRU", yanlis:"YANLIŞ",
+        tab_klasik:"KLASİK", tab_yaris:"YARIŞ", dogru:"DOĞRU", yanlis:"YANLIŞ!",
         puan_kadar:"Puan", bir_kez:"1 Kez", can:"CAN", modal_evet:"EVET", modal_iptal:"İPTAL", sil:"SİL",
         hiz_ayari:"SÜRE / HIZ", otomatik:"OTOMATİK", sabit:"SABİT", yavas:"YAVAŞ", normal:"NORMAL", hizli:"HIZLI"
     },
@@ -488,7 +496,7 @@ const TEXT = {
         gecmis_yok:"Empty.", geri:"BACK", bitir:"FINISH", seans_bitti:"FINISHED", tamam_btn:"OK",
         alert_sayi:"Select numbers first!", alert_hata:"No errors recorded.",
         confirm_bitir:"Are you sure?", confirm_sil:"Delete all?",
-        tab_klasik:"CLASSIC", tab_yaris:"RACER", dogru:"CORRECT", yanlis:"WRONG",
+        tab_klasik:"CLASSIC", tab_yaris:"RACER", dogru:"CORRECT", yanlis:"WRONG!",
         puan_kadar:"Score", bir_kez:"Once", can:"HP", modal_evet:"YES", modal_iptal:"CANCEL", sil:"DEL",
         hiz_ayari:"SPEED", otomatik:"AUTO", sabit:"FIXED", yavas:"SLOW", normal:"NORMAL", hizli:"FAST"
     }
@@ -561,7 +569,7 @@ function getNums() { return Array.from(document.querySelectorAll('.num-chk:check
 function calcTotal() {
     const nums = getNums().length;
     const rep = parseInt(document.getElementById('inp-repeat').value) || 1;
-    // CORRECTION: Only multiply selected numbers among themselves
+    // Logic: Only multiply selected numbers among themselves
     const total = nums * nums * rep;
     
     const mode = document.querySelector('input[name="gMode"]:checked').value;
@@ -606,7 +614,6 @@ function startGame() {
     if(nums.length === 0) return modal(TEXT[DATA.lang].alert_sayi);
     
     let pool = [];
-    // REVERTED LOGIC: Multiply selected numbers with selected numbers
     nums.forEach(n1 => nums.forEach(n2 => pool.push({n1, n2})));
     
     Game.qList = [];
@@ -689,24 +696,30 @@ document.getElementById('c-input').addEventListener('input', function() {
         const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
         if(!DATA.db[k]) DATA.db[k]={score:0};
         
+        const fb = document.getElementById('c-feedback');
+        
         if(val === ans) {
             Game.times.push((Date.now()-Game.startT)/1000);
             if(DATA.db[k].score > 0) DATA.db[k].score--;
-            document.getElementById('c-feedback').innerText = TEXT[DATA.lang].dogru;
-            document.getElementById('c-feedback').style.color = 'var(--primary)';
+            fb.innerText = TEXT[DATA.lang].dogru;
+            fb.style.color = 'var(--primary)';
             const avg = Game.times.reduce((a,b)=>a+b,0)/Game.times.length;
             document.getElementById('c-speed').innerText = avg.toFixed(1)+'s';
             Game.idx++; setTimeout(nextQClassic, 300);
         } else {
             Game.errors++; DATA.db[k].score += 2;
             Game.score = Math.max(0, Game.score-5);
-            document.getElementById('c-feedback').innerText = TEXT[DATA.lang].yanlis;
-            document.getElementById('c-feedback').style.color = 'var(--danger)';
+            
+            // FEEDBACK: SAME FONT, SAME RED COLOR
+            fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`;
+            fb.style.color = 'var(--danger)';
+            
             const i = document.getElementById('c-input');
             i.disabled = true;
+            // AUTO ADVANCE
             setTimeout(() => { 
                 i.disabled = false; Game.idx++; nextQClassic(); 
-            }, 1000);
+            }, 1500);
         }
         if(DATA.db[k].score <= 0) delete DATA.db[k];
         localStorage.setItem('carptrik_data', JSON.stringify(DATA.db));
@@ -748,7 +761,6 @@ function spawnRacerQ() {
     }
     opts.sort(()=>Math.random()-0.5);
     
-    // Randomize Colors
     const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
     
     Game.r.cars = [];
@@ -763,29 +775,15 @@ function spawnRacerQ() {
 }
 
 function drawCar(x, y, color) {
-    // Tires
     ctx.fillStyle = "#000";
     ctx.fillRect(x-22, y+10, 6, 14); ctx.fillRect(x+16, y+10, 6, 14);
     ctx.fillRect(x-22, y+50, 6, 14); ctx.fillRect(x+16, y+50, 6, 14);
-    
-    // Shadow
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.beginPath(); ctx.roundRect(x-18, y+5, 36, 65, 8); ctx.fill();
-
-    // Body
-    ctx.fillStyle = color;
-    ctx.beginPath(); ctx.roundRect(x-20, y, 40, 70, 10); ctx.fill();
-    
-    // Roof/Windshield
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.beginPath(); ctx.roundRect(x-18, y+5, 36, 65, 8); ctx.fill();
+    ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x-20, y, 40, 70, 10); ctx.fill();
     ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.beginPath(); ctx.roundRect(x-16, y+12, 32, 20, 4); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x-16, y+12, 32, 20, 4); ctx.fill(); 
     ctx.beginPath(); ctx.roundRect(x-16, y+45, 32, 12, 4); ctx.fill();
-    
-    // Stripe
-    ctx.fillStyle = "rgba(255,255,255,0.2)";
-    ctx.fillRect(x-5, y, 10, 70);
-
-    // Lights
+    ctx.fillStyle = "rgba(255,255,255,0.2)"; ctx.fillRect(x-5, y, 10, 70);
     ctx.fillStyle = "#fff";
     ctx.beginPath(); ctx.arc(x-12, y+2, 3, 0, Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.arc(x+12, y+2, 3, 0, Math.PI*2); ctx.fill();
@@ -822,7 +820,6 @@ function racerLoop() {
             if(c.y+70 > py && c.y < py+70 && Math.abs(px - cx) < 35) {
                 if(c.isCorrect) {
                     Game.times.push((Date.now()-Game.startT)/1000);
-                    Game.r.speed += 0.2;
                     Game.idx++; Game.r.wait = true; Game.r.cars = [];
                     setTimeout(spawnRacerQ, 500);
                 } else {
@@ -897,7 +894,7 @@ function renderLists() {
 function clearHistory() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA.history = []; localStorage.setItem('carptrik_history', JSON.stringify([])); renderLists(); }); }
 function resetData() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA.db = {}; localStorage.removeItem('carptrik_data'); renderLists(); }); }
 
-calcTotal(); // Init calc
+calcTotal(); 
 init();
 window.addEventListener('resize', ()=>{ 
     if(Game.type==='racer') { cvs.width=document.getElementById('racer-wrap').offsetWidth; cvs.height=document.getElementById('racer-wrap').offsetHeight; }
