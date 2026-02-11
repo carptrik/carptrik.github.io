@@ -2,10 +2,15 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="google-site-verification" content="DbvwD_t2D1ABQ64NDUNPVEbSpcshzLXZ9KIzWLaIF7E" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Çarptrik - Hızlı ve Eğlenceli Çarpım Tablosu Antrenörü">
+    
+    <title>ÇARPTRİK - Çarpım Tablosu Ezberleme ve Matematik Oyunu</title>
+    <meta name="description" content="Çarptrik ile çarpım tablosunu ezberlemek çok kolay! İlkokul öğrencileri için ücretsiz, reklamsız ve hızlı çarpım tablosu oyunu. Matematik hızını test et.">
+    <meta name="keywords" content="çarpım tablosu, matematik oyunu, çarpım tablosu ezberle, ilkokul matematik, çarpım tablosu alıştırmaları, zihinden işlem, carptrik, çarpım tablosu oyunu">
+    
     <meta name="theme-color" content="#0d0d0d">
-    <title>ÇARPTRİK</title>
     <style>
         :root {
             --primary: #00ffaa;
@@ -354,7 +359,7 @@
         else { listeleHatalari(); }
     }
     
-    // --- YENİ EKLENEN KISIM: AYARLARI KAYDETME VE YÜKLEME ---
+    // --- AYARLARI KAYDETME VE YÜKLEME ---
     function saveSettings() {
         const settings = {
             sureModu: document.querySelector('input[name="sureModu"]:checked').value,
@@ -370,7 +375,7 @@
 
     function loadSettings() {
         const saved = JSON.parse(localStorage.getItem('carptrik_settings'));
-        if (!saved) return; // Kayıt yoksa varsayılanları kullan
+        if (!saved) return; 
 
         // Hız Ayarları
         const sureModuEl = document.querySelector(`input[name="sureModu"][value="${saved.sureModu}"]`);
@@ -379,7 +384,7 @@
 
         // Sayı Seçimleri
         if (saved.secilenRakamlar && saved.secilenRakamlar.length > 0) {
-            hepsiniSec(false); // Önce hepsini temizle
+            hepsiniSec(false); 
             saved.secilenRakamlar.forEach(num => {
                 const el = document.querySelector(`.num-check[value="${num}"]`);
                 if(el) el.checked = true;
@@ -417,7 +422,7 @@
     function secilenleriAl() { return Array.from(document.querySelectorAll('.num-check:checked')).map(k => parseInt(k.value)); }
     
     function baslat() {
-        saveSettings(); // Oyuna başlarken ayarları kaydet
+        saveSettings(); 
         
         secilenSureModu = document.querySelector('input[name="sureModu"]:checked').value;
         secilenSabitSure = parseFloat(document.getElementById('sabitSureInput').value);
@@ -540,7 +545,7 @@
         let keys = Object.keys(db);
         if (keys.length === 0) { alert(translations[currentLang].alert_hata_yok); return; }
         
-        saveSettings(); // Hata çalışırken de ayarları kaydet
+        saveSettings(); 
         
         secilenSureModu = document.querySelector('input[name="sureModu"]:checked').value;
         secilenSabitSure = parseFloat(document.getElementById('sabitSureInput').value);
@@ -560,7 +565,7 @@
         if(confirm(translations[currentLang].confirm_sifirla)) { localStorage.removeItem('carptrik_data'); location.reload(); }
     }
     initLanguage();
-    loadSettings(); // Sayfa açılınca son ayarları yükle
+    loadSettings(); 
 </script>
 </body>
 </html>
