@@ -12,12 +12,12 @@
         :root {
             --bg-body: #0f172a;
             --bg-panel: #1e293b;
-            --bg-input: #334155;
+            --bg-card: #334155;
+            --bg-active: rgba(16, 185, 129, 0.15);
             --primary: #10b981;
-            --primary-dark: #059669;
             --accent: #8b5cf6;
             --danger: #ef4444;
-            --text-main: #f1f5f9;
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: #334155;
             --radius: 12px;
@@ -26,179 +26,156 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             margin: 0; padding: 0;
             height: 100vh;
             display: flex; flex-direction: column;
-            overflow: hidden; /* Masaüstünde kaydırmayı engelle */
+            overflow: hidden;
         }
 
-        /* --- HEADER (TOP BAR) --- */
+        /* --- HEADER --- */
         header {
-            height: 70px;
-            background: rgba(30, 41, 59, 0.95);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 30px;
-            flex-shrink: 0;
-            backdrop-filter: blur(10px);
-            z-index: 50;
+            height: 60px; flex-shrink: 0;
+            background: rgba(30, 41, 59, 0.95); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; backdrop-filter: blur(10px); z-index: 50;
         }
+        .logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
+        .lang-switch { display: flex; gap: 5px; }
+        .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .lang-btn.active { border-color: var(--primary); color: var(--primary); background: var(--bg-active); }
 
-        .brand {
-            display: flex; align-items: center; gap: 12px;
-            font-size: 22px; font-weight: 900; letter-spacing: 1px; color: var(--primary);
-        }
-        .brand-icon { font-size: 26px; }
-
-        .mode-switch {
-            display: flex; background: var(--bg-body); padding: 4px; border-radius: 10px; border: 1px solid var(--border);
-        }
-        .mode-btn {
-            padding: 8px 24px; border: none; background: transparent; color: var(--text-muted);
-            border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .mode-btn.active { background: var(--bg-input); color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .mode-btn:hover:not(.active) { color: #fff; }
-
-        .lang-switch { display: flex; gap: 10px; }
-        .lang-btn {
-            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-            padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;
-        }
-        .lang-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(16, 185, 129, 0.1); }
-
-        /* --- MAIN LAYOUT (DASHBOARD) --- */
+        /* --- LAYOUT GRID --- */
         .dashboard {
             display: grid;
-            grid-template-columns: 280px 1fr 280px; /* SOL - ORTA - SAĞ */
-            gap: 20px;
-            padding: 20px;
-            height: calc(100vh - 70px); /* Header hariç kalan yükseklik */
-            max-width: 1600px; margin: 0 auto; width: 100%;
+            grid-template-columns: 250px 1fr 250px;
+            gap: 20px; padding: 20px;
+            height: calc(100vh - 60px);
+            max-width: 1400px; margin: 0 auto; width: 100%;
         }
 
-        /* Paneller */
         .panel {
             background: var(--bg-panel); border-radius: var(--radius); border: 1px solid var(--border);
-            display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
-        .panel-header {
-            padding: 15px; border-bottom: 1px solid var(--border);
-            font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
-            display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1);
-        }
-        .panel-body { padding: 15px; overflow-y: auto; flex: 1; }
-
-        /* --- LEFT & RIGHT LISTS --- */
-        .list-item {
+        
+        /* Left & Right Panels (Lists) */
+        .panel-head {
+            padding: 12px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border);
+            font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 1px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: var(--text-muted);
         }
+        .list-content { flex: 1; overflow-y: auto; padding: 10px; }
+        .list-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: var(--text-muted); }
         .list-item b { color: #fff; }
-        .list-header-row {
-            display: flex; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 6px;
-            font-size: 10px; font-weight: bold; color: var(--text-muted); margin-bottom: 5px;
-        }
-        .col { flex: 1; text-align: center; }
-        
-        .mini-btn { background: none; border: none; color: var(--danger); font-size: 11px; font-weight: bold; cursor: pointer; opacity: 0.7; }
-        .mini-btn:hover { opacity: 1; text-decoration: underline; }
+        .mini-btn { background: none; border: none; color: var(--danger); font-size: 10px; font-weight: bold; cursor: pointer; }
+        .mini-btn:hover { text-decoration: underline; }
 
-        /* --- CENTER PANEL (GAME & SETTINGS) --- */
-        #center-content { position: relative; }
+        /* --- CENTER STAGE --- */
+        #stage { padding: 0; position: relative; display: flex; flex-direction: column; }
         
-        /* Setup Screen */
-        .setup-group { margin-bottom: 25px; }
-        .setup-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
-        
-        .num-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
-        .num-label {
-            display: flex; align-items: center; justify-content: center; height: 45px;
-            background: var(--bg-input); border-radius: 8px; font-weight: bold; cursor: pointer;
-            border: 2px solid transparent; color: var(--text-muted); transition: 0.2s;
+        /* SCROLLABLE AREA FOR SETTINGS */
+        .scroll-area { flex: 1; overflow-y: auto; padding: 20px; }
+
+        /* CARDS (Modules) */
+        .setup-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
         }
-        .num-chk:checked + .num-label { background: var(--primary); color: #000; border-color: #fff; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
+        .card-label { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 15px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* NUMBER GRID */
+        .num-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-bottom: 15px; }
         .num-chk { display: none; }
-
-        .radio-card {
-            display: flex; align-items: center; padding: 15px; background: var(--bg-input);
-            border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 1px solid transparent;
+        .num-box {
+            background: var(--bg-card); color: var(--text-muted); height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;
+            border: 1px solid transparent;
         }
-        .radio-card:hover { border-color: rgba(255,255,255,0.1); }
-        .radio-card input[type="radio"] { margin-right: 15px; accent-color: var(--primary); transform: scale(1.2); }
-        .setting-input {
-            width: 50px; background: transparent; border: none; border-bottom: 2px solid var(--primary);
-            color: var(--primary); font-weight: bold; text-align: center; font-size: 16px; outline: none; margin: 0 5px;
-        }
-
-        /* Action Buttons */
-        .btn-main {
-            width: 100%; padding: 18px; border-radius: 10px; border: none;
-            font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase;
-        }
-        .btn-green { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(16,185,129,0.2); }
-        .btn-green:hover { background: var(--primary-dark); }
-        .btn-orange { background: #f59e0b; color: #000; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2); }
-        .btn-orange:hover { background: #d97706; }
-        .btn-purple { background: var(--accent); color: #fff; margin-top: 15px; }
+        .num-chk:checked + .num-box { background: var(--primary); color: #000; border-color: #fff; box-shadow: 0 0 10px rgba(16,185,129,0.3); }
         
-        /* Game Screens */
-        .view-section { display: none; height: 100%; flex-direction: column; animation: fadeUp 0.3s ease; }
-        .view-section.active { display: flex; }
+        .grid-actions { display: flex; gap: 10px; margin-bottom: 20px; }
+        .act-btn { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .act-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+        /* SETTINGS BOXES (Grid) */
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .setting-box {
+            background: var(--bg-card); border: 1px solid transparent; padding: 15px;
+            border-radius: 10px; cursor: pointer; transition: 0.2s; position: relative;
+        }
+        .setting-box:hover { border-color: rgba(255,255,255,0.1); }
+        .setting-box.selected { background: var(--bg-active); border-color: var(--primary); }
+        .setting-box input[type="radio"] { display: none; }
+        
+        .box-title { font-size: 13px; font-weight: bold; color: #fff; display: block; margin-bottom: 5px; }
+        .box-desc { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+        
+        .inline-input {
+            width: 40px; background: rgba(0,0,0,0.2); border: none; border-bottom: 1px solid var(--primary);
+            color: var(--primary); text-align: center; font-weight: bold; font-size: 14px; outline: none; padding: 2px;
+        }
+
+        /* BIG BUTTONS */
+        .btn-large {
+            width: 100%; padding: 16px; border-radius: 10px; border: none;
+            font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.2s;
+            display: flex; justify-content: center; align-items: center; gap: 10px; text-transform: uppercase;
+        }
+        .btn-large:active { transform: scale(0.98); }
+        .btn-green { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(16,185,129,0.2); }
+        .btn-orange { background: #f59e0b; color: #000; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2); }
+        .btn-purple { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2); }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* --- GAME SCREENS --- */
+        .screen { display: none; flex-direction: column; height: 100%; padding: 20px; animation: fadeUp 0.3s ease; }
+        .screen.active { display: flex; }
         @keyframes fadeUp { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-        /* Classic Game */
-        .hud { display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .hud-item { text-align: center; }
-        .hud-lbl { font-size: 10px; color: var(--text-muted); display: block; }
-        .hud-val { font-size: 20px; font-weight: 800; color: #fff; }
-        
-        .q-display { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 90px; font-weight: 900; }
+        /* HUD */
+        .hud { display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .hud-val { font-size: 18px; font-weight: 800; color: #fff; text-align: center; }
+        .hud-lbl { font-size: 9px; color: var(--text-muted); display: block; text-align: center; margin-bottom: 3px; }
+
+        /* Classic */
+        .q-display { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 80px; font-weight: 900; }
         .ans-input { 
             width: 100%; background: #000; border: 2px solid var(--border); color: var(--primary);
-            font-size: 40px; padding: 15px; text-align: center; border-radius: 12px; outline: none;
-            font-family: monospace; font-weight: bold;
+            font-size: 40px; padding: 15px; text-align: center; border-radius: 12px; outline: none; font-family: monospace;
         }
-        .ans-input:focus { border-color: var(--primary); }
-
-        /* Racer Game */
-        #racer-container { flex: 1; width: 100%; background: #111; border-radius: 12px; position: relative; overflow: hidden; border: 2px solid var(--border); margin-bottom: 15px; }
-        canvas { width: 100%; height: 100%; display: block; }
-        .racer-hud { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; text-shadow: 2px 2px 0 #000; pointer-events: none; z-index: 10; }
-        .racer-q { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.9); padding: 5px 25px; border-radius: 50px; border: 2px solid var(--primary); font-size: 28px; font-weight: 900; color: #fff; z-index: 10; pointer-events: none; }
         
-        .mobile-controls { display: none; gap: 15px; height: 100px; }
-        .ctrl-btn { flex: 1; background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; font-size: 30px; color: #fff; cursor: pointer; }
-
-        /* Footer Buttons */
-        .game-footer { margin-top: auto; display: flex; gap: 10px; }
-        .btn-sec { flex: 1; padding: 12px; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border); color: #fff; font-weight: bold; cursor: pointer; }
-        .btn-sec.danger { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.1); }
+        /* Racer */
+        #racer-viewport { flex: 1; width: 100%; background: #111; border-radius: 12px; position: relative; overflow: hidden; border: 2px solid var(--border); margin-bottom: 15px; }
+        canvas { width: 100%; height: 100%; display: block; }
+        .racer-overlay { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; pointer-events: none; z-index: 10; font-weight: bold; font-size: 16px; text-shadow: 2px 2px 0 #000; }
+        .racer-float-q { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.9); padding: 8px 25px; border-radius: 50px; border: 2px solid var(--primary); font-size: 24px; font-weight: 900; color: #fff; z-index: 10; pointer-events: none; }
+        .mobile-controls { display: none; height: 80px; gap: 10px; }
+        .ctrl-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; font-size: 24px; color: #fff; cursor: pointer; }
 
         /* Result */
-        .res-container { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
-        .res-score { font-size: 80px; font-weight: 900; color: var(--primary); margin: 10px 0; }
-        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 300px; margin-bottom: 30px; }
-        .res-box { background: var(--bg-input); padding: 15px; border-radius: 10px; }
+        .res-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .res-val { font-size: 70px; font-weight: 900; color: var(--primary); }
 
         /* Modal */
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-box { background: var(--bg-panel); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .modal-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .modal-wrap { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: var(--bg-panel); padding: 30px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; border: 1px solid var(--border); }
+        .modal-btns { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+        .m-btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .m-yes { background: var(--primary); color: #000; }
+        .m-no { background: var(--bg-card); color: #fff; }
 
         /* Responsive */
         @media (max-width: 900px) {
-            body { padding: 0; overflow-y: auto; height: auto; }
-            header { padding: 0 15px; height: 60px; }
-            .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; gap: 15px; }
-            .panel { max-height: 400px; }
-            #center-content { min-height: 600px; }
-            #racer-container { height: 400px; }
+            body { padding: 0; height: auto; overflow-y: auto; }
+            .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; }
+            .panel { height: auto; max-height: 500px; }
+            #stage { min-height: 600px; }
             .mobile-controls { display: flex; }
             .num-grid { grid-template-columns: repeat(4, 1fr); }
         }
@@ -207,127 +184,118 @@
 <body>
 
 <header>
-    <div class="brand">
-        <span class="brand-icon">✖</span> ÇARPTRİK
-    </div>
-    
-    <div class="mode-switch">
-        <button class="mode-btn active" id="btn-mode-classic" onclick="setMode('classic')">
-            <span>📊</span> <span data-i18n="tab_klasik">KLASİK</span>
-        </button>
-        <button class="mode-btn" id="btn-mode-racer" onclick="setMode('racer')">
-            <span>🏎️</span> <span data-i18n="tab_yaris">YARIŞ</span>
-        </button>
-    </div>
-
+    <div class="logo">✖ ÇARPTRİK</div>
     <div class="lang-switch">
-        <button class="lang-btn active" id="btn-tr" onclick="setLang('tr')">TR</button>
-        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn active" id="l-tr" onclick="setLang('tr')">TR</button>
+        <button class="lang-btn" id="l-en" onclick="setLang('en')">EN</button>
     </div>
 </header>
 
 <div class="dashboard">
     
-    <div class="panel">
-        <div class="panel-header">
+    <aside class="panel">
+        <div class="panel-head">
             <span data-i18n="hata_listesi">HATA LİSTESİ</span>
-            <button class="mini-btn" onclick="resetData()" data-i18n="listeyi_temizle">TEMİZLE</button>
+            <button class="mini-btn" onclick="resetData()" data-i18n="temizle">TEMİZLE</button>
         </div>
-        <div class="panel-body" id="list-errors">
-            <div style="text-align:center; color:#555; font-size:13px; margin-top:20px;" data-i18n="liste_temiz">Temiz</div>
+        <div class="list-content" id="list-errors">
+            <div style="text-align:center;color:#555;padding:20px;" data-i18n="liste_temiz">Temiz</div>
         </div>
-        
-        <div style="padding:15px; background:rgba(0,0,0,0.2); border-top:1px solid var(--border);">
-            <div style="font-size:11px; color:var(--text-muted); margin-bottom:5px;" data-i18n="hata_tekrar">HATA TEKRARI</div>
-            <div style="display:flex; gap:10px;">
-                <label style="font-size:12px; cursor:pointer; color:#ddd;"><input type="radio" name="errMode" value="weighted" checked> <span data-i18n="puan_kadar">Puan</span></label>
-                <label style="font-size:12px; cursor:pointer; color:#ddd;"><input type="radio" name="errMode" value="single"> <span data-i18n="bir_kez">1 Kez</span></label>
-            </div>
-        </div>
-    </div>
+    </aside>
 
-    <div class="panel" id="center-content">
+    <main class="panel" id="stage">
         
-        <div id="view-setup" class="view-section active panel-body">
-            
-            <div class="setup-group">
-                <div class="panel-header" style="background:transparent; padding-left:0; margin-bottom:15px;">
-                    <span data-i18n="carp_sayilar">SAYI SEÇİMİ</span>
-                    <div style="display:flex; gap:10px;">
-                        <button class="mini-btn" style="color:var(--primary);" onclick="toggleAll(true)" data-i18n="tumu">TÜMÜ</button>
-                        <button class="mini-btn" style="color:var(--text-muted);" onclick="toggleAll(false)" data-i18n="temizle">TEMİZLE</button>
+        <div id="view-setup" class="screen active" style="padding:0;">
+            <div class="scroll-area">
+                
+                <div class="setup-card">
+                    <span class="card-label" data-i18n="yeni_oyun">YENİ OYUN</span>
+                    
+                    <div class="num-grid">
+                        <label><input type="checkbox" class="num-chk" value="2" checked><div class="num-box">2</div></label>
+                        <label><input type="checkbox" class="num-chk" value="3" checked><div class="num-box">3</div></label>
+                        <label><input type="checkbox" class="num-chk" value="4" checked><div class="num-box">4</div></label>
+                        <label><input type="checkbox" class="num-chk" value="5" checked><div class="num-box">5</div></label>
+                        <label><input type="checkbox" class="num-chk" value="6" checked><div class="num-box">6</div></label>
+                        <label><input type="checkbox" class="num-chk" value="7" checked><div class="num-box">7</div></label>
+                        <label><input type="checkbox" class="num-chk" value="8" checked><div class="num-box">8</div></label>
+                        <label><input type="checkbox" class="num-chk" value="9" checked><div class="num-box">9</div></label>
+                    </div>
+                    <div class="grid-actions">
+                        <button class="act-btn" onclick="toggleAll(true)" data-i18n="tumu">TÜMÜ</button>
+                        <button class="act-btn" onclick="toggleAll(false)" data-i18n="temizle">TEMİZLE</button>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="setting-box selected" onclick="selectOpt(this)">
+                            <input type="radio" name="gMode" value="repeat" checked>
+                            <span class="box-title" data-i18n="mod_tekrar_1">Tümünü</span>
+                            <span class="box-desc">
+                                <input type="number" id="inp-repeat" value="1" class="inline-input" onclick="event.stopPropagation()"> <span data-i18n="mod_tekrar_2">kez sor</span>
+                            </span>
+                        </div>
+                        <div class="setting-box" onclick="selectOpt(this)">
+                            <input type="radio" name="gMode" value="limit">
+                            <span class="box-title" data-i18n="mod_limit_1">Rastgele</span>
+                            <span class="box-desc">
+                                <input type="number" id="inp-limit" value="20" class="inline-input" onclick="event.stopPropagation()"> <span data-i18n="mod_limit_2">tane sor</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-large btn-green" onclick="startGame('classic')">📊 <span data-i18n="klasik">KLASİK</span></button>
+                        <button class="btn-large btn-orange" onclick="startGame('racer')">🏎️ <span data-i18n="yaris">YARIŞ</span></button>
                     </div>
                 </div>
-                <div class="num-grid">
-                    <label><input type="checkbox" class="num-chk" value="2" checked><div class="num-label">2</div></label>
-                    <label><input type="checkbox" class="num-chk" value="3" checked><div class="num-label">3</div></label>
-                    <label><input type="checkbox" class="num-chk" value="4" checked><div class="num-label">4</div></label>
-                    <label><input type="checkbox" class="num-chk" value="5" checked><div class="num-label">5</div></label>
-                    <label><input type="checkbox" class="num-chk" value="6" checked><div class="num-label">6</div></label>
-                    <label><input type="checkbox" class="num-chk" value="7" checked><div class="num-label">7</div></label>
-                    <label><input type="checkbox" class="num-chk" value="8" checked><div class="num-label">8</div></label>
-                    <label><input type="checkbox" class="num-chk" value="9" checked><div class="num-label">9</div></label>
+
+                <div class="setup-card" style="border-color: rgba(139, 92, 246, 0.3);">
+                    <span class="card-label" style="color:var(--accent);" data-i18n="hata_yonetimi">HATA YÖNETİMİ</span>
+                    
+                    <div class="settings-grid">
+                        <div class="setting-box selected" onclick="selectOpt(this)">
+                            <input type="radio" name="errMode" value="weighted" checked>
+                            <span class="box-title" data-i18n="puan_kadar">Puan Kadar</span>
+                            <span class="box-desc" style="font-size:10px;">Çok yanlış yapılanlar çok sorulur</span>
+                        </div>
+                        <div class="setting-box" onclick="selectOpt(this)">
+                            <input type="radio" name="errMode" value="single">
+                            <span class="box-title" data-i18n="bir_kez">1 Kez</span>
+                            <span class="box-desc" style="font-size:10px;">Her hata bir kere sorulur</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-large btn-purple" onclick="startErrorPractice()">⚠️ <span data-i18n="hatalara_calis">HATALARA ÇALIŞ</span></button>
                 </div>
-            </div>
 
-            <div class="setup-group">
-                <span class="setup-label" data-i18n="ayarlar">OYUN AYARLARI</span>
-                
-                <label class="radio-card">
-                    <input type="radio" name="gMode" value="repeat" checked>
-                    <div style="margin-left:10px;">
-                        <span style="font-weight:bold; color:#fff;" data-i18n="mod_tekrar_1">Tümünü</span>
-                        <input type="number" id="inp-repeat" value="1" class="setting-input" onclick="event.stopPropagation()">
-                        <span style="font-size:13px; color:var(--text-muted);" data-i18n="mod_tekrar_2">kez sor</span>
-                    </div>
-                </label>
-
-                <label class="radio-card">
-                    <input type="radio" name="gMode" value="limit">
-                    <div style="margin-left:10px;">
-                        <span style="font-weight:bold; color:#fff;" data-i18n="mod_limit_1">Rastgele</span>
-                        <input type="number" id="inp-limit" value="20" class="setting-input" onclick="event.stopPropagation()">
-                        <span style="font-size:13px; color:var(--text-muted);" data-i18n="mod_limit_2">soru sor</span>
-                    </div>
-                </label>
-            </div>
-
-            <div style="margin-top:auto;">
-                <button class="btn-main btn-green" id="btn-start-game" onclick="startGame()">
-                    <span>▶</span> <span data-i18n="baslat_klasik">KLASİK BAŞLAT</span>
-                </button>
-                
-                <button class="btn-main btn-purple" onclick="startErrorPractice()">
-                    <span>⚠️</span> <span data-i18n="hatalara_calis">HATALARA ÇALIŞ</span>
-                </button>
             </div>
         </div>
 
-        <div id="view-classic" class="view-section panel-body">
+        <div id="view-classic" class="screen">
             <div class="hud">
-                <div class="hud-item"><span class="hud-lbl" data-i18n="tablo_puan">PUAN</span><span class="hud-val" style="color:var(--primary)" id="c-score">100</span></div>
-                <div class="hud-item"><span class="hud-lbl" data-i18n="tablo_soru">SORU</span><span class="hud-val"><span id="c-curr">0</span>/<span id="c-total">0</span></span></div>
-                <div class="hud-item"><span class="hud-lbl" data-i18n="tablo_hiz">HIZ</span><span class="hud-val" id="c-speed">0.0s</span></div>
+                <div class="hud-item"><span class="hud-lbl" data-i18n="tablo_puan">PUAN</span><div class="hud-val" style="color:var(--primary)" id="c-score">100</div></div>
+                <div class="hud-item"><span class="hud-lbl" data-i18n="tablo_soru">SORU</span><div class="hud-val"><span id="c-curr">0</span>/<span id="c-total">0</span></div></div>
+                <div class="hud-item"><span class="hud-lbl" data-i18n="tablo_hiz">HIZ</span><div class="hud-val" id="c-speed">0.0s</div></div>
             </div>
             
             <div class="q-display" id="c-q-text"></div>
             <input type="number" class="ans-input" id="c-input" inputmode="numeric" placeholder="?" autocomplete="off">
             <div id="c-feedback" style="text-align:center; height:20px; font-weight:bold; margin-top:10px;"></div>
 
-            <div class="game-footer">
-                <button class="btn-sec" onclick="showSetup()" data-i18n="geri">GERİ</button>
-                <button class="btn-sec danger" onclick="finishConfirm()" data-i18n="bitir">BİTİR</button>
+            <div style="margin-top:auto; display:flex; gap:10px;">
+                <button class="act-btn" style="flex:1" onclick="showSetup()" data-i18n="geri">GERİ</button>
+                <button class="act-btn" style="flex:1; border-color:var(--danger); color:var(--danger);" onclick="finishConfirm()" data-i18n="bitir">BİTİR</button>
             </div>
         </div>
 
-        <div id="view-racer" class="view-section panel-body">
-            <div id="racer-container">
+        <div id="view-racer" class="screen">
+            <div id="racer-viewport">
                 <canvas id="racerCanvas"></canvas>
-                <div class="racer-hud">
+                <div class="racer-overlay">
                     <span style="color:var(--primary)"><span data-i18n="tablo_puan">P</span>: <span id="r-score">0</span></span>
                     <span style="color:var(--danger)"><span data-i18n="can">CAN</span>: <span id="r-lives">3</span></span>
                 </div>
-                <div class="racer-q" id="r-q-text"></div>
+                <div class="racer-float-q" id="r-q-text"></div>
             </div>
             
             <div class="mobile-controls">
@@ -335,176 +303,130 @@
                 <button class="ctrl-btn" ontouchstart="racerInput(1)" onmousedown="racerInput(1)">➡️</button>
             </div>
 
-            <div class="game-footer" style="margin-top:10px;">
-                <button class="btn-sec" onclick="showSetup()" data-i18n="geri">GERİ</button>
-                <button class="btn-sec danger" onclick="finishConfirm()" data-i18n="bitir">BİTİR</button>
+            <div style="margin-top:10px;">
+                <button class="act-btn" style="width:100%; border-color:var(--danger); color:var(--danger);" onclick="finishConfirm()" data-i18n="bitir">BİTİR</button>
             </div>
         </div>
 
-        <div id="view-result" class="view-section panel-body">
-            <div class="res-container">
-                <div class="res-title" data-i18n="seans_bitti">SEANS BİTTİ</div>
-                <div class="res-score" id="res-score">100</div>
-                
-                <div class="res-grid">
-                    <div class="res-box">
-                        <span style="font-size:10px; color:var(--text-muted);" data-i18n="tablo_hiz">HIZ</span>
-                        <div style="font-size:20px; font-weight:bold;" id="res-speed">0.0s</div>
-                    </div>
-                    <div class="res-box">
-                        <span style="font-size:10px; color:var(--text-muted);" data-i18n="tablo_hata">HATA</span>
-                        <div style="font-size:20px; font-weight:bold; color:var(--danger);" id="res-err">0</div>
-                    </div>
+        <div id="view-result" class="screen">
+            <div class="res-box">
+                <div class="card-label" style="font-size:16px; color:var(--text-muted);" data-i18n="seans_bitti">SEANS BİTTİ</div>
+                <div class="res-val" id="res-score">100</div>
+                <div style="display:flex; gap:30px; margin-top:20px;">
+                    <div><span class="hud-lbl" data-i18n="tablo_hiz">HIZ</span><span style="font-size:20px; font-weight:bold" id="res-speed">0.0s</span></div>
+                    <div><span class="hud-lbl" data-i18n="tablo_hata">HATA</span><span style="font-size:20px; font-weight:bold; color:var(--danger)" id="res-err">0</span></div>
                 </div>
-
-                <button class="btn-main btn-green" style="max-width:200px;" onclick="showSetup()" data-i18n="tamam_btn">TAMAM</button>
+                <button class="btn-large btn-green" style="margin-top:40px; max-width:200px;" onclick="showSetup()" data-i18n="tamam_btn">TAMAM</button>
             </div>
         </div>
 
-    </div>
+    </main>
 
-    <div class="panel">
-        <div class="panel-header">
+    <aside class="panel">
+        <div class="panel-head">
             <span data-i18n="gecmis_skorlar">GEÇMİŞ</span>
-            <button class="mini-btn" onclick="clearHistory()" data-i18n="gecmisi_sil">SİL</button>
+            <button class="mini-btn" onclick="clearHistory()" data-i18n="sil">SİL</button>
         </div>
-        <div class="list-header-row" style="margin:10px;">
+        <div style="display:flex; padding:5px 10px; background:rgba(255,255,255,0.05); font-size:10px; font-weight:bold; color:var(--text-muted);">
             <span class="col" data-i18n="tablo_puan">P</span>
             <span class="col" data-i18n="tablo_hiz">HZ</span>
             <span class="col" data-i18n="tablo_hata">HT</span>
             <span class="col" data-i18n="tablo_soru">SR</span>
         </div>
-        <div class="panel-body" id="list-history" style="padding-top:0;">
-            <div style="text-align:center; color:#555; font-size:13px;" data-i18n="gecmis_yok">Yok</div>
+        <div class="list-content" id="list-history">
+            <div style="text-align:center;color:#555;padding:20px;" data-i18n="gecmis_yok">Yok</div>
         </div>
-    </div>
+    </aside>
 
 </div>
 
-<div id="mainModal" class="modal">
+<div id="customModal" class="modal-wrap">
     <div class="modal-box">
-        <div id="m-text" style="font-size:18px; margin-bottom:20px; color:#fff;">...</div>
+        <div id="m-text" style="font-size:16px; margin-bottom:20px; color:#fff;">...</div>
         <div class="modal-btns" id="m-btns"></div>
     </div>
 </div>
 
 <script>
-/* ================= SYSTEM ================= */
+/* SYSTEM */
 const DATA = {
     lang: 'tr',
-    activeMode: 'classic', // 'classic' or 'racer' (Set by Top Bar)
     db: JSON.parse(localStorage.getItem('carptrik_data')) || {},
     history: JSON.parse(localStorage.getItem('carptrik_history')) || []
 };
 
 const TEXT = {
     tr: {
-        carp_sayilar:"SAYI SEÇİMİ", tumu:"TÜMÜ", temizle:"TEMİZLE", ayarlar:"OYUN AYARLARI",
+        yeni_oyun:"YENİ OYUN", hata_yonetimi:"HATA YÖNETİMİ", tumu:"TÜMÜ", temizle:"TEMİZLE", sil:"SİL",
         mod_tekrar_1:"Tümünü", mod_tekrar_2:"kez", mod_limit_1:"Rastgele", mod_limit_2:"soru",
-        hata_listesi:"HATALAR", hatalara_calis:"HATALARA ÇALIŞ", liste_temiz:"Temiz.",
-        gecmis_skorlar:"GEÇMİŞ", gecmisi_sil:"SİL", tablo_puan:"P", tablo_hiz:"HIZ", tablo_hata:"HT", tablo_soru:"SR",
-        gecmis_yok:"Yok.", geri:"GERİ", bitir:"BİTİR", seans_bitti:"SEANS BİTTİ", tamam_btn:"TAMAM",
-        alert_sayi:"Lütfen en az bir sayı seçin!", alert_hata:"Hata listeniz temiz.",
-        confirm_bitir:"Bitirmek istediğinize emin misiniz?", confirm_sil:"Silmek istediğinize emin misiniz?",
-        tab_klasik:"KLASİK", tab_yaris:"YARIŞ",
-        baslat_klasik:"KLASİK BAŞLAT", baslat_yaris:"YARIŞ BAŞLAT",
-        dogru:"DOĞRU", yanlis:"YANLIŞ", puan_kadar:"Puan", bir_kez:"1 Kez", listeyi_temizle:"TEMİZLE",
-        can:"CAN", hata_tekrar:"HATA TEKRAR MODU"
+        klasik:"KLASİK", yaris:"YARIŞ", hatalara_calis:"HATALARA ÇALIŞ", puan_kadar:"Puan Kadar", bir_kez:"1 Kez",
+        hata_listesi:"HATALAR", liste_temiz:"Hata listeniz temiz.", gecmis_skorlar:"GEÇMİŞ", gecmis_yok:"Kayıt yok.",
+        tablo_puan:"P", tablo_hiz:"HZ", tablo_hata:"H", tablo_soru:"S",
+        alert_sayi:"Lütfen en az bir sayı seçin!", alert_hata:"Hata listeniz temiz!",
+        geri:"GERİ", bitir:"BİTİR", duraklat:"DURAKLAT", tamam_btn:"TAMAM", seans_bitti:"SEANS BİTTİ",
+        confirm_bitir:"Bitirmek istiyor musunuz?", confirm_sil:"Silmek istiyor musunuz?",
+        dogru:"DOĞRU", yanlis:"YANLIŞ", can:"CAN", modal_evet:"EVET", modal_iptal:"İPTAL"
     },
     en: {
-        carp_sayilar:"NUMBERS", tumu:"ALL", temizle:"CLEAR", ayarlar:"SETTINGS",
+        yeni_oyun:"NEW GAME", hata_yonetimi:"ERROR MANAGEMENT", tumu:"ALL", temizle:"CLEAR", sil:"DEL",
         mod_tekrar_1:"All", mod_tekrar_2:"times", mod_limit_1:"Random", mod_limit_2:"qs",
-        hata_listesi:"ERRORS", hatalara_calis:"PRACTICE ERRORS", liste_temiz:"Clean.",
-        gecmis_skorlar:"HISTORY", gecmisi_sil:"CLEAR", tablo_puan:"S", tablo_hiz:"SPD", tablo_hata:"E", tablo_soru:"Q",
-        gecmis_yok:"Empty.", geri:"BACK", bitir:"FINISH", seans_bitti:"FINISHED", tamam_btn:"OK",
+        klasik:"CLASSIC", yaris:"RACER", hatalara_calis:"PRACTICE ERRORS", puan_kadar:"Weighted", bir_kez:"Once",
+        hata_listesi:"ERRORS", liste_temiz:"No errors.", gecmis_skorlar:"HISTORY", gecmis_yok:"No records.",
+        tablo_puan:"S", tablo_hiz:"SP", tablo_hata:"E", tablo_soru:"Q",
         alert_sayi:"Select numbers first!", alert_hata:"No errors recorded.",
+        geri:"BACK", bitir:"FINISH", duraklat:"PAUSE", tamam_btn:"OK", seans_bitti:"FINISHED",
         confirm_bitir:"Are you sure?", confirm_sil:"Delete everything?",
-        tab_klasik:"CLASSIC", tab_yaris:"RACER",
-        baslat_klasik:"START CLASSIC", baslat_yaris:"START RACER",
-        dogru:"CORRECT", yanlis:"WRONG", puan_kadar:"Score", bir_kez:"Once", listeyi_temizle:"CLEAR",
-        can:"HP", hata_tekrar:"ERROR REPEAT"
+        dogru:"CORRECT", yanlis:"WRONG", can:"HP", modal_evet:"YES", modal_iptal:"CANCEL"
     }
 };
 
-/* ================= INIT ================= */
+/* INIT */
 function init() {
     const l = localStorage.getItem('carptrik_lang');
     if(l) DATA.lang = l;
     setLang(DATA.lang);
-    setMode('classic'); // Default visual
+    renderLists();
 }
 
 function setLang(l) {
     DATA.lang = l;
     localStorage.setItem('carptrik_lang', l);
-    document.getElementById('btn-tr').classList.toggle('active', l==='tr');
-    document.getElementById('btn-en').classList.toggle('active', l==='en');
-    
-    document.querySelectorAll('[data-i18n]').forEach(el => {
+    document.getElementById('l-tr').classList.toggle('active', l==='tr');
+    document.getElementById('l-en').classList.toggle('active', l==='en');
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
         const k = el.getAttribute('data-i18n');
         if(TEXT[l][k]) el.innerText = TEXT[l][k];
     });
-    updateStartBtn();
     renderLists();
 }
 
-function setMode(m) {
-    DATA.activeMode = m;
-    document.getElementById('btn-mode-classic').classList.toggle('active', m==='classic');
-    document.getElementById('btn-mode-racer').classList.toggle('active', m==='racer');
-    
-    const btn = document.getElementById('btn-start-game');
-    if(m === 'classic') {
-        btn.className = "btn-main btn-green";
-    } else {
-        btn.className = "btn-main btn-orange";
-    }
-    updateStartBtn();
+function selectOpt(el) {
+    el.parentElement.querySelectorAll('.setting-box').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input').checked = true;
 }
 
-function updateStartBtn() {
-    const btn = document.getElementById('btn-start-game');
-    const txtKey = DATA.activeMode === 'classic' ? 'baslat_klasik' : 'baslat_yaris';
-    const icon = DATA.activeMode === 'classic' ? '▶' : '🏎️';
-    btn.innerHTML = `<span>${icon}</span> <span>${TEXT[DATA.lang][txtKey]}</span>`;
-}
+function toggleAll(v) { document.querySelectorAll('.num-chk').forEach(c=>c.checked=v); }
+function getNums() { return Array.from(document.querySelectorAll('.num-chk:checked')).map(c=>parseInt(c.value)); }
 
 function showView(id) {
-    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById('view-'+id).classList.add('active');
 }
 
-/* INPUT HELPER */
-function toggleAll(v) { document.querySelectorAll('.num-chk').forEach(c => c.checked=v); }
-function getNums() { return Array.from(document.querySelectorAll('.num-chk:checked')).map(c=>parseInt(c.value)); }
+function showSetup() { showView('setup'); }
 
-/* MODAL */
-function modal(msg, onYes) {
-    const o = document.getElementById('mainModal');
-    document.getElementById('m-text').innerText = msg;
-    const b = document.getElementById('m-btns');
-    if(onYes) {
-        b.innerHTML = `<button class="m-btn btn-green" onclick="doYes()">${TEXT[DATA.lang].modal_evet}</button><button class="m-btn btn-danger" onclick="closeModal()">${TEXT[DATA.lang].modal_iptal}</button>`;
-        window.doYes = () => { onYes(); closeModal(); };
-    } else {
-        b.innerHTML = `<button class="m-btn btn-green" onclick="closeModal()">${TEXT[DATA.lang].tamam_btn}</button>`;
-    }
-    o.style.display = 'flex';
-}
-function closeModal() { document.getElementById('mainModal').style.display='none'; }
-
-/* ================= ENGINE ================= */
+/* GAME LOGIC */
 let Game = {
-    type: 'classic', qList: [], total:0, idx:0, score:100, errors:0, times:[], startT:0, currQ:null,
-    // Racer
-    r: { loop:null, lane:1, x:0, cars:[], parts:[], speed:5, lives:3, waiting:false }
+    type: null, qList:[], total:0, idx:0, score:100, errors:0, times:[], startT:0, currQ:null,
+    r: { loop:null, lane:1, x:0, cars:[], parts:[], speed:6, lives:3, wait:false }
 };
 
-function startGame() {
+function startGame(type) {
     const nums = getNums();
     if(nums.length === 0) return modal(TEXT[DATA.lang].alert_sayi);
-
-    // Build Question Pool
+    
+    // Prepare Questions
     let pool = [];
     nums.forEach(n1 => nums.forEach(n2 => pool.push({n1, n2})));
     
@@ -519,19 +441,11 @@ function startGame() {
         for(let i=0; i<lim; i++) Game.qList.push(pool[Math.floor(Math.random()*pool.length)]);
     }
     Game.qList.sort(()=>Math.random()-0.5);
-
-    // Reset State
-    Game.type = DATA.activeMode;
-    Game.total = Game.qList.length;
-    Game.idx = 0; Game.score = 100; Game.errors = 0; Game.times = [];
     
-    if(Game.type === 'classic') {
-        showView('classic');
-        nextQClassic();
-    } else {
-        showView('racer');
-        initRacer();
-    }
+    resetState(type, Game.qList.length);
+    
+    if(type === 'classic') { showView('classic'); nextQClassic(); }
+    else { showView('racer'); initRacer(); }
 }
 
 function startErrorPractice() {
@@ -547,10 +461,15 @@ function startErrorPractice() {
     });
     Game.qList.sort(()=>Math.random()-0.5);
     
-    Game.type = 'classic'; // Error practice is always classic
-    Game.total = Game.qList.length; Game.idx=0; Game.score=100; Game.errors=0; Game.times=[];
+    resetState('classic', Game.qList.length);
     showView('classic');
     nextQClassic();
+}
+
+function resetState(type, total) {
+    Game.type = type;
+    Game.total = total;
+    Game.idx = 0; Game.score = 100; Game.errors = 0; Game.times = [];
 }
 
 function finishConfirm() { modal(TEXT[DATA.lang].confirm_bitir, endGame); }
@@ -567,16 +486,14 @@ function endGame() {
     if(DATA.history.length > 20) DATA.history.pop();
     localStorage.setItem('carptrik_history', JSON.stringify(DATA.history));
     renderLists();
-
+    
     document.getElementById('res-score').innerText = Game.score;
     document.getElementById('res-speed').innerText = avg+'s';
     document.getElementById('res-err').innerText = Game.errors;
     showView('result');
 }
 
-function showSetup() { showView('setup'); }
-
-/* --- CLASSIC LOGIC --- */
+/* CLASSIC MODE */
 function nextQClassic() {
     if(Game.idx >= Game.total) return endGame();
     Game.currQ = Game.qList[Game.idx];
@@ -587,8 +504,8 @@ function nextQClassic() {
     document.getElementById('c-score').innerText = Game.score;
     document.getElementById('c-feedback').innerText = "";
     
-    const inp = document.getElementById('c-input');
-    inp.value = ''; inp.disabled = false; inp.focus();
+    const i = document.getElementById('c-input');
+    i.value = ''; i.disabled = false; i.focus();
     Game.startT = Date.now();
 }
 
@@ -597,7 +514,7 @@ document.getElementById('c-input').addEventListener('input', function() {
     if(this.value.length >= ans.toString().length) {
         const val = parseInt(this.value);
         const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
-        if(!DATA.db[k]) DATA.db[k] = {score:0};
+        if(!DATA.db[k]) DATA.db[k]={score:0};
         
         if(val === ans) {
             Game.times.push((Date.now()-Game.startT)/1000);
@@ -624,18 +541,17 @@ document.getElementById('c-input').addEventListener('input', function() {
     }
 });
 
-/* --- RACER LOGIC V3 --- */
+/* RACER MODE */
 const cvs = document.getElementById('racerCanvas');
 const ctx = cvs.getContext('2d');
 
 function initRacer() {
-    cvs.width = document.getElementById('racer-container').offsetWidth;
-    cvs.height = document.getElementById('racer-container').offsetHeight;
+    cvs.width = document.getElementById('racer-viewport').offsetWidth;
+    cvs.height = document.getElementById('racer-viewport').offsetHeight;
     
-    Game.r.lives = 3; Game.r.score = 0; Game.r.lane = 1;
-    Game.r.x = (1 * (cvs.width/4)) + (cvs.width/8); // Target X
-    Game.r.currX = Game.r.x;
-    Game.r.cars = []; Game.r.parts = []; Game.r.speed = 5; Game.r.waiting = false;
+    Game.r.lives=3; Game.r.score=0; Game.r.lane=1;
+    Game.r.x = (1 * (cvs.width/4)) + (cvs.width/8); Game.r.currX = Game.r.x;
+    Game.r.cars = []; Game.r.parts = []; Game.r.speed=5; Game.r.wait=false;
     
     spawnRacerQ();
     Game.r.loop = requestAnimationFrame(racerLoop);
@@ -651,30 +567,27 @@ function spawnRacerQ() {
     
     const ans = Game.currQ.n1 * Game.currQ.n2;
     let opts = [ans];
-    while(opts.length < 4) {
+    while(opts.length<4) {
         let f = ans + (Math.floor(Math.random()*10)-5);
         if(f>0 && f!==ans && !opts.includes(f)) opts.push(f);
     }
     opts.sort(()=>Math.random()-0.5);
     
-    // Spawn Wave
     Game.r.cars = [];
     for(let i=0; i<4; i++) {
         Game.r.cars.push({
-            lane: i,
-            y: -200 - (Math.random()*150),
-            val: opts[i],
-            isCorrect: opts[i] === ans,
-            color: opts[i] === ans ? '#f59e0b' : ['#ef4444','#10b981','#3b82f6'][Math.floor(Math.random()*3)]
+            lane: i, y: -250 - (Math.random()*150),
+            val: opts[i], isCorrect: opts[i]===ans,
+            color: opts[i]===ans ? '#f59e0b' : ['#ef4444','#10b981','#3b82f6'][Math.floor(Math.random()*3)]
         });
     }
     Game.startT = Date.now();
-    Game.r.waiting = false;
+    Game.r.wait = false;
 }
 
 function racerLoop() {
     if(Game.type !== 'racer') return;
-    ctx.clearRect(0,0,cvs.width, cvs.height);
+    ctx.clearRect(0,0,cvs.width,cvs.height);
     const lw = cvs.width/4;
     
     // Road
@@ -684,57 +597,48 @@ function racerLoop() {
     
     // Player
     const tx = (Game.r.lane * lw) + (lw/2);
-    Game.r.currX += (tx - Game.r.currX) * 0.2; // Smooth Lerp
+    Game.r.currX += (tx - Game.r.currX) * 0.2;
     const px = Game.r.currX; const py = cvs.height - 100;
     
     ctx.fillStyle = "#10b981"; ctx.fillRect(px-20, py, 40, 70);
     ctx.fillStyle = "rgba(16,185,129,0.3)"; ctx.beginPath(); ctx.moveTo(px-15,py); ctx.lineTo(px-35,py-150); ctx.lineTo(px+35,py-150); ctx.lineTo(px+15,py); ctx.fill();
 
-    // Enemies
-    if(!Game.r.waiting) {
+    // Cars
+    if(!Game.r.wait) {
         for(let i=Game.r.cars.length-1; i>=0; i--) {
             let c = Game.r.cars[i];
             c.y += Game.r.speed;
-            
             const cx = (c.lane * lw) + (lw/2);
+            
             ctx.fillStyle = c.color; ctx.fillRect(cx-20, c.y, 40, 70);
             ctx.fillStyle = "#fff"; ctx.font="bold 20px Arial"; ctx.textAlign="center"; ctx.fillText(c.val, cx, c.y+40);
             
-            // Hit?
             if(c.y+70 > py && c.y < py+70 && Math.abs(px - cx) < 35) {
                 if(c.isCorrect) {
                     Game.times.push((Date.now()-Game.startT)/1000);
                     Game.r.speed += 0.2;
                     explode(cx, c.y, '#fff');
-                    Game.idx++;
-                    Game.r.waiting = true;
-                    Game.r.cars = []; // Clear current
+                    Game.idx++; Game.r.wait = true; Game.r.cars = [];
                     setTimeout(spawnRacerQ, 500);
                 } else {
-                    Game.r.lives--;
-                    Game.score = Math.max(0, Game.score-10);
-                    Game.errors++;
-                    shakeCanvas();
+                    Game.r.lives--; Game.errors++; Game.score = Math.max(0, Game.score-10);
                     Game.r.cars.splice(i, 1);
                     document.getElementById('r-lives').innerText = Game.r.lives;
                     if(Game.r.lives <= 0) { endGame(); return; }
                 }
             } else if (c.y > cvs.height) {
                 Game.r.cars.splice(i, 1);
-                // Correct passed? Respawn
                 if(c.isCorrect && Game.r.cars.length === 0) spawnRacerQ();
             }
         }
     }
-
+    
     // Particles
     for(let i=Game.r.parts.length-1; i>=0; i--) {
-        let p = Game.r.parts[i];
-        p.x+=p.vx; p.y+=p.vy; p.life--;
+        let p = Game.r.parts[i]; p.x+=p.vx; p.y+=p.vy; p.life--;
         ctx.fillStyle=p.c; ctx.fillRect(p.x,p.y,4,4);
         if(p.life<=0) Game.r.parts.splice(i,1);
     }
-
     Game.r.loop = requestAnimationFrame(racerLoop);
 }
 
@@ -749,50 +653,42 @@ window.addEventListener('keydown', e => {
     }
 });
 
-function explode(x,y,c) {
-    for(let i=0;i<20;i++) Game.r.parts.push({x:x, y:y, vx:(Math.random()-0.5)*15, vy:(Math.random()-0.5)*15, life:30, c:c});
-}
-function shakeCanvas() {
-    const el = document.getElementById('racer-container');
-    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
-}
+function explode(x,y,c) { for(let i=0;i<20;i++) Game.r.parts.push({x:x, y:y, vx:(Math.random()-0.5)*15, vy:(Math.random()-0.5)*15, life:30, c:c}); }
 
-/* LISTS & DATA */
+/* LISTS */
 function renderLists() {
     const el = document.getElementById('list-errors');
-    if(Object.keys(DATA.db).length === 0) el.innerHTML = `<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].liste_temiz}</div>`;
+    if(Object.keys(DATA.db).length===0) el.innerHTML=`<div style="text-align:center;color:#555;padding:20px;">${TEXT[DATA.lang].liste_temiz}</div>`;
     else {
-        let h = "";
-        Object.keys(DATA.db).sort((a,b)=>DATA.db[b].score - DATA.db[a].score).forEach(k => {
-            h += `<div class="list-item"><span>${k}</span><b style="color:var(--danger)">+${DATA.db[k].score}</b></div>`;
-        });
-        el.innerHTML = h;
+        let h=""; Object.keys(DATA.db).sort((a,b)=>DATA.db[b].score-DATA.db[a].score).forEach(k=>{ h+=`<div class="list-item"><span>${k}</span><b style="color:var(--danger)">+${DATA.db[k].score}</b></div>`; });
+        el.innerHTML=h;
     }
     const hl = document.getElementById('list-history');
-    if(DATA.history.length === 0) hl.innerHTML = `<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].gecmis_yok}</div>`;
+    if(DATA.history.length===0) hl.innerHTML=`<div style="text-align:center;color:#555;padding:20px;">${TEXT[DATA.lang].gecmis_yok}</div>`;
     else {
-        let h = "";
-        DATA.history.forEach(x => {
-            h += `<div class="list-item"><span class="col" style="color:var(--primary);font-weight:bold">${x.score}</span><span class="col">${x.speed}s</span><span class="col" style="color:${x.errors>0?'var(--danger)':'#666'}">${x.errors}</span><span class="col">${x.q}</span></div>`;
-        });
-        hl.innerHTML = h;
+        let h=""; DATA.history.forEach(x=>{ h+=`<div class="list-item"><b style="color:var(--primary)">${x.score}</b><span>${x.speed}s</span><span style="color:${x.errors>0?'var(--danger)':'#666'}">${x.errors}</span><span>${x.q}</span></div>`; });
+        hl.innerHTML=h;
     }
 }
 
-function clearHistory() {
-    modal(TEXT[DATA.lang].confirm_sil, () => {
-        DATA.history = []; localStorage.setItem('carptrik_history', JSON.stringify([])); renderLists();
-    });
+function modal(msg, onYes) {
+    const o = document.getElementById('customModal');
+    document.getElementById('m-text').innerText = msg;
+    const b = document.getElementById('m-btns');
+    if(onYes) {
+        b.innerHTML = `<button class="m-btn m-yes" onclick="doYes()">${TEXT[DATA.lang].modal_evet}</button><button class="m-btn m-no" onclick="closeModal()">${TEXT[DATA.lang].modal_iptal}</button>`;
+        window.doYes = () => { onYes(); closeModal(); };
+    } else {
+        b.innerHTML = `<button class="m-btn m-yes" onclick="closeModal()">${TEXT[DATA.lang].tamam_btn}</button>`;
+    }
+    o.style.display = 'flex';
 }
-function resetData() {
-    modal(TEXT[DATA.lang].confirm_sil, () => {
-        DATA.db = {}; localStorage.removeItem('carptrik_data'); renderLists();
-    });
-}
+function closeModal() { document.getElementById('customModal').style.display='none'; }
+function resetData() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA.db={}; localStorage.removeItem('carptrik_data'); renderLists(); }); }
+function clearHistory() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA.history=[]; localStorage.removeItem('carptrik_history'); renderLists(); }); }
 
-// Start
 init();
-window.addEventListener('resize', () => { if(Game.type==='racer') { cvs.width = document.getElementById('racer-container').offsetWidth; cvs.height = document.getElementById('racer-container').offsetHeight; }});
+window.addEventListener('resize', ()=>{ if(Game.type==='racer') { cvs.width=document.getElementById('racer-viewport').offsetWidth; cvs.height=document.getElementById('racer-viewport').offsetHeight; } });
 </script>
 </body>
 </html>
