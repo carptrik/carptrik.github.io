@@ -52,7 +52,7 @@
         
         #side-box { width: 280px; order: 1; flex-shrink: 0; }
         #main-box { flex: 1; min-width: 300px; order: 2; }
-        #history-box { width: 280px; order: 3; flex-shrink: 0; }
+        #history-box { width: 300px; order: 3; flex-shrink: 0; } /* Genişletildi */
 
         h2 { color: var(--accent); font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -85,16 +85,16 @@
         .selection-btns { float: right; }
         .tiny-btn { background: #333; border: none; color: #fff; cursor: pointer; font-size: 10px; padding: 4px 8px; border-radius: 4px; margin-left: 2px; }
 
-        /* --- GAME AREA (GÜNCELLENDİ: Yazılar büyütüldü) --- */
+        /* --- GAME AREA --- */
         #puanGosterge { 
             font-size: 32px; font-weight: 900; color: var(--primary); 
             text-shadow: 0 0 15px rgba(0,255,170,0.3); margin-bottom: 15px; letter-spacing: 1px;
         }
         
         .stats-bar { 
-            font-size: 15px; /* Büyütüldü */
+            font-size: 15px;
             font-weight: bold;
-            color: #fff; /* Daha parlak */
+            color: #fff;
             margin-bottom: 15px; 
             display: flex; justify-content: space-between; 
             background: #111; padding: 15px; border-radius: 12px; border: 1px solid #333;
@@ -118,6 +118,13 @@
         .list-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; }
         .list-item:last-child { border-bottom: none; }
         
+        /* History Özel Tablo Stili */
+        .history-header { display: flex; justify-content: space-between; color: #888; font-size: 11px; font-weight: bold; padding: 8px 10px; border-bottom: 1px solid #333; background: #222; border-radius: 8px 8px 0 0; }
+        .history-header span { flex: 1; text-align: center; }
+        .history-row { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #222; font-size: 13px; align-items: center; }
+        .history-row span { flex: 1; text-align: center; }
+        .history-row:last-child { border-bottom: none; }
+
         .footer-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .footer-btns button { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px; }
         .btn-hata { background: var(--accent); color: white; }
@@ -298,13 +305,21 @@
                 </div>
             </div>
 
-            <button class="btn-start" onclick="resetGameUI()" data-i18n="yeni_oyun">YENİ OYUN</button>
+            <button class="btn-start" onclick="resetGameUI()" data-i18n="tamam_btn">TAMAM</button>
         </div>
     </div>
 
     <div id="history-box" class="box">
         <h2 data-i18n="gecmis_skorlar">GEÇMİŞ SKORLAR</h2>
-        <div id="historyList" class="scroll-list" data-i18n="gecmis_yok">Henüz kayıt yok.</div>
+        
+        <div class="history-header">
+            <span data-i18n="tablo_puan">PUAN</span>
+            <span data-i18n="tablo_hiz">HIZ</span>
+            <span data-i18n="tablo_hata">HATA</span>
+            <span data-i18n="tablo_soru">SORU</span>
+        </div>
+
+        <div id="historyList" class="scroll-list" style="border-radius:0 0 10px 10px; margin-top:0; border-top:none;" data-i18n="gecmis_yok">Henüz kayıt yok.</div>
         <button class="btn-reset" style="width:100%; margin-top:10px;" onclick="clearHistory()" data-i18n="gecmisi_sil">GEÇMİŞİ SİL</button>
     </div>
 </div>
@@ -336,9 +351,10 @@
             puan: "PUAN: ", hata_yok_html: "<div style='color:#555; text-align:center;'>Hata kaydı yok.</div>",
             puan_label: "Puan: ",
             gecmis_skorlar: "GEÇMİŞ SKORLAR", gecmis_yok: "Henüz kayıt yok.", gecmisi_sil: "GEÇMİŞİ SİL",
-            seans_bitti: "SEANS BİTTİ", soru_sayisi: "SORU", ortalama_hiz: "ORT. HIZ", hata_sayisi: "HATA", yeni_oyun: "YENİ OYUN",
+            seans_bitti: "SEANS BİTTİ", soru_sayisi: "SORU", ortalama_hiz: "ORT. HIZ", hata_sayisi: "HATA", tamam_btn: "TAMAM",
             modal_tamam: "TAMAM", modal_iptal: "İPTAL", modal_evet: "EVET",
-            confirm_gecmis_sil: "Tüm geçmiş kayıtları silmek istiyor musunuz?"
+            confirm_gecmis_sil: "Tüm geçmiş kayıtları silmek istiyor musunuz?",
+            tablo_puan: "PUAN", tablo_hiz: "HIZ", tablo_hata: "HATA", tablo_soru: "SORU"
         },
         en: {
             hiz_ayari: "SPEED SETTING", otomatik: "AUTO (Average x 1.2)", sabit: "FIXED:", sn: "SEC",
@@ -356,9 +372,10 @@
             puan: "SCORE: ", hata_yok_html: "<div style='color:#555; text-align:center;'>No errors recorded.</div>",
             puan_label: "Score: ",
             gecmis_skorlar: "PAST SCORES", gecmis_yok: "No records yet.", gecmisi_sil: "CLEAR HISTORY",
-            seans_bitti: "SESSION FINISHED", soru_sayisi: "QUEST", ortalama_hiz: "AVG SPEED", hata_sayisi: "ERRORS", yeni_oyun: "NEW GAME",
+            seans_bitti: "SESSION FINISHED", soru_sayisi: "QUEST", ortalama_hiz: "AVG SPEED", hata_sayisi: "ERRORS", tamam_btn: "OK",
             modal_tamam: "OK", modal_iptal: "CANCEL", modal_evet: "YES",
-            confirm_gecmis_sil: "Are you sure you want to delete all history?"
+            confirm_gecmis_sil: "Are you sure you want to delete all history?",
+            tablo_puan: "SCORE", tablo_hiz: "SPEED", tablo_hata: "ERR", tablo_soru: "Q"
         }
     };
 
@@ -547,6 +564,14 @@
     }
 
     function endSession() {
+        // Puan Kesintisi Mantığı
+        let remaining = toplamHedef - suankiIndex;
+        if (remaining > 0) {
+            // Cevaplanmayan sorular için puan kır (5 puan her soru için)
+            mevcutPuan = Math.max(0, mevcutPuan - (remaining * 5));
+            // Not: db (hata listesi) güncellenmediği için bu sorular hataya eklenmez.
+        }
+
         let ort = seansSureleri.length > 0 ? seansSureleri.reduce((a,b)=>a+b,0)/seansSureleri.length : 0;
         let bitenSoru = suankiIndex; 
         
@@ -666,16 +691,11 @@
         let html = "";
         history.forEach(item => {
             html += `
-            <div class="list-item" style="flex-direction:column; gap:4px; padding:10px 5px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:4px; margin-bottom:4px;">
-                    <span style="color:#666; font-size:11px;">${item.date}</span>
-                    <span style="color:var(--primary); font-weight:bold; font-size:14px;">${translations[currentLang].puan_label} ${item.score}</span>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; text-align:center; font-size:12px; color:#aaa;">
-                    <div><span style="display:block; font-size:10px; color:#666;">SORU</span>${item.qCount}</div>
-                    <div><span style="display:block; font-size:10px; color:#666;">HIZ</span>${item.speed}s</div>
-                    <div><span style="display:block; font-size:10px; color:#666;">HATA</span><span style="color:${item.errors>0?'#ff4757':'#aaa'}">${item.errors}</span></div>
-                </div>
+            <div class="history-row">
+                <span style="color:var(--primary); font-weight:bold;">${item.score}</span>
+                <span style="color:#fff;">${item.speed}s</span>
+                <span style="color:${item.errors>0?'#ff4757':'#888'}; font-weight:bold;">${item.errors}</span>
+                <span style="color:#888;">${item.qCount}</span>
             </div>`;
         });
         h.innerHTML = html;
