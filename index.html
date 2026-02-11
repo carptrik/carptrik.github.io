@@ -35,54 +35,53 @@
         }
 
         /* --- HEADER & NAV --- */
-        header { width: 100%; padding: 20px; text-align: center; background: rgba(30,30,30,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        header { width: 100%; padding: 15px 20px; text-align: center; background: rgba(30,30,30,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); display:flex; justify-content:center; align-items:center; }
         h1 { margin: 0; color: var(--primary); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; text-shadow: 0 0 15px rgba(0, 255, 170, 0.4); }
         
-        /* Language Switcher */
-        .lang-switch { position: absolute; top: 20px; right: 20px; }
+        .lang-switch { position: absolute; right: 20px; }
         .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .lang-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
 
         /* --- MODE TABS --- */
-        .mode-tabs { display: flex; justify-content: center; gap: 15px; margin: 20px 0; padding: 0 15px; }
+        .mode-tabs { display: flex; justify-content: center; gap: 15px; margin: 20px 0; padding: 0 15px; width:100%; max-width:600px; }
         .tab-btn {
-            background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary);
-            padding: 12px 25px; border-radius: 12px; cursor: pointer;
+            flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary);
+            padding: 12px 0; border-radius: 12px; cursor: pointer;
             font-size: 14px; font-weight: bold; transition: 0.3s;
-            display: flex; align-items: center; gap: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .tab-btn:hover { border-color: var(--primary); color: #fff; }
         .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 20px rgba(0,255,170,0.3); }
 
         /* --- MAIN LAYOUT --- */
         .app-container {
-            width: 100%; max-width: 1200px; padding: 20px;
+            width: 100%; max-width: 1200px; padding: 0 20px;
             display: grid; gap: 20px;
-            /* Default: Tek sütun (Mobile first) */
+            /* Default: Mobile Column */
             grid-template-columns: 1fr;
         }
-        /* Desktop Layout */
+        
+        /* Layout Modes */
+        .classic-layout { grid-template-columns: 1fr; } /* Mobile Default */
+        .racer-layout { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 600px; margin: 0 auto; }
+
         @media (min-width: 900px) {
-            .app-container.classic-layout { grid-template-columns: 280px 1fr 280px; }
-            .app-container.racer-layout { grid-template-columns: 1fr; max-width: 600px; }
+            .classic-layout { grid-template-columns: 280px 1fr 280px; }
         }
 
         /* --- CARDS --- */
         .card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; }
         .card-title { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
 
-        /* --- COMMON UI ELEMENTS --- */
+        /* --- COMMON UI --- */
         .btn-primary { background: var(--primary); color: #000; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 900; cursor: pointer; font-size: 16px; transition: 0.2s; text-transform: uppercase; margin-top: 15px; }
         .btn-primary:active { transform: scale(0.98); }
-        
         .btn-danger { background: rgba(255, 71, 87, 0.1); color: var(--danger); border: 1px solid var(--danger); width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 10px; }
         
-        /* Input & Radios */
         .option-row { display: flex; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
         .option-row input { margin-right: 10px; accent-color: var(--primary); transform: scale(1.2); }
         .option-row span { font-size: 14px; color: var(--text); }
         
-        /* Number Grid */
         .num-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
         .num-chk { display: none; }
         .num-box { background: rgba(255,255,255,0.05); padding: 15px 0; border-radius: 8px; text-align: center; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
@@ -98,23 +97,21 @@
         #question-text { font-size: 80px; font-weight: 900; color: #fff; line-height: 1; }
         .blur { filter: blur(10px); opacity: 0.5; }
         
-        #answer-input { 
-            width: 100%; background: #000; border: 2px solid var(--border); color: var(--primary); 
-            font-size: 40px; text-align: center; padding: 15px; border-radius: 12px; font-weight: bold; outline: none; font-family: monospace;
-        }
+        #answer-input { width: 100%; background: #000; border: 2px solid var(--border); color: var(--primary); font-size: 40px; text-align: center; padding: 15px; border-radius: 12px; font-weight: bold; outline: none; font-family: monospace; }
         #answer-input:focus { border-color: var(--primary); }
         #feedback { height: 30px; margin-top: 10px; font-weight: bold; font-size: 18px; text-align: center; }
 
         /* --- RACER MODE UI --- */
-        #racer-area { position: relative; width: 100%; height: 500px; background: #222; border-radius: 16px; overflow: hidden; border: 4px solid #333; }
+        #racer-area { position: relative; width: 100%; height: 500px; background: #222; border-radius: 16px; overflow: hidden; border: 4px solid #333; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         canvas { width: 100%; height: 100%; display: block; }
-        .racer-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; pointer-events: none; }
+        .racer-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; pointer-events: none; z-index: 5; }
         .racer-score { color: var(--primary); font-size: 18px; text-shadow: 2px 2px 0 #000; }
         .racer-lives { color: var(--danger); font-size: 18px; text-shadow: 2px 2px 0 #000; }
-        .racer-question { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); border: 2px solid var(--primary); padding: 5px 20px; border-radius: 20px; font-size: 24px; font-weight: 900; color: #fff; }
+        .racer-question { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); border: 2px solid var(--primary); padding: 5px 25px; border-radius: 20px; font-size: 28px; font-weight: 900; color: #fff; z-index: 5; white-space: nowrap; }
         
         .mobile-controls { display: none; gap: 20px; margin-top: 15px; width: 100%; }
-        .control-btn { flex: 1; padding: 20px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 24px; cursor: pointer; touch-action: manipulation; }
+        .control-btn { flex: 1; padding: 25px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 16px; color: #fff; font-size: 30px; cursor: pointer; touch-action: manipulation; transition: 0.1s; }
+        .control-btn:active { background: rgba(0,255,170,0.2); border-color: var(--primary); }
         @media (max-width: 900px) { .mobile-controls { display: flex; } }
 
         /* --- LISTS --- */
@@ -131,15 +128,13 @@
         .btn-confirm { background: var(--primary); color: #000; }
         .btn-cancel { background: #333; color: #fff; }
 
-        /* --- FOOTER --- */
-        footer { margin-top: auto; padding: 30px 0; text-align: center; font-size: 12px; color: var(--text-secondary); width: 100%; }
-        footer a { color: var(--text-secondary); text-decoration: none; }
-        footer a:hover { color: #fff; text-decoration: underline; }
-
         /* --- UTILS --- */
         .hidden { display: none !important; }
         .shake { animation: shake 0.5s; border-color: var(--danger) !important; }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+        footer { margin-top: auto; padding: 30px 0; text-align: center; font-size: 12px; color: var(--text-secondary); width: 100%; }
+        footer a { color: var(--text-secondary); text-decoration: none; }
     </style>
 </head>
 <body>
@@ -154,10 +149,10 @@
 
 <div class="mode-tabs">
     <button class="tab-btn active" id="tab-classic" onclick="setMode('classic')">
-        📊 KLASİK
+        <span style="font-size:18px">📊</span> <span data-i18n="tab_klasik">KLASİK</span>
     </button>
     <button class="tab-btn" id="tab-racer" onclick="setMode('racer')">
-        🏎️ YARIŞ
+        <span style="font-size:18px">🏎️</span> <span data-i18n="tab_yaris">YARIŞ</span>
     </button>
 </div>
 
@@ -170,10 +165,10 @@
         <div style="margin-top: 20px;">
             <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;" data-i18n="hata_tekrar">HATA TEKRARI</div>
             <label class="option-row">
-                <input type="radio" name="errorMode" value="weighted" checked> <span>Puan Kadar</span>
+                <input type="radio" name="errorMode" value="weighted" checked> <span data-i18n="puan_kadar">Puan Kadar</span>
             </label>
             <label class="option-row">
-                <input type="radio" name="errorMode" value="single"> <span>1 Kez</span>
+                <input type="radio" name="errorMode" value="single"> <span data-i18n="bir_kez">1 Kez</span>
             </label>
         </div>
 
@@ -196,18 +191,18 @@
             </div>
             
             <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button class="lang-btn" onclick="toggleAll(true)" style="flex:1">TÜMÜ</button>
-                <button class="lang-btn" onclick="toggleAll(false)" style="flex:1">TEMİZLE</button>
+                <button class="lang-btn" onclick="toggleAll(true)" style="flex:1" data-i18n="tumu">TÜMÜ</button>
+                <button class="lang-btn" onclick="toggleAll(false)" style="flex:1" data-i18n="temizle">TEMİZLE</button>
             </div>
 
             <div class="card-title" data-i18n="oyun_modu">OYUN MODU</div>
             <label class="option-row">
                 <input type="radio" name="gameMode" value="repeat" checked>
-                <span>Tümünü <input type="number" id="inp-repeat" value="1" style="width:40px; background:transparent; border:none; color:var(--primary); font-weight:bold;"> kez sor</span>
+                <span><span data-i18n="mod_tekrar_1">Tüm olasılıkları</span> <input type="number" id="inp-repeat" value="1" style="width:40px; background:transparent; border:none; color:var(--primary); font-weight:bold;"> <span data-i18n="mod_tekrar_2">kez sor</span></span>
             </label>
             <label class="option-row">
                 <input type="radio" name="gameMode" value="limit">
-                <span>Rastgele <input type="number" id="inp-limit" value="20" style="width:40px; background:transparent; border:none; color:var(--primary); font-weight:bold;"> soru</span>
+                <span><span data-i18n="mod_limit_1">Rastgele</span> <input type="number" id="inp-limit" value="20" style="width:40px; background:transparent; border:none; color:var(--primary); font-weight:bold;"> <span data-i18n="mod_limit_2">soru</span></span>
             </label>
 
             <button class="btn-primary" onclick="startClassic()" data-i18n="baslat">BAŞLAT</button>
@@ -215,9 +210,9 @@
 
         <div id="classic-play" class="hidden">
             <div class="game-header">
-                <div class="stat-item"><span class="stat-label">PUAN</span><span class="stat-val" style="color:var(--primary); font-size:20px;" id="disp-score">100</span></div>
-                <div class="stat-item"><span class="stat-label">SORU</span><span class="stat-val"><span id="disp-q">0</span>/<span id="disp-total">0</span></span></div>
-                <div class="stat-item"><span class="stat-label">HIZ</span><span class="stat-val" id="disp-speed">0.0s</span></div>
+                <div class="stat-item"><span class="stat-label" data-i18n="tablo_puan">PUAN</span><span class="stat-val" style="color:var(--primary); font-size:20px;" id="disp-score">100</span></div>
+                <div class="stat-item"><span class="stat-label" data-i18n="tablo_soru">SORU</span><span class="stat-val"><span id="disp-q">0</span>/<span id="disp-total">0</span></span></div>
+                <div class="stat-item"><span class="stat-label" data-i18n="tablo_hiz">HIZ</span><span class="stat-val" id="disp-speed">0.0s</span></div>
             </div>
 
             <div class="question-area">
@@ -228,37 +223,37 @@
             <div id="feedback"></div>
 
             <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-danger" style="background:#333; border-color:#444; color:#fff;" onclick="pauseGame()">DURAKLAT</button>
-                <button class="btn-danger" onclick="finishGameConfirm()">BİTİR</button>
+                <button class="btn-danger" style="background:#333; border-color:#444; color:#fff;" onclick="pauseGame()" data-i18n="duraklat">DURAKLAT</button>
+                <button class="btn-danger" onclick="finishGameConfirm()" data-i18n="bitir">BİTİR</button>
             </div>
         </div>
 
         <div id="classic-result" class="hidden" style="text-align:center;">
-            <div class="card-title" style="border:none; font-size:24px;">SEANS BİTTİ</div>
+            <div class="card-title" style="border:none; font-size:24px;" data-i18n="seans_bitti">SEANS BİTTİ</div>
             <div style="font-size:60px; font-weight:900; color:var(--primary); margin:20px 0;" id="final-score">100</div>
             
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
                 <div style="background:#222; padding:10px; border-radius:8px;">
-                    <div style="font-size:10px; color:#888;">HIZ</div>
+                    <div style="font-size:10px; color:#888;" data-i18n="tablo_hiz">HIZ</div>
                     <div style="font-size:18px; font-weight:bold;" id="final-speed">0.0s</div>
                 </div>
                 <div style="background:#222; padding:10px; border-radius:8px;">
-                    <div style="font-size:10px; color:#888;">HATA</div>
+                    <div style="font-size:10px; color:#888;" data-i18n="tablo_hata">HATA</div>
                     <div style="font-size:18px; font-weight:bold; color:var(--danger);" id="final-errors">0</div>
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="backToSetup()">TAMAM</button>
+            <button class="btn-primary" onclick="backToSetup()" data-i18n="tamam_btn">TAMAM</button>
         </div>
     </div>
 
     <div class="card" id="card-history">
         <div class="card-title" data-i18n="gecmis_skorlar">GEÇMİŞ</div>
         <div style="display:flex; font-size:10px; color:#666; font-weight:bold; padding-bottom:5px; border-bottom:1px solid #333; margin-bottom:5px;">
-            <span style="flex:1; text-align:center;">PUAN</span>
-            <span style="flex:1; text-align:center;">HIZ</span>
-            <span style="flex:1; text-align:center;">HATA</span>
-            <span style="flex:1; text-align:center;">SORU</span>
+            <span style="flex:1; text-align:center;" data-i18n="tablo_puan">PUAN</span>
+            <span style="flex:1; text-align:center;" data-i18n="tablo_hiz">HIZ</span>
+            <span style="flex:1; text-align:center;" data-i18n="tablo_hata">HATA</span>
+            <span style="flex:1; text-align:center;" data-i18n="tablo_soru">SORU</span>
         </div>
         <div id="history-list" class="list-container" data-i18n="gecmis_yok">Kayıt yok.</div>
         <button class="btn-danger" onclick="clearHistory()" data-i18n="gecmisi_sil">SİL</button>
@@ -266,26 +261,26 @@
 </div>
 
 <div id="view-racer" class="app-container racer-layout hidden">
-    <div class="card" style="padding:0; border:none; background:transparent; box-shadow:none;">
+    <div class="card" style="padding:0; border:none; background:transparent; box-shadow:none; width:100%;">
         <div id="racer-area">
             <canvas id="racerCanvas"></canvas>
             <div class="racer-overlay">
-                <span class="racer-score">PUAN: <span id="r-score">0</span></span>
-                <span class="racer-lives">CAN: <span id="r-lives">3</span></span>
+                <span class="racer-score"><span data-i18n="tablo_puan">PUAN</span>: <span id="r-score">0</span></span>
+                <span class="racer-lives"><span data-i18n="can">CAN</span>: <span id="r-lives">3</span></span>
             </div>
-            <div class="racer-question" id="r-question">HAZIR?</div>
+            <div class="racer-question" id="r-question">---</div>
             
             <div id="racer-menu" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10;">
-                <h1 style="font-size:32px; margin-bottom:10px;">YARIŞ MODU</h1>
-                <p style="color:#aaa; text-align:center; padding:0 20px;">Arabayı yönlendir, doğru cevaba çarp!<br>Yanlış cevap can götürür.</p>
-                <button class="btn-primary" style="width:200px;" onclick="startRacer()">BAŞLA</button>
+                <h1 style="font-size:32px; margin-bottom:10px;" data-i18n="racer_baslik">YARIŞ MODU</h1>
+                <p style="color:#aaa; text-align:center; padding:0 20px; margin-bottom:20px;" data-i18n="racer_aciklama">Arabayı yönlendir, doğru cevaba çarp!</p>
+                <button class="btn-primary" style="width:200px;" onclick="startRacer()" data-i18n="baslat">BAŞLA</button>
             </div>
 
             <div id="racer-over" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:11;">
-                <h1 style="color:var(--danger);">OYUN BİTTİ</h1>
+                <h1 style="color:var(--danger);" data-i18n="oyun_bitti">OYUN BİTTİ</h1>
                 <div style="font-size:40px; font-weight:bold; color:var(--primary); margin-bottom:20px;" id="r-final-score">0</div>
-                <button class="btn-primary" style="width:200px;" onclick="startRacer()">TEKRAR</button>
-                <button class="btn-danger" style="width:200px; background:transparent;" onclick="document.getElementById('racer-menu').style.display='flex'; document.getElementById('racer-over').style.display='none';">MENÜ</button>
+                <button class="btn-primary" style="width:200px;" onclick="startRacer()" data-i18n="tekrar_oyna">TEKRAR</button>
+                <button class="btn-danger" style="width:200px; background:transparent;" onclick="exitRacer()" data-i18n="menu">MENÜ</button>
             </div>
         </div>
 
@@ -316,32 +311,12 @@
    GLOBAL STATE & UTILS
    ========================================= */
 const state = {
-    mode: 'classic', // classic | racer
+    mode: 'classic',
     lang: 'tr',
     db: JSON.parse(localStorage.getItem('carptrik_data')) || {},
     history: JSON.parse(localStorage.getItem('carptrik_history')) || [],
-    classic: {
-        activeList: [],
-        total: 0,
-        currentIdx: 0,
-        score: 100,
-        times: [],
-        errors: 0,
-        paused: false,
-        startTime: 0,
-        pauseTime: 0,
-        currentQ: null
-    },
-    racer: {
-        active: false,
-        lane: 1,
-        score: 0,
-        lives: 3,
-        speed: 5,
-        cars: [],
-        particles: [],
-        q: null
-    }
+    classic: { activeList: [], total: 0, currentIdx: 0, score: 100, times: [], errors: 0, paused: false, startTime: 0, pauseTime: 0, currentQ: null },
+    racer: { active: false, lane: 1, score: 0, lives: 3, speed: 5, cars: [], particles: [], q: null }
 };
 
 const text = {
@@ -351,11 +326,18 @@ const text = {
         confirm_bitir: "Bitirmek istediğine emin misin?",
         confirm_sil: "Tüm verileri silmek istiyor musun?",
         dogru: "DOĞRU!", yanlis: "YANLIŞ!", yavas: "YAVAŞ!",
-        hata_listesi: "HATA LİSTESİ", liste_temiz: "Liste temiz.", hata_tekrar: "HATA ÇALIŞMA",
+        hata_listesi: "HATA LİSTESİ", liste_temiz: "Liste temiz.", hata_tekrar: "HATA TEKRARI",
         hatalara_calis: "HATALARA ÇALIŞ", listeyi_temizle: "TEMİZLE", carp_sayilar: "SAYI SEÇİMİ",
         oyun_modu: "OYUN MODU", baslat: "BAŞLAT", seans_bitti: "SEANS BİTTİ",
         gecmis_skorlar: "GEÇMİŞ", gecmis_yok: "Kayıt yok.", gecmisi_sil: "SİL",
-        iletisim_text: "Öneri ve Hata:"
+        iletisim_text: "Öneri ve Hata:", tab_klasik: "KLASİK", tab_yaris: "YARIŞ",
+        puan_kadar: "Puan Kadar", bir_kez: "1 Kez", tumu: "TÜMÜ", temizle: "TEMİZLE",
+        mod_tekrar_1: "Tümünü", mod_tekrar_2: "kez sor", mod_limit_1: "Rastgele", mod_limit_2: "soru",
+        tablo_puan: "PUAN", tablo_soru: "SORU", tablo_hiz: "HIZ", tablo_hata: "HATA",
+        duraklat: "DURAKLAT", bitir: "BİTİR", tamam_btn: "TAMAM",
+        modal_tamam: "TAMAM", modal_evet: "EVET", modal_iptal: "İPTAL",
+        racer_baslik: "YARIŞ MODU", racer_aciklama: "Doğru cevaba çarp, puan topla!",
+        can: "CAN", oyun_bitti: "OYUN BİTTİ", tekrar_oyna: "TEKRAR", menu: "MENÜ"
     },
     en: {
         alert_sayi_sec: "Please select numbers!",
@@ -367,20 +349,21 @@ const text = {
         hatalara_calis: "PRACTICE ERRORS", listeyi_temizle: "CLEAR", carp_sayilar: "NUMBERS",
         oyun_modu: "GAME MODE", baslat: "START", seans_bitti: "SESSION END",
         gecmis_skorlar: "HISTORY", gecmis_yok: "No records.", gecmisi_sil: "CLEAR",
-        iletisim_text: "Contact:"
+        iletisim_text: "Contact:", tab_klasik: "CLASSIC", tab_yaris: "RACER",
+        puan_kadar: "By Score", bir_kez: "Once", tumu: "ALL", temizle: "CLEAR",
+        mod_tekrar_1: "Ask all", mod_tekrar_2: "times", mod_limit_1: "Random", mod_limit_2: "qs",
+        tablo_puan: "SCORE", tablo_soru: "Q", tablo_hiz: "SPEED", tablo_hata: "ERR",
+        duraklat: "PAUSE", bitir: "FINISH", tamam_btn: "OK",
+        modal_tamam: "OK", modal_evet: "YES", modal_iptal: "CANCEL",
+        racer_baslik: "RACER MODE", racer_aciklama: "Hit the correct answer!",
+        can: "HP", oyun_bitti: "GAME OVER", tekrar_oyna: "REPLAY", menu: "MENU"
     }
 };
 
 function init() {
-    // Load Lang
     const savedLang = localStorage.getItem('carptrik_lang');
     if (savedLang) state.lang = savedLang;
     setLanguage(state.lang);
-
-    // Load Settings
-    const savedSettings = JSON.parse(localStorage.getItem('carptrik_settings'));
-    if (savedSettings) applySettings(savedSettings);
-
     updateLists();
 }
 
@@ -402,16 +385,15 @@ function setMode(m) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-'+m).classList.add('active');
     
+    // Hide all views
     document.getElementById('view-classic').classList.add('hidden');
     document.getElementById('view-racer').classList.add('hidden');
+    
+    // Show active view
     document.getElementById('view-'+m).classList.remove('hidden');
 
-    // Container sınıflarını ayarla (layout için)
-    const container = document.querySelector('.app-container');
-    container.className = `app-container ${m}-layout`;
-
     if(m === 'racer') {
-        setTimeout(initRacerCanvas, 100); // Wait for flex layout
+        setTimeout(initRacerCanvas, 100); 
     } else {
         state.racer.active = false;
     }
@@ -424,20 +406,18 @@ function modal(msg, onYes) {
     
     if(onYes) {
         acts.innerHTML = `
-            <button class="modal-btn btn-confirm" onclick="confirmAction()">EVET</button>
-            <button class="modal-btn btn-cancel" onclick="closeModal()">İPTAL</button>
+            <button class="modal-btn btn-confirm" onclick="confirmAction()">${text[state.lang].modal_evet}</button>
+            <button class="modal-btn btn-cancel" onclick="closeModal()">${text[state.lang].modal_iptal}</button>
         `;
         window.confirmAction = () => { onYes(); closeModal(); };
     } else {
-        acts.innerHTML = `<button class="modal-btn btn-confirm" onclick="closeModal()">TAMAM</button>`;
+        acts.innerHTML = `<button class="modal-btn btn-confirm" onclick="closeModal()">${text[state.lang].modal_tamam}</button>`;
     }
     m.style.display = 'flex';
 }
 function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
 
-/* =========================================
-   CLASSIC MODE LOGIC
-   ========================================= */
+/* CLASSIC MODE FUNCTIONS */
 const inputEl = document.getElementById('answer-input');
 
 function toggleAll(val) {
@@ -452,24 +432,11 @@ function startClassic() {
     const nums = getSelectedNumbers();
     if(nums.length === 0) return modal(text[state.lang].alert_sayi_sec);
     
-    // Save Settings
-    localStorage.setItem('carptrik_settings', JSON.stringify({
-        nums: nums,
-        mode: document.querySelector('input[name="gameMode"]:checked').value,
-        repeat: document.getElementById('inp-repeat').value,
-        limit: document.getElementById('inp-limit').value
-    }));
-
-    // Build Questions
     state.classic.activeList = [];
     const mode = document.querySelector('input[name="gameMode"]:checked').value;
     
     let pool = [];
-    nums.forEach(n1 => {
-        nums.forEach(n2 => {
-            pool.push({n1, n2});
-        });
-    });
+    nums.forEach(n1 => { nums.forEach(n2 => { pool.push({n1, n2}); }); });
 
     if(mode === 'repeat') {
         const count = parseInt(document.getElementById('inp-repeat').value) || 1;
@@ -482,7 +449,6 @@ function startClassic() {
     }
     state.classic.activeList.sort(() => Math.random() - 0.5);
 
-    // Reset State
     state.classic.total = state.classic.activeList.length;
     state.classic.currentIdx = 0;
     state.classic.score = 100;
@@ -490,7 +456,6 @@ function startClassic() {
     state.classic.errors = 0;
     state.classic.paused = false;
 
-    // UI Switch
     document.getElementById('classic-setup').classList.add('hidden');
     document.getElementById('classic-result').classList.add('hidden');
     document.getElementById('classic-play').classList.remove('hidden');
@@ -510,9 +475,7 @@ function nextQuestion() {
     document.getElementById('disp-score').innerText = state.classic.score;
     document.getElementById('feedback').innerText = "";
     
-    inputEl.value = '';
-    inputEl.disabled = false;
-    inputEl.focus();
+    inputEl.value = ''; inputEl.disabled = false; inputEl.focus();
     state.classic.startTime = Date.now();
 }
 
@@ -524,34 +487,25 @@ function checkAnswer() {
     const realAns = state.classic.currentQ.n1 * state.classic.currentQ.n2;
     const time = (Date.now() - state.classic.startTime) / 1000;
     const key = `${state.classic.currentQ.n1}x${state.classic.currentQ.n2}`;
-    
     if(!state.db[key]) state.db[key] = {score: 0};
 
     const fb = document.getElementById('feedback');
-    
     if(userAns === realAns) {
         state.classic.times.push(time);
-        fb.innerText = text[state.lang].dogru;
-        fb.style.color = 'var(--primary)';
+        fb.innerText = text[state.lang].dogru; fb.style.color = 'var(--primary)';
         if(state.db[key].score > 0) state.db[key].score--;
         
-        // Speed Calculation
         const avg = state.classic.times.reduce((a,b)=>a+b,0) / state.classic.times.length;
         document.getElementById('disp-speed').innerText = avg.toFixed(1) + 's';
-        
         state.classic.currentIdx++;
         setTimeout(nextQuestion, 500);
     } else {
-        fb.innerText = text[state.lang].yanlis;
-        fb.style.color = 'var(--danger)';
+        fb.innerText = text[state.lang].yanlis; fb.style.color = 'var(--danger)';
         state.db[key].score += 2;
         state.classic.score = Math.max(0, state.classic.score - 5);
         state.classic.errors++;
-        
-        // Retry delay
         setTimeout(nextQuestion, 1000);
     }
-    
     if(state.db[key].score <= 0) delete state.db[key];
     saveDB();
 }
@@ -561,35 +515,22 @@ inputEl.addEventListener('input', () => {
     if(inputEl.value.length >= realAns.toString().length) checkAnswer();
 });
 
-function finishGameConfirm() {
-    modal(text[state.lang].confirm_bitir, finishGame);
-}
+function finishGameConfirm() { modal(text[state.lang].confirm_bitir, finishGame); }
 
 function finishGame() {
-    // Proportional Score Logic
     if (state.classic.total > 0 && state.classic.currentIdx < state.classic.total) {
         const ratio = state.classic.currentIdx / state.classic.total;
         state.classic.score = Math.round(state.classic.score * ratio);
     }
-
     const avg = state.classic.times.length ? (state.classic.times.reduce((a,b)=>a+b,0)/state.classic.times.length).toFixed(2) : "0.0";
     
-    // Save History
-    state.history.unshift({
-        score: state.classic.score,
-        speed: avg,
-        errors: state.classic.errors,
-        q: state.classic.currentIdx,
-        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-    });
+    state.history.unshift({ score: state.classic.score, speed: avg, errors: state.classic.errors, q: state.classic.currentIdx, date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
     if(state.history.length > 20) state.history.pop();
     localStorage.setItem('carptrik_history', JSON.stringify(state.history));
     updateLists();
 
-    // Show Result
     document.getElementById('classic-play').classList.add('hidden');
     document.getElementById('classic-result').classList.remove('hidden');
-    
     document.getElementById('final-score').innerText = state.classic.score;
     document.getElementById('final-speed').innerText = avg + 's';
     document.getElementById('final-errors').innerText = state.classic.errors;
@@ -603,49 +544,34 @@ function backToSetup() {
 function startErrorPractice() {
     const keys = Object.keys(state.db);
     if(keys.length === 0) return modal(text[state.lang].alert_hata_yok);
-    
     state.classic.activeList = [];
     const mode = document.querySelector('input[name="errorMode"]:checked').value;
-    
     keys.forEach(k => {
         const [n1, n2] = k.split('x').map(Number);
         const count = mode === 'single' ? 1 : state.db[k].score;
         for(let i=0; i<count; i++) state.classic.activeList.push({n1, n2});
     });
-    
     state.classic.activeList.sort(() => Math.random() - 0.5);
-    
-    // Setup UI
-    state.classic.total = state.classic.activeList.length;
-    state.classic.currentIdx = 0;
-    state.classic.score = 100;
-    state.classic.times = [];
-    state.classic.errors = 0;
-    
+    state.classic.total = state.classic.activeList.length; state.classic.currentIdx = 0; state.classic.score = 100; state.classic.times = []; state.classic.errors = 0;
     document.getElementById('classic-setup').classList.add('hidden');
     document.getElementById('classic-play').classList.remove('hidden');
     nextQuestion();
 }
 
 function pauseGame() {
-    if(state.classic.paused) {
+    state.classic.paused = true;
+    document.getElementById('question-text').classList.add('blur');
+    inputEl.disabled = true;
+    state.classic.pauseTime = Date.now();
+    modal(text[state.lang].duraklat, () => {
         state.classic.paused = false;
         document.getElementById('question-text').classList.remove('blur');
-        inputEl.disabled = false;
-        inputEl.focus();
+        inputEl.disabled = false; inputEl.focus();
         state.classic.startTime += (Date.now() - state.classic.pauseTime);
-    } else {
-        state.classic.paused = true;
-        document.getElementById('question-text').classList.add('blur');
-        inputEl.disabled = true;
-        state.classic.pauseTime = Date.now();
-        modal("OYUN DURAKLATILDI", pauseGame); // Using modal to resume
-    }
+    });
 }
 
-/* =========================================
-   RACER MODE LOGIC
-   ========================================= */
+/* RACER MODE LOGIC */
 const canvas = document.getElementById('racerCanvas');
 const ctx = canvas.getContext('2d');
 let racerLoopId;
@@ -685,7 +611,6 @@ function spawnRacerQ() {
     state.racer.q = { ans: ans };
     document.getElementById('r-question').innerText = `${n1} x ${n2}`;
 
-    // Generate Answers
     let answers = [ans];
     while(answers.length < 4) {
         let fake = ans + (Math.floor(Math.random() * 10) - 5);
@@ -693,12 +618,9 @@ function spawnRacerQ() {
     }
     answers.sort(() => Math.random() - 0.5);
 
-    // Create Cars
     for(let i=0; i<4; i++) {
         state.racer.cars.push({
-            lane: i,
-            y: -200, // Start way above
-            val: answers[i],
+            lane: i, y: -200, val: answers[i],
             isCorrect: answers[i] === ans,
             color: answers[i] === ans ? '#ffaa00' : ['#ff4757','#2ed573','#1e90ff'][Math.floor(Math.random()*3)]
         });
@@ -711,65 +633,45 @@ function racerLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const laneW = canvas.width / 4;
 
-    // Draw Road
-    ctx.fillStyle = "#222";
-    ctx.fillRect(0,0,canvas.width, canvas.height);
-    ctx.strokeStyle = "#444";
-    ctx.setLineDash([20, 20]);
-    ctx.lineWidth = 2;
-    for(let i=1; i<4; i++) {
-        ctx.beginPath(); ctx.moveTo(i*laneW, 0); ctx.lineTo(i*laneW, canvas.height); ctx.stroke();
-    }
+    // Road
+    ctx.fillStyle = "#222"; ctx.fillRect(0,0,canvas.width, canvas.height);
+    ctx.strokeStyle = "#444"; ctx.setLineDash([20, 20]); ctx.lineWidth = 2;
+    for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*laneW, 0); ctx.lineTo(i*laneW, canvas.height); ctx.stroke(); }
 
     // Player
     const pX = (state.racer.lane * laneW) + (laneW/2);
     const pY = canvas.height - 100;
-    
-    // Draw Player Car
-    ctx.fillStyle = "#00ffaa";
-    ctx.fillRect(pX - 20, pY, 40, 70); // Body
-    ctx.fillStyle = "#000";
-    ctx.fillRect(pX - 15, pY + 10, 30, 15); // Windshield
-    // Headlights
-    ctx.fillStyle = "rgba(0, 255, 170, 0.5)";
-    ctx.beginPath(); ctx.moveTo(pX-15, pY); ctx.lineTo(pX-30, pY-100); ctx.lineTo(pX+30, pY-100); ctx.lineTo(pX+15, pY); ctx.fill();
+    ctx.fillStyle = "#00ffaa"; ctx.fillRect(pX - 20, pY, 40, 70);
+    ctx.fillStyle = "#000"; ctx.fillRect(pX - 15, pY + 10, 30, 15);
+    ctx.fillStyle = "rgba(0, 255, 170, 0.5)"; ctx.beginPath(); ctx.moveTo(pX-15, pY); ctx.lineTo(pX-30, pY-100); ctx.lineTo(pX+30, pY-100); ctx.lineTo(pX+15, pY); ctx.fill();
 
-    // Enemy Cars
+    // Cars
     for(let i = state.racer.cars.length - 1; i >= 0; i--) {
         let c = state.racer.cars[i];
         c.y += state.racer.speed;
-        
         const cX = (c.lane * laneW) + (laneW/2);
         
-        // Draw Enemy
-        ctx.fillStyle = c.color;
-        ctx.fillRect(cX - 20, c.y, 40, 70);
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 20px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText(c.val, cX, c.y + 45);
+        ctx.fillStyle = c.color; ctx.fillRect(cX - 20, c.y, 40, 70);
+        ctx.fillStyle = "#fff"; ctx.font = "bold 20px Arial"; ctx.textAlign = "center"; ctx.fillText(c.val, cX, c.y + 45);
 
-        // Collision Check
         if(c.y + 70 > pY && c.y < pY + 70 && c.lane === state.racer.lane) {
-            // HIT!
+            // Hit logic
             if(c.isCorrect) {
-                state.racer.score += 10;
-                state.racer.speed += 0.2;
+                state.racer.score += 10; state.racer.speed += 0.2;
                 createExplosion(cX, c.y);
-                state.racer.cars = []; // Clear others
-                setTimeout(spawnRacerQ, 500);
+                state.racer.cars = []; // Clear board
+                setTimeout(spawnRacerQ, 200); // Fast spawn
             } else {
                 state.racer.lives--;
                 shakeScreen();
-                state.racer.cars.splice(i, 1);
-                if(state.racer.lives <= 0) return gameOverRacer();
+                state.racer.cars.splice(i, 1); // Just remove this car
+                if(state.racer.lives <= 0) { gameOverRacer(); return; }
             }
             updateRacerStats();
         } 
-        // Missed (Fell off screen)
         else if(c.y > canvas.height) {
             state.racer.cars.splice(i, 1);
-            if(c.isCorrect && state.racer.cars.length === 0) spawnRacerQ(); // Missed correct one, respawn
+            if(c.isCorrect && state.racer.cars.length === 0) spawnRacerQ(); 
         }
     }
 
@@ -777,12 +679,11 @@ function racerLoop() {
     for(let i=state.racer.particles.length-1; i>=0; i--) {
         let p = state.racer.particles[i];
         p.x += p.vx; p.y += p.vy; p.life--;
-        ctx.fillStyle = p.color;
-        ctx.fillRect(p.x, p.y, p.size, p.size);
+        ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size, p.size);
         if(p.life <= 0) state.racer.particles.splice(i, 1);
     }
 
-    requestAnimationFrame(racerLoop);
+    if(state.racer.active) requestAnimationFrame(racerLoop);
 }
 
 function moveCar(dir) {
@@ -790,7 +691,6 @@ function moveCar(dir) {
     if(newLane >= 0 && newLane <= 3) state.racer.lane = newLane;
 }
 
-// Keyboard controls
 window.addEventListener('keydown', (e) => {
     if(!state.racer.active) return;
     if(e.key === 'ArrowLeft' || e.key === 'a') moveCar(-1);
@@ -800,8 +700,7 @@ window.addEventListener('keydown', (e) => {
 function createExplosion(x, y) {
     for(let i=0; i<15; i++) {
         state.racer.particles.push({
-            x: x, y: y,
-            vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+            x: x, y: y, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
             life: 30, size: Math.random()*5+2, color: '#fff'
         });
     }
@@ -824,11 +723,14 @@ function gameOverRacer() {
     document.getElementById('racer-over').style.display = 'flex';
 }
 
-/* =========================================
-   DATA & UI HELPERS
-   ========================================= */
+function exitRacer() {
+    document.getElementById('racer-menu').style.display = 'flex';
+    document.getElementById('racer-over').style.display = 'none';
+    state.racer.active = false;
+}
+
+/* DATA & UI HELPERS */
 function updateLists() {
-    // Errors
     const list = document.getElementById('error-list');
     let html = "";
     if(Object.keys(state.db).length === 0) {
@@ -840,59 +742,24 @@ function updateLists() {
         list.innerHTML = html;
     }
 
-    // History
     const hist = document.getElementById('history-list');
     let hHtml = "";
     if(state.history.length === 0) {
         hist.innerHTML = `<div style="text-align:center; color:#555; padding:10px;">${text[state.lang].gecmis_yok}</div>`;
     } else {
         state.history.forEach(h => {
-            hHtml += `<div class="list-row">
-                <b style="color:var(--primary);">${h.score}</b>
-                <span>${h.speed}s</span>
-                <span style="color:${h.errors>0?'var(--danger)':'#666'}">${h.errors}</span>
-                <span style="color:#666;">${h.q}</span>
-            </div>`;
+            hHtml += `<div class="list-row"><b style="flex:1; text-align:center;">${h.score}</b><span style="flex:1; text-align:center;">${h.speed}s</span><span style="flex:1; text-align:center; color:${h.errors>0?'var(--danger)':'#666'}">${h.errors}</span><span style="flex:1; text-align:center; color:#666;">${h.q}</span></div>`;
         });
         hist.innerHTML = hHtml;
     }
 }
 
-function saveDB() {
-    localStorage.setItem('carptrik_data', JSON.stringify(state.db));
-    updateLists();
-}
+function saveDB() { localStorage.setItem('carptrik_data', JSON.stringify(state.db)); updateLists(); }
+function resetData() { modal(text[state.lang].confirm_sil, () => { state.db = {}; saveDB(); }); }
+function clearHistory() { modal(text[state.lang].confirm_sil, () => { state.history = []; localStorage.setItem('carptrik_history', JSON.stringify([])); updateLists(); }); }
 
-function resetData() {
-    modal(text[state.lang].confirm_sil, () => {
-        state.db = {};
-        saveDB();
-    });
-}
-
-function clearHistory() {
-    modal(text[state.lang].confirm_sil, () => {
-        state.history = [];
-        localStorage.setItem('carptrik_history', JSON.stringify([]));
-        updateLists();
-    });
-}
-
-function applySettings(s) {
-    if(s.nums) {
-        document.querySelectorAll('.num-chk').forEach(c => {
-            c.checked = s.nums.includes(parseInt(c.value));
-        });
-    }
-    // Other simple settings can be added here
-}
-
-// Init
 init();
-window.addEventListener('resize', () => {
-    if(state.mode === 'racer' && state.racer.active) initRacerCanvas();
-});
-
+window.addEventListener('resize', () => { if(state.mode === 'racer' && state.racer.active) initRacerCanvas(); });
 </script>
 </body>
 </html>
