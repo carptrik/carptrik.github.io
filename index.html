@@ -737,7 +737,7 @@ document.getElementById('c-input').addEventListener('input', function() {
     }
 });
 
-/* RACER (V4.2 FINAL FIX) */
+/* RACER (DONMA FIX) */
 const cvs = document.getElementById('racerCanvas');
 const ctx = cvs.getContext('2d');
 
@@ -750,7 +750,8 @@ function initRacer() {
 
     Game.r.lives=3; Game.r.score=0; Game.r.lane=1;
     Game.r.x = (1 * (cvs.width/4)) + (cvs.width/8); Game.r.currX = Game.r.x;
-    Game.r.cars=[]; Game.r.particles=[]; Game.r.wait=false;
+    Game.r.cars=[]; Game.r.particles=[]; 
+    Game.r.wait=false; // Bekleme modu sıfırla
     
     spawnRacerQ();
     Game.r.loop = requestAnimationFrame(racerLoop);
@@ -774,16 +775,16 @@ function spawnRacerQ() {
     const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
     
     Game.r.cars = [];
-    // SENKRONİZE SPAWN: Hepsi aynı Y koordinatında başlar
+    // SENKRONİZE BAŞLANGIÇ
     for(let i=0; i<4; i++) {
         Game.r.cars.push({
-            lane: i, y: -200, // Hepsi aynı hizada
+            lane: i, y: -200, // Aynı hizadan başlat
             val: opts[i], isCorrect: opts[i]===ans,
             color: colors[Math.floor(Math.random()*colors.length)]
         });
     }
     Game.startT = Date.now(); 
-    Game.r.wait = false; 
+    Game.r.wait = false; // Hareketi başlat
 }
 
 function spawnParticles(x, y, color) {
@@ -800,7 +801,6 @@ function spawnParticles(x, y, color) {
 function drawCar(x, y, color, isPlayer=false) {
     const w = 70; const h = 90;
     
-    // Hasar Rengi Kontrolü (Sadece oyuncu için)
     let finalColor = color;
     if(isPlayer) {
         if(Game.r.lives === 2) finalColor = "#facc15"; // Sarı
@@ -810,26 +810,21 @@ function drawCar(x, y, color, isPlayer=false) {
     ctx.fillStyle = finalColor; 
     ctx.beginPath(); ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
     
-    // Cam
     ctx.fillStyle = "rgba(0,0,0,0.5)"; 
     ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
 
-    // Hasar Efekti (Çatlaklar)
     if(isPlayer && Game.r.lives < 3) {
         ctx.strokeStyle = "#000"; ctx.lineWidth=2;
         ctx.beginPath(); ctx.moveTo(x, y+30); ctx.lineTo(x+10, y+40); ctx.lineTo(x-5, y+50); ctx.stroke();
     }
     if(isPlayer && Game.r.lives < 2) {
-        // Duman
         ctx.fillStyle="rgba(100,100,100,0.5)";
         ctx.beginPath(); ctx.arc(x, y-10, 10 + Math.random()*5, 0, Math.PI*2); ctx.fill();
     }
 
-    // Tavan
     ctx.fillStyle = "rgba(0,0,0,0.2)"; 
     ctx.beginPath(); ctx.roundRect(x - (w/2)+10, y + 45, w-20, 30, 5); ctx.fill();
     
-    // Farlar
     ctx.fillStyle = "#fff";
     ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
@@ -837,6 +832,7 @@ function drawCar(x, y, color, isPlayer=false) {
 
 function racerLoop() {
     if(Game.type !== 'racer') return;
+    
     ctx.clearRect(0,0,cvs.width, cvs.height);
     const lw = cvs.width/4;
     
@@ -845,11 +841,11 @@ function racerLoop() {
     ctx.strokeStyle = "#334155"; ctx.lineWidth=2; ctx.setLineDash([20,30]);
     for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
     
+    // OYUNCU
     const tx = (Game.r.lane * lw) + (lw/2);
     Game.r.currX += (tx - Game.r.currX) * 0.2;
     const px = Game.r.currX; const py = cvs.height - 120;
     
-    // OYUNCU ARACI
     drawCar(px, py, "#10b981", true);
     ctx.fillStyle = "rgba(16,185,129,0.15)"; ctx.beginPath(); ctx.moveTo(px-20,py); ctx.lineTo(px-50,py-200); ctx.lineTo(px+50,py-200); ctx.lineTo(px+20,py); ctx.fill();
 
@@ -861,58 +857,69 @@ function racerLoop() {
         if(p.life <= 0) Game.r.particles.splice(i,1);
     }
 
+    // ARABALARI ÇİZ & HAREKET ETTİR
     if(!Game.r.wait) {
-        let waveHit = false; // Tek bir araca çarpma kontrolü
-        
+        let collisionHappened = false;
+
         for(let i=Game.r.cars.length-1; i>=0; i--) {
-            let c = Game.r.cars[i]; 
+            let c = Game.r.cars[i];
+            
+            // Arabayı hareket ettir
             c.y += Game.r.speed;
             const cx = (c.lane * lw) + (lw/2);
             
-            // Eğer henüz kimseye çarpılmadıysa çiz
             drawCar(cx, c.y, c.color);
-
             ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
-            ctx.shadowColor="black"; ctx.shadowBlur=4; 
-            ctx.fillText(c.val, cx, c.y + 60); 
-            ctx.shadowBlur=0;
-            
-            // ÇARPIŞMA (Genişlik toleransı arttırıldı)
-            if(!waveHit && c.y+90 > py && c.y < py+90 && Math.abs(px - cx) < 40) {
-                waveHit = true;
-                Game.r.wait = true;
-                
+            ctx.fillText(c.val, cx, c.y + 60);
+
+            // Çarpışma Kontrolü
+            if(!collisionHappened && c.y+90 > py && c.y < py+90 && Math.abs(px - cx) < 50) {
+                collisionHappened = true;
+                Game.r.wait = true; // DÖNGÜYÜ DURDUR (Hareket etmesinler)
+
                 if(c.isCorrect) {
                     // DOĞRU: Düşman patlar
                     spawnParticles(cx, c.y + 45, c.color);
                     Game.times.push((Date.now()-Game.startT)/1000);
-                    Game.idx++; 
-                    // Düşman arabaları hemen gizle (wave bitti)
-                    Game.r.cars = [];
+                    Game.idx++;
+                    // Sadece patlayan arabayı listeden silmiyoruz, görsel kalsın diye.
+                    // 1 saniye sonra resetliyoruz.
                     setTimeout(spawnRacerQ, 800);
                 } else {
                     // YANLIŞ: Oyuncu hasar alır
+                    spawnParticles(px, py + 45, "#ef4444");
                     Game.r.lives--; 
-                    spawnParticles(px, py + 45, "#ef4444"); // Oyuncu üzerinde patlama
-                    Game.errors++; Game.score = Math.max(0, Game.score-10);
+                    Game.errors++; 
+                    Game.score = Math.max(0, Game.score-10);
                     document.getElementById('r-lives').innerText = Game.r.lives;
                     
-                    if(Game.r.lives <= 0) { endGame(); return; }
-                    
-                    // Yanlışta da arabalar kaybolsun, yeni soru gelsin
-                    Game.r.cars = [];
-                    setTimeout(spawnRacerQ, 800);
-                }
-            } else if (c.y > cvs.height) {
-                // Ekran dışına çıkma kontrolü (Sadece son araba geçince tetikle)
-                if(i === 0 && !waveHit) {
-                    // Hiçbirine çarpamadıysa tekrar aynı soru gelir (veya ceza verilebilir, şimdilik tekrar)
-                    Game.r.cars = [];
-                    spawnRacerQ();
+                    if(Game.r.lives <= 0) { 
+                        setTimeout(endGame, 800);
+                    } else {
+                        setTimeout(spawnRacerQ, 800);
+                    }
                 }
             }
+            
+            // Ekran dışına çıkarsa (Hiçbirine çarpmazsa)
+            if(c.y > cvs.height && i===0 && !collisionHappened) {
+                // Ceza yok, aynı soruyu tekrar sor (veya ceza verilebilir)
+                spawnRacerQ();
+            }
+        }
+    } else {
+        // WAIT MODUNDAYSA SADECE ÇİZ (Hareket ettirme)
+        // Böylece patlama anı ekranda donmuş gibi görünür, efektler oynar
+        const lw = cvs.width/4;
+        for(let i=0; i<Game.r.cars.length; i++) {
+            let c = Game.r.cars[i];
+            const cx = (c.lane * lw) + (lw/2);
+            drawCar(cx, c.y, c.color);
+            ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
+            ctx.fillText(c.val, cx, c.y + 60);
         }
     }
+    
     Game.r.loop = requestAnimationFrame(racerLoop);
 }
 
