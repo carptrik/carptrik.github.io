@@ -229,6 +229,37 @@
         #racer-wrap { flex: 1; margin: 20px; background: #111; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border); }
         canvas { width: 100%; height: 100%; display: block; }
         
+        /* ROAD FIGHTER STYLE PROGRESS BAR */
+        .progress-strip {
+            position: absolute;
+            left: 15px;
+            top: 70px; /* Header'ın biraz altı */
+            bottom: 40px;
+            width: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            z-index: 50;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+        }
+        .prog-flag {
+            position: absolute;
+            left: -6px;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .pf-start { bottom: -20px; }
+        .pf-end { top: -20px; }
+        
+        .prog-car {
+            position: absolute;
+            left: -8px; /* Çizgiyi ortalamak için */
+            bottom: 0%;
+            font-size: 20px;
+            line-height: 1;
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
         /* YENİ KOMPAKT ÜST BAR */
         .r-header {
             position: absolute; top: 15px; left: 15px; right: 15px;
@@ -478,6 +509,12 @@
             <div id="racer-wrap">
                 <canvas id="racerCanvas"></canvas>
                 
+                <div class="progress-strip">
+                    <div class="prog-flag pf-end">🏁</div>
+                    <div class="prog-car" id="prog-car">🏎️</div>
+                    <div class="prog-flag pf-start">🏳️</div>
+                </div>
+
                 <div class="r-header">
                     <div class="r-stat" style="color:var(--primary)">P: <span id="r-score">0</span></div>
                     <div class="r-q-box" id="r-q-text">2 x 2</div>
@@ -790,6 +827,13 @@ function shakeScreen() {
     }, 500);
 }
 
+function updateProgress() {
+    // 0-100 arası yüzde hesapla
+    const p = (Game.total > 0) ? Math.min(100, (Game.idx / Game.total) * 100) : 0;
+    const car = document.getElementById('prog-car');
+    if(car) car.style.bottom = p + '%';
+}
+
 /* GAME ENGINE */
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
@@ -995,6 +1039,9 @@ function initRacer() {
     
     AudioSys.startEngine(); // Start Engine Sound
     
+    // PROGRESS INITIALIZE
+    updateProgress();
+
     spawnRacerQ();
     Game.r.loop = requestAnimationFrame(racerLoop);
 }
@@ -1002,6 +1049,9 @@ function initRacer() {
 function spawnRacerQ() {
     if(Game.idx >= Game.total) { endGame(); return; }
     
+    // UPDATE PROGRESS
+    updateProgress();
+
     // YENİ SORU İÇİN TEMİZLİK (Eskileri sil)
     Game.r.cars = []; 
     Game.r.isWaveActive = true; // Dalga aktif, çarpışma olabilir
