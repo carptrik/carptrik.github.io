@@ -18,6 +18,7 @@
     <meta property="og:title" content="ÇARPTRİK - Çarpım Tablosu Yarışı">
     <meta property="og:description" content="Çarpım tablosunu araba yarışı yaparak öğren! Skorunu kaydet, kendini geliştir.">
     <meta property="og:type" content="website">
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3E text { fill: %2310b981; font-weight: bold; font-family: sans-serif; } %3C/style%3E%3Crect width='100%25' height='100%25' fill='%230f172a' rx='20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='80'%3E✖%3C/text%3E%3C/svg%3E">
     
     <style>
@@ -71,7 +72,16 @@
         .m-btn.active { background: var(--bg-card); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .m-btn:hover:not(.active) { color: #fff; }
 
-        .header-right { justify-self: end; }
+        .header-right { justify-self: end; display: flex; align-items: center; gap: 15px; }
+        
+        /* SOUND BUTTON */
+        .sound-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+            padding: 5px 10px; border-radius: 8px; font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .sound-btn.active { color: var(--primary); border-color: var(--primary); background: rgba(16,185,129,0.1); }
+
         .lang-switch { display: flex; gap: 5px; }
         .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
         .lang-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(16, 185, 129, 0.1); }
@@ -254,16 +264,6 @@
         .f-btn:hover { background: var(--bg-panel); }
         .f-btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.05); }
 
-        .modal-wrap { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal { background: var(--bg-panel); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-        .m-btns { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
-        .mb { padding: 12px 30px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-size: 14px; }
-        .mb-ok { background: var(--primary); color: #000; }
-        .mb-no { background: var(--bg-card); color: #fff; border: 1px solid var(--border); }
-
-        footer { margin-top: auto; padding: 15px; text-align: center; font-size: 11px; color: var(--text-muted); background: var(--bg-body); border-top: 1px solid var(--border); }
-        footer a { color: var(--text-muted); text-decoration: none; }
-
         /* MOBILE FIXES */
         @media (max-width: 900px) {
             body { padding: 0; overflow-y: auto; height: auto; }
@@ -296,19 +296,21 @@
     
     <div class="header-center">
         <div class="mode-switch">
-            <button class="m-btn active" id="tab-classic" onclick="setMode('classic')">
+            <button class="m-btn active" id="tab-classic" onclick="setMode('classic'); AudioSys.playClick()">
                 <span>📊</span> <span data-i18n="tab_klasik">KLASİK</span>
             </button>
-            <button class="m-btn" id="tab-racer" onclick="setMode('racer')">
+            <button class="m-btn" id="tab-racer" onclick="setMode('racer'); AudioSys.playClick()">
                 <span>🏎️</span> <span data-i18n="tab_yaris">YARIŞ</span>
             </button>
         </div>
     </div>
 
     <div class="header-right">
+        <button class="sound-btn" id="btn-sound" onclick="toggleSound()">🔊</button>
+        
         <div class="lang-switch">
-            <button class="lang-btn active" id="l-tr" onclick="setLang('tr')">TR</button>
-            <button class="lang-btn" id="l-en" onclick="setLang('en')">EN</button>
+            <button class="lang-btn active" id="l-tr" onclick="setLang('tr'); AudioSys.playClick()">TR</button>
+            <button class="lang-btn" id="l-en" onclick="setLang('en'); AudioSys.playClick()">EN</button>
         </div>
     </div>
 </header>
@@ -318,23 +320,23 @@
     <aside class="panel">
         <div class="practice-area">
             <div class="pill-group">
-                <div class="pill selected" onclick="setErrMode('weighted', this)">
+                <div class="pill selected" onclick="setErrMode('weighted', this); AudioSys.playClick()">
                     <span data-i18n="puan_kadar">Puan</span>
                     <input type="radio" name="errMode" value="weighted" checked>
                 </div>
-                <div class="pill" onclick="setErrMode('single', this)">
+                <div class="pill" onclick="setErrMode('single', this); AudioSys.playClick()">
                     <span data-i18n="bir_kez">1 Kez</span>
                     <input type="radio" name="errMode" value="single">
                 </div>
             </div>
-            <button class="btn-purple" onclick="startErrorPractice()">
+            <button class="btn-purple" onclick="startErrorPractice(); AudioSys.playClick()">
                 <span>⚠️</span> <span data-i18n="hatalara_calis">HATALARA ÇALIŞ</span>
             </button>
         </div>
 
         <div class="panel-head">
             <span data-i18n="hata_listesi">HATA LİSTESİ</span>
-            <button class="mini-btn" onclick="resetData()" data-i18n="temizle">TEMİZLE</button>
+            <button class="mini-btn" onclick="resetData(); AudioSys.playClick()" data-i18n="temizle">TEMİZLE</button>
         </div>
         <div class="list-content" id="list-errors">
             <div style="text-align:center; padding:20px; color:#555;" data-i18n="liste_temiz">Temiz</div>
@@ -348,31 +350,31 @@
                 
                 <div class="section-header" data-i18n="carp_sayilar">ÇARPILACAK SAYILAR</div>
                 <div class="num-grid">
-                    <label><input type="checkbox" class="num-chk" value="2" checked onchange="calcTotal()"><div class="num-label">2</div></label>
-                    <label><input type="checkbox" class="num-chk" value="3" checked onchange="calcTotal()"><div class="num-label">3</div></label>
-                    <label><input type="checkbox" class="num-chk" value="4" checked onchange="calcTotal()"><div class="num-label">4</div></label>
-                    <label><input type="checkbox" class="num-chk" value="5" checked onchange="calcTotal()"><div class="num-label">5</div></label>
-                    <label><input type="checkbox" class="num-chk" value="6" checked onchange="calcTotal()"><div class="num-label">6</div></label>
-                    <label><input type="checkbox" class="num-chk" value="7" checked onchange="calcTotal()"><div class="num-label">7</div></label>
-                    <label><input type="checkbox" class="num-chk" value="8" checked onchange="calcTotal()"><div class="num-label">8</div></label>
-                    <label><input type="checkbox" class="num-chk" value="9" checked onchange="calcTotal()"><div class="num-label">9</div></label>
+                    <label><input type="checkbox" class="num-chk" value="2" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">2</div></label>
+                    <label><input type="checkbox" class="num-chk" value="3" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">3</div></label>
+                    <label><input type="checkbox" class="num-chk" value="4" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">4</div></label>
+                    <label><input type="checkbox" class="num-chk" value="5" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">5</div></label>
+                    <label><input type="checkbox" class="num-chk" value="6" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">6</div></label>
+                    <label><input type="checkbox" class="num-chk" value="7" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">7</div></label>
+                    <label><input type="checkbox" class="num-chk" value="8" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">8</div></label>
+                    <label><input type="checkbox" class="num-chk" value="9" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">9</div></label>
                 </div>
                 <div class="grid-actions">
-                    <button class="action-btn" onclick="toggleAll(true)" data-i18n="tumu">TÜMÜ SEÇ</button>
-                    <button class="action-btn" onclick="toggleAll(false)" data-i18n="temizle">TEMİZLE</button>
+                    <button class="action-btn" onclick="toggleAll(true); AudioSys.playClick()" data-i18n="tumu">TÜMÜ SEÇ</button>
+                    <button class="action-btn" onclick="toggleAll(false); AudioSys.playClick()" data-i18n="temizle">TEMİZLE</button>
                 </div>
 
                 <div class="settings-box">
                     <div class="sb-title" data-i18n="soru_sayisi">SORU SAYISI</div>
                     <div class="toggle-group">
-                        <div class="toggle-opt selected" onclick="selectToggle(this)">
+                        <div class="toggle-opt selected" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="mod_tekrar_1">Tümünü</span>
                             <input type="number" id="inp-repeat" value="1" class="input-box" onchange="calcTotal()" onclick="event.stopPropagation()">
                             <span data-i18n="mod_tekrar_2">kez</span>
                             <span id="total-info" class="total-info">(1)</span>
                             <input type="radio" name="gMode" value="repeat" checked>
                         </div>
-                        <div class="toggle-opt" onclick="selectToggle(this)">
+                        <div class="toggle-opt" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="mod_limit_1">Rastgele</span>
                             <input type="number" id="inp-limit" value="20" class="input-box" onclick="event.stopPropagation()">
                             <span data-i18n="mod_limit_2">tane sor</span>
@@ -385,11 +387,11 @@
                     <div class="sb-title" data-i18n="hiz_ayari">SÜRE / HIZ</div>
                     
                     <div id="opt-speed-classic" class="toggle-group">
-                        <div class="toggle-opt" onclick="selectToggle(this)">
+                        <div class="toggle-opt" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="otomatik">ORTALAMA</span>
                             <input type="radio" name="cSpeed" value="auto">
                         </div>
-                        <div class="toggle-opt selected" onclick="selectToggle(this)">
+                        <div class="toggle-opt selected" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="sabit">SABİT</span>
                             <input type="number" id="inp-speed" value="4" class="input-box" onclick="event.stopPropagation()">
                             <span style="font-size:12px;color:var(--text-muted)">sn</span>
@@ -398,22 +400,22 @@
                     </div>
 
                     <div id="opt-speed-racer" class="toggle-group" style="display:none;">
-                        <div class="toggle-opt" onclick="selectToggle(this)">
+                        <div class="toggle-opt" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="yavas">YAVAŞ</span>
                             <input type="radio" name="rSpeed" value="2">
                         </div>
-                        <div class="toggle-opt selected" onclick="selectToggle(this)">
+                        <div class="toggle-opt selected" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="normal">NORMAL</span>
                             <input type="radio" name="rSpeed" value="4" checked>
                         </div>
-                        <div class="toggle-opt" onclick="selectToggle(this)">
+                        <div class="toggle-opt" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="hizli">HIZLI</span>
                             <input type="radio" name="rSpeed" value="6">
                         </div>
                     </div>
                 </div>
 
-                <button class="btn-start classic" id="btn-start" onclick="startGame()">
+                <button class="btn-start classic" id="btn-start" onclick="startGame(); AudioSys.playClick()">
                     <span>▶</span> <span data-i18n="baslat_klasik">KLASİK BAŞLAT</span>
                 </button>
             </div>
@@ -433,8 +435,8 @@
             </div>
 
             <div class="foot-btns">
-                <button class="f-btn" onclick="showSetup()" data-i18n="geri">GERİ</button>
-                <button class="f-btn danger" onclick="confirmFinish()" data-i18n="bitir">BİTİR</button>
+                <button class="f-btn" onclick="showSetup(); AudioSys.playClick()" data-i18n="geri">GERİ</button>
+                <button class="f-btn danger" onclick="confirmFinish(); AudioSys.playClick()" data-i18n="bitir">BİTİR</button>
             </div>
         </div>
 
@@ -454,8 +456,8 @@
                 <button class="c-btn" onpointerdown="racerInput(1); event.preventDefault()">➡️</button>
             </div>
             <div class="foot-btns">
-                <button class="f-btn" onclick="showSetup()" data-i18n="geri">GERİ</button>
-                <button class="f-btn danger" onclick="confirmFinish()" data-i18n="bitir">BİTİR</button>
+                <button class="f-btn" onclick="showSetup(); AudioSys.stopEngine(); AudioSys.playClick()" data-i18n="geri">GERİ</button>
+                <button class="f-btn danger" onclick="confirmFinish(); AudioSys.playClick()" data-i18n="bitir">BİTİR</button>
             </div>
         </div>
 
@@ -473,7 +475,7 @@
                         <div style="font-size:24px; font-weight:bold; color:var(--danger)" id="res-err">0</div>
                     </div>
                 </div>
-                <button class="btn-start classic" style="max-width:200px;" onclick="showSetup()" data-i18n="tamam_btn">TAMAM</button>
+                <button class="btn-start classic" style="max-width:200px;" onclick="showSetup(); AudioSys.playClick()" data-i18n="tamam_btn">TAMAM</button>
             </div>
         </div>
 
@@ -483,7 +485,7 @@
         <div class="graph-area" id="score-graph"></div>
         <div class="panel-head">
             <span data-i18n="gecmis_skorlar">GEÇMİŞ</span>
-            <button class="mini-btn" onclick="clearHistory()" data-i18n="sil">SİL</button>
+            <button class="mini-btn" onclick="clearHistory(); AudioSys.playClick()" data-i18n="sil">SİL</button>
         </div>
         <div class="grid-header">
             <span>P</span> <span>HZ</span> <span>HT</span> <span>SR</span>
@@ -508,9 +510,84 @@
 </footer>
 
 <script>
+/* AUDIO SYSTEM (SYNTHESIZED) */
+const AudioSys = {
+    ctx: null,
+    osc: null, // Engine oscillator
+    gain: null,
+    
+    init: function() {
+        if(!this.ctx) {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+        }
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+    },
+
+    playTone: function(freq, type, duration, vol=0.1) {
+        if(!DATA.sound) return;
+        this.init();
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.type = type;
+        o.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        g.gain.setValueAtTime(vol, this.ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        o.connect(g);
+        g.connect(this.ctx.destination);
+        o.start();
+        o.stop(this.ctx.currentTime + duration);
+    },
+
+    playClick: function() { this.playTone(800, 'sine', 0.1, 0.05); },
+    playCorrect: function() { 
+        if(!DATA.sound) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.frequency.setValueAtTime(600, now);
+        o.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        g.gain.setValueAtTime(0.1, now);
+        g.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        o.connect(g); g.connect(this.ctx.destination);
+        o.start(); o.stop(now + 0.3);
+    },
+    playWrong: function() { this.playTone(150, 'sawtooth', 0.3, 0.1); },
+
+    startEngine: function() {
+        if(!DATA.sound || this.osc) return;
+        this.init();
+        this.osc = this.ctx.createOscillator();
+        this.gain = this.ctx.createGain();
+        this.osc.type = 'sawtooth';
+        this.osc.frequency.value = 60; // Low rumble
+        
+        // Lowpass filter to muffle it
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 120;
+
+        this.gain.gain.value = 0.05; // Very quiet
+        
+        this.osc.connect(filter);
+        filter.connect(this.gain);
+        this.gain.connect(this.ctx.destination);
+        this.osc.start();
+    },
+
+    stopEngine: function() {
+        if(this.osc) {
+            this.osc.stop();
+            this.osc.disconnect();
+            this.osc = null;
+        }
+    }
+};
+
 /* STATE */
 const DATA = {
-    lang: 'tr', mode: 'classic',
+    lang: 'tr', mode: 'classic', sound: true,
     classic: {
         db: JSON.parse(localStorage.getItem('carptrik_classic_db')) || {},
         history: JSON.parse(localStorage.getItem('carptrik_classic_history')) || []
@@ -520,6 +597,9 @@ const DATA = {
         history: JSON.parse(localStorage.getItem('carptrik_racer_history')) || []
     }
 };
+
+// Check Sound Pref
+if(localStorage.getItem('carptrik_sound') === 'false') DATA.sound = false;
 
 const TEXT = {
     tr: {
@@ -558,6 +638,21 @@ function init() {
     if(l) DATA.lang = l;
     setLang(DATA.lang);
     setMode('classic');
+    updateSoundBtn();
+}
+
+function toggleSound() {
+    DATA.sound = !DATA.sound;
+    localStorage.setItem('carptrik_sound', DATA.sound);
+    updateSoundBtn();
+    if(DATA.sound) AudioSys.init(); // Init context on user interaction
+    else AudioSys.stopEngine();
+}
+
+function updateSoundBtn() {
+    const btn = document.getElementById('btn-sound');
+    btn.innerHTML = DATA.sound ? '🔊' : '🔇';
+    btn.classList.toggle('active', DATA.sound);
 }
 
 function setLang(l) {
@@ -641,10 +736,10 @@ function modal(msg, onYes) {
     document.getElementById('m-text').innerText = msg;
     const a = document.getElementById('m-actions');
     if(onYes) {
-        a.innerHTML = `<button class="mb mb-ok" onclick="doYes()">${TEXT[DATA.lang].modal_evet}</button><button class="mb mb-no" onclick="closeModal()">${TEXT[DATA.lang].modal_iptal}</button>`;
+        a.innerHTML = `<button class="mb mb-ok" onclick="doYes(); AudioSys.playClick()">${TEXT[DATA.lang].modal_evet}</button><button class="mb mb-no" onclick="closeModal(); AudioSys.playClick()">${TEXT[DATA.lang].modal_iptal}</button>`;
         window.doYes = () => { onYes(); closeModal(); };
     } else {
-        a.innerHTML = `<button class="mb mb-ok" onclick="closeModal()">${TEXT[DATA.lang].tamam_btn}</button>`;
+        a.innerHTML = `<button class="mb mb-ok" onclick="closeModal(); AudioSys.playClick()">${TEXT[DATA.lang].tamam_btn}</button>`;
     }
     w.style.display = 'flex';
 }
@@ -721,6 +816,7 @@ function confirmFinish() { modal(TEXT[DATA.lang].confirm_bitir, endGame); }
 
 function endGame() {
     if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
+    AudioSys.stopEngine();
     
     if(Game.total > 0 && Game.idx < Game.total) {
         Game.score = Math.round(Game.score * (Game.idx / Game.total));
@@ -789,14 +885,17 @@ document.getElementById('c-input').addEventListener('input', function() {
             if (isSlow) {
                 Game.errors++; db[k].score += 1; Game.score = Math.max(0, Game.score-2);
                 fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`;
+                AudioSys.playWrong(); // Yavaşsa uyarı sesi
             } else {
                 if(db[k].score > 0) db[k].score--;
                 fb.innerText = TEXT[DATA.lang].dogru; fb.style.color = 'var(--primary)';
+                AudioSys.playCorrect();
             }
             Game.idx++; setTimeout(nextQClassic, 500); 
         } else {
             Game.errors++; db[k].score += 2; Game.score = Math.max(0, Game.score-5); 
             fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)';
+            AudioSys.playWrong();
             const i = document.getElementById('c-input'); i.disabled = true;
             setTimeout(() => { i.disabled = false; Game.idx++; nextQClassic(); }, 1500);
         }
@@ -832,6 +931,8 @@ function initRacer() {
     
     Game.r.cars=[]; Game.r.particles=[]; 
     Game.r.inputLocked = false; 
+    
+    AudioSys.startEngine(); // Start Engine Sound
     
     spawnRacerQ();
     Game.r.loop = requestAnimationFrame(racerLoop);
@@ -1012,6 +1113,7 @@ function racerLoop() {
                 Game.r.cars.splice(i, 1); 
                 Game.times.push((Date.now()-Game.startT)/1000);
                 Game.idx++;
+                AudioSys.playCorrect();
                 
                 if(db[k].score > 0) db[k].score--; 
 
@@ -1027,6 +1129,7 @@ function racerLoop() {
 
                 shakeScreen(); // SARSINTI & KIRMIZI EFEKT
                 spawnParticles(px, py + 45, "#ef4444");
+                AudioSys.playWrong();
 
                 Game.r.lives--;
                 Game.errors++; 
