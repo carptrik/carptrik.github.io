@@ -264,12 +264,46 @@
         .f-btn:hover { background: var(--bg-panel); }
         .f-btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.05); }
 
-        /* MOBILE FIXES */
+        .modal-wrap { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal { background: var(--bg-panel); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+        .m-btns { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
+        .mb { padding: 12px 30px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-size: 14px; }
+        .mb-ok { background: var(--primary); color: #000; }
+        .mb-no { background: var(--bg-card); color: #fff; border: 1px solid var(--border); }
+
+        footer { margin-top: auto; padding: 15px; text-align: center; font-size: 11px; color: var(--text-muted); background: var(--bg-body); border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+
+        /* MOBILE FIXES & HEADER ADJUSTMENTS */
         @media (max-width: 900px) {
             body { padding: 0; overflow-y: auto; height: auto; }
-            header { grid-template-columns: 1fr auto; height: auto; padding: 15px; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
-            .header-left { order: 1; } .header-right { order: 2; } .header-center { order: 3; width: 100%; margin-top: 10px; display: flex; justify-content: center; }
-            .mode-switch { transform: scale(1); width: 100%; } .m-btn { flex: 1; justify-content: center; }
+            
+            /* Düzeltilmiş Mobile Header */
+            header { 
+                display: flex; 
+                flex-wrap: wrap; 
+                justify-content: space-between; 
+                align-items: center;
+                height: auto; 
+                padding: 10px 15px; 
+            }
+            .header-left { order: 1; flex: 0 0 auto; }
+            .header-right { 
+                order: 2; 
+                flex: 0 0 auto; 
+                gap: 8px; /* Sağ tarafı sıkıştırmamak için boşluk azaltıldı */
+            }
+            .header-center { 
+                order: 3; 
+                width: 100%; 
+                margin-top: 10px; 
+                display: flex; 
+                justify-content: center; 
+            }
+            
+            .mode-switch { transform: scale(1); width: 100%; } 
+            .m-btn { flex: 1; justify-content: center; }
+            
             .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; gap: 15px; }
             .panel:nth-child(2) { order: 1; min-height: 600px; } .panel:nth-child(1) { order: 2; height: auto; } .panel:nth-child(3) { order: 3; height: auto; }
             
@@ -645,7 +679,7 @@ function toggleSound() {
     DATA.sound = !DATA.sound;
     localStorage.setItem('carptrik_sound', DATA.sound);
     updateSoundBtn();
-    if(DATA.sound) AudioSys.init(); // Init context on user interaction
+    if(DATA.sound) AudioSys.init(); 
     else AudioSys.stopEngine();
 }
 
