@@ -131,20 +131,18 @@
         .action-btn { padding: 8px 20px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
         .action-btn:hover { color: #fff; border-color: #fff; }
 
-        /* SETTINGS BOXES (Expanded & Styled) */
+        /* SETTINGS BOXES */
         .settings-box { 
             background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 16px; padding: 25px; 
             display: flex; flex-direction: column; gap: 15px;
         }
         .sb-title { font-size: 14px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: 5px; letter-spacing: 1px; }
         
-        /* The container for options */
         .toggle-group { 
             display: flex; background: var(--bg-dark); padding: 5px; border-radius: 12px; border: 1px solid var(--border);
-            height: 75px; /* Vertical space increased */
+            min-height: 75px; 
         }
         
-        /* The individual option */
         .toggle-opt { 
             flex: 1; text-align: center; padding: 0 15px; cursor: pointer; border-radius: 8px; 
             font-size: 13px; font-weight: 700; color: var(--text-muted); transition: 0.2s; 
@@ -154,27 +152,19 @@
         .toggle-opt.selected { background: var(--bg-card); color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
         .toggle-opt input[type="radio"] { display: none; }
         
-        /* THE INPUT BOXES (Made distinct and proportional) */
         .input-box {
             width: 70px; height: 40px; 
-            background: #000; 
-            border: 2px solid var(--border); 
-            border-radius: 8px;
-            color: var(--primary); 
-            font-weight: 800; text-align: center; font-size: 18px; 
-            outline: none; transition: 0.2s;
-            flex-shrink: 0;
+            background: #000; border: 2px solid var(--border); border-radius: 8px;
+            color: var(--primary); font-weight: 800; text-align: center; font-size: 18px; 
+            outline: none; transition: 0.2s; flex-shrink: 0;
         }
         .input-box:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
         
-        /* Hide spinner arrows in number input */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
         .total-info { font-size: 12px; color: var(--primary); margin-left: 5px; font-weight: 600; opacity: 0.9; }
 
-        /* Start Button */
         .btn-start {
             width: 100%; padding: 22px; border-radius: 14px; border: none; margin-top: auto;
             font-size: 20px; font-weight: 900; cursor: pointer; transition: 0.2s;
@@ -185,29 +175,34 @@
         .btn-start.racer { background: #f59e0b; color: #000; box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3); }
         .btn-start:hover { transform: translateY(-3px); }
 
-        /* --- GAME SCREENS --- */
         .screen { display: none; height: 100%; flex-direction: column; }
         .screen.active { display: flex; animation: fade 0.3s ease; }
         @keyframes fade { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
+
+        /* Effects */
+        @keyframes shakeAnim {
+            0% { transform: translate(1px, 1px) rotate(0deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake { animation: shakeAnim 0.5s; }
+        .damage-flash { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; box-shadow: inset 0 0 80px var(--danger); border: 4px solid var(--danger); z-index:9999; opacity:0.8; animation: fadeOut 0.5s forwards; }
+        @keyframes fadeOut { from{opacity:0.8} to{opacity:0} }
 
         .hud { display: flex; justify-content: space-between; padding: 20px 30px; background: rgba(0,0,0,0.2); border-radius: 16px; margin: 20px; border: 1px solid var(--border); }
         .hud-val { font-size: 26px; font-weight: 900; color: #fff; text-align: center; }
         .hud-lbl { font-size: 11px; color: var(--text-muted); text-align: center; display: block; margin-bottom: 2px; }
 
-        /* Classic */
         .q-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .q-text { font-size: 120px; font-weight: 900; color: #fff; margin-bottom: 30px; text-shadow: 0 0 50px rgba(255,255,255,0.05); }
         .ans-inp { width: 100%; max-width: 400px; background: #000; border: 3px solid var(--border); color: var(--primary); font-size: 60px; padding: 20px; text-align: center; border-radius: 20px; outline: none; font-family: monospace; font-weight: bold; transition: 0.2s; }
         .ans-inp:focus { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
         
         .feedback { 
-            min-height: 80px; margin-top: 20px; 
-            font-weight: 900; font-size: 40px; 
-            text-align: center; line-height: 1.2;
-            display: flex; flex-direction: column; justify-content: center;
+            min-height: 80px; margin-top: 20px; font-weight: 900; font-size: 40px; 
+            text-align: center; line-height: 1.2; display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* Racer */
         #racer-wrap { flex: 1; margin: 20px; background: #111; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border); }
         canvas { width: 100%; height: 100%; display: block; }
         .r-hud { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; font-weight: 900; font-size: 20px; text-shadow: 3px 3px 0 #000; pointer-events: none; z-index: 10; }
@@ -235,6 +230,7 @@
         footer { margin-top: auto; padding: 15px; text-align: center; font-size: 11px; color: var(--text-muted); background: var(--bg-body); border-top: 1px solid var(--border); }
         footer a { color: var(--text-muted); text-decoration: none; }
 
+        /* MOBILE FIXES */
         @media (max-width: 900px) {
             body { padding: 0; overflow-y: auto; height: auto; }
             header { grid-template-columns: 1fr auto; height: auto; padding: 15px; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
@@ -242,7 +238,13 @@
             .mode-switch { transform: scale(1); width: 100%; } .m-btn { flex: 1; justify-content: center; }
             .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; gap: 15px; }
             .panel:nth-child(2) { order: 1; min-height: 600px; } .panel:nth-child(1) { order: 2; height: auto; } .panel:nth-child(3) { order: 3; height: auto; }
-            #racer-wrap { margin: 15px; height: 350px; } .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
+            
+            /* Vertical Settings on Mobile */
+            .toggle-group { flex-direction: column; height: auto; gap: 5px; padding: 10px; }
+            .toggle-opt { padding: 15px; width: 100%; justify-content: center; }
+            
+            #racer-wrap { margin: 15px; height: 50vh; min-height: 400px; } 
+            .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
             .ans-inp { font-size: 40px; padding: 15px; }
         }
     </style>
@@ -469,8 +471,14 @@
 /* STATE */
 const DATA = {
     lang: 'tr', mode: 'classic',
-    db: JSON.parse(localStorage.getItem('carptrik_data')) || {},
-    history: JSON.parse(localStorage.getItem('carptrik_history')) || []
+    classic: {
+        db: JSON.parse(localStorage.getItem('carptrik_classic_db')) || {},
+        history: JSON.parse(localStorage.getItem('carptrik_classic_history')) || []
+    },
+    racer: {
+        db: JSON.parse(localStorage.getItem('carptrik_racer_db')) || {},
+        history: JSON.parse(localStorage.getItem('carptrik_racer_history')) || []
+    }
 };
 
 const TEXT = {
@@ -534,6 +542,7 @@ function setMode(m) {
     document.getElementById('opt-speed-racer').style.display = m==='racer' ? 'flex' : 'none';
     
     updateStartBtn();
+    renderLists();
     calcTotal();
 }
 
@@ -601,11 +610,22 @@ function modal(msg, onYes) {
 }
 function closeModal() { document.querySelector('.modal-wrap').style.display = 'none'; }
 
+function shakeScreen() {
+    document.body.classList.add('shake');
+    const flash = document.createElement('div');
+    flash.className = 'damage-flash';
+    document.body.appendChild(flash);
+    setTimeout(() => {
+        document.body.classList.remove('shake');
+        if(flash) flash.remove();
+    }, 500);
+}
+
 /* GAME ENGINE */
 let Game = {
     type: null, qList:[], total:0, idx:0, score:100, errors:0, times:[], startT:0, currQ:null,
     slowLimit: 0,
-    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, wait:false, particles:[] }
+    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false } 
 };
 
 function startGame() {
@@ -632,21 +652,22 @@ function startGame() {
 }
 
 function startErrorPractice() {
-    const keys = Object.keys(DATA.db);
+    const currentDB = DATA[DATA.mode].db;
+    const keys = Object.keys(currentDB);
     if(keys.length === 0) return modal(TEXT[DATA.lang].alert_hata);
     
     Game.qList = [];
     const mode = document.querySelector('input[name="errMode"]:checked').value;
     keys.forEach(k => {
         const [n1, n2] = k.split('x').map(Number);
-        const c = mode === 'single' ? 1 : DATA.db[k].score;
+        const c = mode === 'single' ? 1 : currentDB[k].score;
         for(let i=0; i<c; i++) Game.qList.push({n1,n2});
     });
     Game.qList.sort(()=>Math.random()-0.5);
     
-    resetState('classic', Game.qList.length);
-    showScreen('classic');
-    nextQClassic();
+    resetState(DATA.mode, Game.qList.length);
+    if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); }
+    else { showScreen('racer'); initRacer(); }
 }
 
 function resetState(t, len) {
@@ -663,9 +684,11 @@ function endGame() {
     }
     const avg = Game.times.length ? (Game.times.reduce((a,b)=>a+b,0)/Game.times.length).toFixed(1) : "0.0";
     
-    DATA.history.unshift({score:Game.score, speed:avg, errors:Game.errors, q:Game.idx});
-    if(DATA.history.length > 20) DATA.history.pop();
-    localStorage.setItem('carptrik_history', JSON.stringify(DATA.history));
+    const activeData = DATA[DATA.mode];
+    activeData.history.unshift({score:Game.score, speed:avg, errors:Game.errors, q:Game.idx});
+    if(activeData.history.length > 20) activeData.history.pop();
+    
+    localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify(activeData.history));
     renderLists();
     
     document.getElementById('res-score').innerText = Game.score;
@@ -710,7 +733,10 @@ document.getElementById('c-input').addEventListener('input', function() {
         const isSlow = elapsed > Game.slowLimit;
         const val = parseInt(this.value);
         const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
-        if(!DATA.db[k]) DATA.db[k]={score:0};
+        
+        const db = DATA.classic.db;
+        if(!db[k]) db[k]={score:0};
+        
         const fb = document.getElementById('c-feedback');
         
         if(val === ans) {
@@ -718,26 +744,26 @@ document.getElementById('c-input').addEventListener('input', function() {
             const avg = Game.times.reduce((a,b)=>a+b,0)/Game.times.length;
             document.getElementById('c-speed').innerText = avg.toFixed(1)+'s';
             if (isSlow) {
-                Game.errors++; DATA.db[k].score += 1; Game.score = Math.max(0, Game.score-2);
+                Game.errors++; db[k].score += 1; Game.score = Math.max(0, Game.score-2);
                 fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`;
             } else {
-                if(DATA.db[k].score > 0) DATA.db[k].score--;
+                if(db[k].score > 0) db[k].score--;
                 fb.innerText = TEXT[DATA.lang].dogru; fb.style.color = 'var(--primary)';
             }
             Game.idx++; setTimeout(nextQClassic, 500); 
         } else {
-            Game.errors++; DATA.db[k].score += 2; Game.score = Math.max(0, Game.score-5); 
+            Game.errors++; db[k].score += 2; Game.score = Math.max(0, Game.score-5); 
             fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)';
             const i = document.getElementById('c-input'); i.disabled = true;
             setTimeout(() => { i.disabled = false; Game.idx++; nextQClassic(); }, 1500);
         }
-        if(DATA.db[k].score <= 0) delete DATA.db[k];
-        localStorage.setItem('carptrik_data', JSON.stringify(DATA.db));
+        if(db[k].score <= 0) delete db[k];
+        localStorage.setItem('carptrik_classic_db', JSON.stringify(db));
         renderLists();
     }
 });
 
-/* RACER (DONMA FIX) */
+/* RACER */
 const cvs = document.getElementById('racerCanvas');
 const ctx = cvs.getContext('2d');
 
@@ -751,7 +777,7 @@ function initRacer() {
     Game.r.lives=3; Game.r.score=0; Game.r.lane=1;
     Game.r.x = (1 * (cvs.width/4)) + (cvs.width/8); Game.r.currX = Game.r.x;
     Game.r.cars=[]; Game.r.particles=[]; 
-    Game.r.wait=false; // Bekleme modu sıfırla
+    Game.r.inputLocked = false; 
     
     spawnRacerQ();
     Game.r.loop = requestAnimationFrame(racerLoop);
@@ -759,6 +785,12 @@ function initRacer() {
 
 function spawnRacerQ() {
     if(Game.idx >= Game.total) { endGame(); return; }
+    
+    // YENİ SORU İÇİN TEMİZLİK (Eskileri sil)
+    Game.r.cars = []; 
+    Game.r.isWaveActive = true; 
+    Game.r.inputLocked = false; 
+
     Game.currQ = Game.qList[Game.idx];
     document.getElementById('r-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
     document.getElementById('r-score').innerText = Game.score;
@@ -774,26 +806,24 @@ function spawnRacerQ() {
     
     const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
     
-    Game.r.cars = [];
-    // SENKRONİZE BAŞLANGIÇ
     for(let i=0; i<4; i++) {
         Game.r.cars.push({
-            lane: i, y: -200, // Aynı hizadan başlat
+            lane: i, y: -300, 
             val: opts[i], isCorrect: opts[i]===ans,
-            color: colors[Math.floor(Math.random()*colors.length)]
+            color: colors[Math.floor(Math.random()*colors.length)],
+            hit: false, driftX: 0, driftY: 0 
         });
     }
     Game.startT = Date.now(); 
-    Game.r.wait = false; // Hareketi başlat
 }
 
 function spawnParticles(x, y, color) {
-    for(let i=0; i<15; i++) {
+    for(let i=0; i<20; i++) {
         Game.r.particles.push({
             x: x, y: y,
-            vx: (Math.random()-0.5) * 10,
-            vy: (Math.random()-0.5) * 10,
-            life: 30, color: color
+            vx: (Math.random()-0.5) * 15,
+            vy: (Math.random()-0.5) * 15,
+            life: 40, color: color
         });
     }
 }
@@ -801,33 +831,56 @@ function spawnParticles(x, y, color) {
 function drawCar(x, y, color, isPlayer=false) {
     const w = 70; const h = 90;
     
-    let finalColor = color;
-    if(isPlayer) {
-        if(Game.r.lives === 2) finalColor = "#facc15"; // Sarı
-        else if(Game.r.lives === 1) finalColor = "#ef4444"; // Kırmızı
+    if(y > -150 && y < cvs.height + 100) { 
+        ctx.save();
+        // Sol Beam
+        ctx.beginPath();
+        ctx.moveTo(x - (w/2) + 10, y);
+        ctx.lineTo(x - (w/2) - 15, y - 200);
+        ctx.lineTo(x - (w/2) + 35, y - 200);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+        ctx.fill();
+
+        // Sağ Beam (Can > 1 ise yanar)
+        if (!isPlayer || Game.r.lives > 1) {
+            ctx.beginPath();
+            ctx.moveTo(x + (w/2) - 10, y);
+            ctx.lineTo(x + (w/2) - 35, y - 200);
+            ctx.lineTo(x + (w/2) + 15, y - 200);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+            ctx.fill();
+        }
+        ctx.restore();
     }
 
-    ctx.fillStyle = finalColor; 
+    ctx.fillStyle = color; 
     ctx.beginPath(); ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
     
     ctx.fillStyle = "rgba(0,0,0,0.5)"; 
     ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
 
-    if(isPlayer && Game.r.lives < 3) {
-        ctx.strokeStyle = "#000"; ctx.lineWidth=2;
-        ctx.beginPath(); ctx.moveTo(x, y+30); ctx.lineTo(x+10, y+40); ctx.lineTo(x-5, y+50); ctx.stroke();
-    }
-    if(isPlayer && Game.r.lives < 2) {
-        ctx.fillStyle="rgba(100,100,100,0.5)";
-        ctx.beginPath(); ctx.arc(x, y-10, 10 + Math.random()*5, 0, Math.PI*2); ctx.fill();
+    if(isPlayer) {
+        if (Game.r.lives <= 2) {
+            ctx.strokeStyle = "rgba(0,0,0,0.7)"; ctx.lineWidth=3;
+            ctx.beginPath(); ctx.moveTo(x-10, y+30); ctx.lineTo(x+15, y+40); ctx.stroke();
+        }
+        if (Game.r.lives <= 1) {
+            ctx.beginPath(); ctx.moveTo(x+10, y+25); ctx.lineTo(x-15, y+45); ctx.lineTo(x+5, y+55); ctx.stroke();
+        }
     }
 
-    ctx.fillStyle = "rgba(0,0,0,0.2)"; 
-    ctx.beginPath(); ctx.roundRect(x - (w/2)+10, y + 45, w-20, 30, 5); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.3)"; 
+    ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
     
     ctx.fillStyle = "#fff";
-    ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); 
+    
+    if (!isPlayer || Game.r.lives > 1) {
+        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); 
+    } else {
+        ctx.fillStyle = "#333"; 
+        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
+    }
 }
 
 function racerLoop() {
@@ -836,87 +889,92 @@ function racerLoop() {
     ctx.clearRect(0,0,cvs.width, cvs.height);
     const lw = cvs.width/4;
     
-    // YOL
     ctx.fillStyle = "#1e293b"; ctx.fillRect(0,0,cvs.width,cvs.height);
     ctx.strokeStyle = "#334155"; ctx.lineWidth=2; ctx.setLineDash([20,30]);
     for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
     
-    // OYUNCU
     const tx = (Game.r.lane * lw) + (lw/2);
     Game.r.currX += (tx - Game.r.currX) * 0.2;
     const px = Game.r.currX; const py = cvs.height - 120;
     
-    drawCar(px, py, "#10b981", true);
-    ctx.fillStyle = "rgba(16,185,129,0.15)"; ctx.beginPath(); ctx.moveTo(px-20,py); ctx.lineTo(px-50,py-200); ctx.lineTo(px+50,py-200); ctx.lineTo(px+20,py); ctx.fill();
+    drawCar(px, py, "#10b981", true); 
 
-    // PARÇACIKLAR
     for(let i=Game.r.particles.length-1; i>=0; i--) {
         let p = Game.r.particles[i];
         p.x += p.vx; p.y += p.vy; p.life--;
-        ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 5, 5);
+        ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.life/5, p.life/5);
         if(p.life <= 0) Game.r.particles.splice(i,1);
     }
 
-    // ARABALARI ÇİZ & HAREKET ETTİR
-    if(!Game.r.wait) {
-        let collisionHappened = false;
-
-        for(let i=Game.r.cars.length-1; i>=0; i--) {
-            let c = Game.r.cars[i];
-            
-            // Arabayı hareket ettir
+    for(let i=Game.r.cars.length-1; i>=0; i--) {
+        let c = Game.r.cars[i];
+        
+        if (c.hit) {
+            c.x += c.driftX;
+            c.y += c.driftY; 
+        } else {
             c.y += Game.r.speed;
-            const cx = (c.lane * lw) + (lw/2);
-            
-            drawCar(cx, c.y, c.color);
+        }
+
+        let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
+        
+        if (c.y > cvs.height + 100) {
+            Game.r.cars.splice(i, 1);
+            continue; 
+        }
+
+        drawCar(drawX, c.y, c.color);
+        
+        if(!c.hit) {
             ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
-            ctx.fillText(c.val, cx, c.y + 60);
+            ctx.fillText(c.val, drawX, c.y + 70); 
+        }
 
-            // Çarpışma Kontrolü
-            if(!collisionHappened && c.y+90 > py && c.y < py+90 && Math.abs(px - cx) < 50) {
-                collisionHappened = true;
-                Game.r.wait = true; // DÖNGÜYÜ DURDUR (Hareket etmesinler)
+        if(Game.r.isWaveActive && !c.hit && c.y+90 > py && c.y < py+90 && Math.abs(px - drawX) < 50) {
+            
+            Game.r.isWaveActive = false; // BU DALGADA BAŞKA ÇARPIŞMA OLAMAZ
+            Game.r.inputLocked = true;   // INPUT KİLİTLE
 
-                if(c.isCorrect) {
-                    // DOĞRU: Düşman patlar
-                    spawnParticles(cx, c.y + 45, c.color);
-                    Game.times.push((Date.now()-Game.startT)/1000);
-                    Game.idx++;
-                    // Sadece patlayan arabayı listeden silmiyoruz, görsel kalsın diye.
-                    // 1 saniye sonra resetliyoruz.
-                    setTimeout(spawnRacerQ, 800);
+            const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
+            const db = DATA.racer.db;
+            if(!db[k]) db[k]={score:0};
+
+            if(c.isCorrect) {
+                spawnParticles(drawX, c.y + 45, c.color);
+                Game.r.cars.splice(i, 1); 
+                Game.times.push((Date.now()-Game.startT)/1000);
+                Game.idx++;
+                
+                if(db[k].score > 0) db[k].score--; 
+
+                setTimeout(spawnRacerQ, 800); 
+
+            } else {
+                c.hit = true;
+                c.x = drawX; 
+                c.driftX = (drawX < px) ? -8 : 8; 
+                c.driftY = Game.r.speed * 1.2; 
+
+                shakeScreen(); 
+                spawnParticles(px, py + 45, "#ef4444");
+
+                Game.r.lives--;
+                Game.errors++; 
+                db[k].score += 2; 
+                Game.score = Math.max(0, Game.score-10);
+                document.getElementById('r-lives').innerText = Game.r.lives;
+
+                if(Game.r.lives <= 0) {
+                    spawnParticles(px, py, "#10b981"); 
+                    setTimeout(endGame, 1000);
                 } else {
-                    // YANLIŞ: Oyuncu hasar alır
-                    spawnParticles(px, py + 45, "#ef4444");
-                    Game.r.lives--; 
-                    Game.errors++; 
-                    Game.score = Math.max(0, Game.score-10);
-                    document.getElementById('r-lives').innerText = Game.r.lives;
-                    
-                    if(Game.r.lives <= 0) { 
-                        setTimeout(endGame, 800);
-                    } else {
-                        setTimeout(spawnRacerQ, 800);
-                    }
+                    Game.idx++;
+                    setTimeout(spawnRacerQ, 1500); 
                 }
             }
-            
-            // Ekran dışına çıkarsa (Hiçbirine çarpmazsa)
-            if(c.y > cvs.height && i===0 && !collisionHappened) {
-                // Ceza yok, aynı soruyu tekrar sor (veya ceza verilebilir)
-                spawnRacerQ();
-            }
-        }
-    } else {
-        // WAIT MODUNDAYSA SADECE ÇİZ (Hareket ettirme)
-        // Böylece patlama anı ekranda donmuş gibi görünür, efektler oynar
-        const lw = cvs.width/4;
-        for(let i=0; i<Game.r.cars.length; i++) {
-            let c = Game.r.cars[i];
-            const cx = (c.lane * lw) + (lw/2);
-            drawCar(cx, c.y, c.color);
-            ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
-            ctx.fillText(c.val, cx, c.y + 60);
+            if(db[k].score <= 0) delete db[k];
+            localStorage.setItem('carptrik_racer_db', JSON.stringify(db));
+            renderLists();
         }
     }
     
@@ -924,23 +982,27 @@ function racerLoop() {
 }
 
 function racerInput(d) {
+    if(Game.r.inputLocked) return; 
     let n = Game.r.lane + d; if(n>=0 && n<=3) Game.r.lane = n;
 }
+
 window.addEventListener('keydown', e => {
     if(Game.type === 'racer') {
-        if(e.key === 'ArrowLeft' || e.key === 'a') racerInput(-1);
-        if(e.key === 'ArrowRight' || e.key === 'd') racerInput(1);
+        const k = e.key.toLowerCase(); 
+        if(k === 'arrowleft' || k === 'a') racerInput(-1);
+        if(k === 'arrowright' || k === 'd') racerInput(1);
     }
 });
 
-/* LISTS & GRAPH */
 function renderLists() {
+    const activeData = DATA[DATA.mode];
+    
     const el = document.getElementById('list-errors');
-    if(Object.keys(DATA.db).length === 0) el.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].liste_temiz}</div>`;
+    if(Object.keys(activeData.db).length === 0) el.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].liste_temiz}</div>`;
     else {
         let h = "";
-        Object.keys(DATA.db).sort((a,b)=>DATA.db[b].score - DATA.db[a].score).forEach(k => {
-            h += `<div class="err-row"><span>${k}</span><b style="color:var(--danger)">+${DATA.db[k].score}</b></div>`;
+        Object.keys(activeData.db).sort((a,b)=>activeData.db[b].score - activeData.db[a].score).forEach(k => {
+            h += `<div class="err-row"><span>${k}</span><b style="color:var(--danger)">+${activeData.db[k].score}</b></div>`;
         });
         el.innerHTML = h;
     }
@@ -948,12 +1010,12 @@ function renderLists() {
     const hl = document.getElementById('list-history');
     const graphBox = document.getElementById('score-graph');
     
-    if(DATA.history.length === 0) {
+    if(activeData.history.length === 0) {
         hl.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].gecmis_yok}</div>`;
         graphBox.innerHTML = "";
     } else {
         let h = "";
-        const points = DATA.history.slice(0, 10).reverse().map(x => x.score);
+        const points = activeData.history.slice(0, 10).reverse().map(x => x.score);
         
         if(points.length > 1) {
             const w = graphBox.offsetWidth;
@@ -970,15 +1032,27 @@ function renderLists() {
             graphBox.innerHTML = `<svg><path d="${d}" class="chart-line" />${circles}</svg>`;
         }
 
-        DATA.history.forEach(x => {
+        activeData.history.forEach(x => {
             h += `<div class="grid-row"><span class="col" style="color:var(--primary);font-weight:bold">${x.score}</span><span class="col">${x.speed}s</span><span class="col" style="color:${x.errors>0?'var(--danger)':'#666'}">${x.errors}</span><span class="col">${x.q}</span></div>`;
         });
         hl.innerHTML = h;
     }
 }
 
-function clearHistory() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA.history = []; localStorage.setItem('carptrik_history', JSON.stringify([])); renderLists(); }); }
-function resetData() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA.db = {}; localStorage.removeItem('carptrik_data'); renderLists(); }); }
+function clearHistory() { 
+    modal(TEXT[DATA.lang].confirm_sil, () => { 
+        DATA[DATA.mode].history = []; 
+        localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify([])); 
+        renderLists(); 
+    }); 
+}
+function resetData() { 
+    modal(TEXT[DATA.lang].confirm_sil, () => { 
+        DATA[DATA.mode].db = {}; 
+        localStorage.removeItem(`carptrik_${DATA.mode}_db`); 
+        renderLists(); 
+    }); 
+}
 
 calcTotal(); 
 init();
