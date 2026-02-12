@@ -693,7 +693,7 @@ function nextQClassic() {
     i.value = ''; i.disabled = false; i.focus();
     Game.startT = Date.now();
 
-    // SÜRE HESABI (Limiti hesapla ama sayacı kurma)
+    // SÜRE HESABI
     const speedMode = document.querySelector('input[name="cSpeed"]:checked').value;
     
     if(speedMode === 'manual') {
@@ -714,7 +714,7 @@ document.getElementById('c-input').addEventListener('input', function() {
     const ans = Game.currQ.n1 * Game.currQ.n2;
     if(this.value.length >= ans.toString().length) {
         
-        // SÜRE KONTROLÜ (Cevap verildiği anda)
+        // SÜRE KONTROLÜ
         const now = Date.now();
         const elapsed = (now - Game.startT) / 1000;
         const isSlow = elapsed > Game.slowLimit;
@@ -725,7 +725,6 @@ document.getElementById('c-input').addEventListener('input', function() {
         
         const fb = document.getElementById('c-feedback');
         
-        // YENİ MANTIK: Doğru bildi ama yavaş mı?
         if(val === ans) {
             Game.times.push(elapsed);
             const avg = Game.times.reduce((a,b)=>a+b,0)/Game.times.length;
@@ -734,7 +733,7 @@ document.getElementById('c-input').addEventListener('input', function() {
             if (isSlow) {
                 // DOĞRU AMA YAVAŞ
                 Game.errors++;
-                DATA.db[k].score += 1; // Yavaş cezası
+                DATA.db[k].score += 1;
                 Game.score = Math.max(0, Game.score-2);
                 
                 fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`;
@@ -744,9 +743,9 @@ document.getElementById('c-input').addEventListener('input', function() {
                 fb.innerText = TEXT[DATA.lang].dogru;
                 fb.style.color = 'var(--primary)';
             }
-            Game.idx++; setTimeout(nextQClassic, 500); // Kullanıcı mesajı görsün diye süre biraz arttırıldı
+            Game.idx++; setTimeout(nextQClassic, 500); 
         } else {
-            // YANLIŞ CEVAP (Süreden bağımsız)
+            // YANLIŞ CEVAP
             Game.errors++; 
             DATA.db[k].score += 2; 
             Game.score = Math.max(0, Game.score-5); 
@@ -812,22 +811,33 @@ function spawnRacerQ() {
             color: colors[Math.floor(Math.random()*colors.length)]
         });
     }
-    Game.startT = Date.now(); Game.r.wait = false;
+    Game.startT = Date.now(); 
+    Game.r.wait = false; // DÖNGÜYÜ AÇ
 }
 
 function drawCar(x, y, color) {
-    ctx.fillStyle = "#000";
-    ctx.fillRect(x-22, y+10, 6, 14); ctx.fillRect(x+16, y+10, 6, 14);
-    ctx.fillRect(x-22, y+50, 6, 14); ctx.fillRect(x+16, y+50, 6, 14);
-    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.beginPath(); ctx.roundRect(x-18, y+5, 36, 65, 8); ctx.fill();
-    ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x-20, y, 40, 70, 10); ctx.fill();
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.beginPath(); ctx.roundRect(x-16, y+12, 32, 20, 4); ctx.fill(); 
-    ctx.beginPath(); ctx.roundRect(x-16, y+45, 32, 12, 4); ctx.fill();
-    ctx.fillStyle = "rgba(255,255,255,0.2)"; ctx.fillRect(x-5, y, 10, 70);
+    // GENİŞLETİLMİŞ ARAÇ (70px genişlik)
+    const w = 70; 
+    const h = 90;
+    
+    // YUKARI BAKAN ARAÇ TASARIMI
+    
+    // Gövde
+    ctx.fillStyle = color; 
+    ctx.beginPath(); ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
+    
+    // Cam (Ön/Üst taraf)
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; 
+    ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
+
+    // Tavan
+    ctx.fillStyle = "rgba(0,0,0,0.2)"; 
+    ctx.beginPath(); ctx.roundRect(x - (w/2)+10, y + 45, w-20, 30, 5); ctx.fill();
+    
+    // Farlar (En üstte)
     ctx.fillStyle = "#fff";
-    ctx.beginPath(); ctx.arc(x-12, y+2, 3, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x+12, y+2, 3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
 }
 
 function racerLoop() {
@@ -843,26 +853,31 @@ function racerLoop() {
     Game.r.currX += (tx - Game.r.currX) * 0.2;
     const px = Game.r.currX; const py = cvs.height - 120;
     
+    // OYUNCU ARACI (YUKARI BAKIYOR)
     drawCar(px, py, "#10b981");
-    ctx.fillStyle = "rgba(16,185,129,0.15)"; ctx.beginPath(); ctx.moveTo(px-15,py); ctx.lineTo(px-40,py-200); ctx.lineTo(px+40,py-200); ctx.lineTo(px+15,py); ctx.fill();
+    // Far ışığı efekti (Yukarı doğru)
+    ctx.fillStyle = "rgba(16,185,129,0.15)"; ctx.beginPath(); ctx.moveTo(px-20,py); ctx.lineTo(px-50,py-200); ctx.lineTo(px+50,py-200); ctx.lineTo(px+20,py); ctx.fill();
 
     if(!Game.r.wait) {
         for(let i=Game.r.cars.length-1; i>=0; i--) {
             let c = Game.r.cars[i]; c.y += Game.r.speed;
             const cx = (c.lane * lw) + (lw/2);
             
-            ctx.save(); ctx.translate(cx, c.y + 35); ctx.rotate(Math.PI); ctx.translate(-cx, -(c.y + 35));
             drawCar(cx, c.y, c.color);
-            ctx.restore();
 
+            // METİN (Döndürme kaldırıldı, düz yazılıyor)
             ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
-            ctx.shadowColor="black"; ctx.shadowBlur=4; ctx.fillText(c.val, cx, c.y+45); ctx.shadowBlur=0;
+            ctx.shadowColor="black"; ctx.shadowBlur=4; 
+            ctx.fillText(c.val, cx, c.y + 60); // Metni aracın ortasına hizala
+            ctx.shadowBlur=0;
             
-            if(c.y+70 > py && c.y < py+70 && Math.abs(px - cx) < 35) {
+            if(c.y+90 > py && c.y < py+90 && Math.abs(px - cx) < 50) { // Çarpışma alanı genişletildi
                 if(c.isCorrect) {
                     Game.times.push((Date.now()-Game.startT)/1000);
-                    Game.idx++; Game.r.wait = true; Game.r.cars = [];
-                    setTimeout(spawnRacerQ, 500);
+                    Game.idx++; 
+                    Game.r.wait = true; 
+                    Game.r.cars = [];
+                    setTimeout(spawnRacerQ, 500); // YENİ SORU İÇİN BEKLE
                 } else {
                     Game.r.lives--; Game.errors++; Game.score = Math.max(0, Game.score-10);
                     Game.r.cars.splice(i, 1);
