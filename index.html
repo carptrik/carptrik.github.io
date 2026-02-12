@@ -296,13 +296,6 @@
         .f-btn:hover { background: var(--bg-panel); }
         .f-btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.05); }
 
-        .modal-wrap { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal { background: var(--bg-panel); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-        .m-btns { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
-        .mb { padding: 12px 30px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-size: 14px; }
-        .mb-ok { background: var(--primary); color: #000; }
-        .mb-no { background: var(--bg-card); color: #fff; border: 1px solid var(--border); }
-
         /* PAUSE OVERLAY - FIXED POSITION TO COVER EVERYTHING */
         #pause-overlay {
             display: none;
@@ -485,15 +478,15 @@
                     <div id="opt-speed-racer" class="toggle-group" style="display:none;">
                         <div class="toggle-opt" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="yavas">YAVAŞ</span>
-                            <input type="radio" name="rSpeed" value="2">
+                            <input type="radio" name="rSpeed" value="2.5">
                         </div>
                         <div class="toggle-opt selected" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="normal">NORMAL</span>
-                            <input type="radio" name="rSpeed" value="4" checked>
+                            <input type="radio" name="rSpeed" value="4.5" checked>
                         </div>
                         <div class="toggle-opt" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="hizli">HIZLI</span>
-                            <input type="radio" name="rSpeed" value="6">
+                            <input type="radio" name="rSpeed" value="7">
                         </div>
                     </div>
                 </div>
@@ -892,7 +885,7 @@ function updateProgress() {
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
     slowLimit: 0, isPaused: false, pauseStart: 0,
-    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false } 
+    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false, lastTime: 0 } 
 };
 
 function startGame() {
@@ -980,6 +973,8 @@ function pauseGame() {
          document.querySelector('#racer-wrap').style.filter = 'blur(30px)';
          if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
          AudioSys.stopEngine();
+         // Reset delta time on pause so we don't jump when resuming
+         Game.r.lastTime = 0; 
     }
 }
 
@@ -1002,15 +997,13 @@ function resumeGame() {
     } else if(Game.type === 'racer') {
         document.querySelector('#racer-wrap').style.filter = 'none';
         AudioSys.startEngine();
+        Game.r.lastTime = 0; // Reset for fresh DT
         Game.r.loop = requestAnimationFrame(racerLoop);
     }
 }
 
 function confirmFinish() { 
-    // If we are in pause menu, close it briefly or just show modal over it
-    // The modal has z-index 1000, pause overlay 2000. Wait, pause is higher now.
-    // So we should hide pause overlay temporarily to show modal or make modal higher.
-    // Let's hide pause overlay.
+    // Hide pause overlay temporarily to show modal
     document.getElementById('pause-overlay').style.display = 'none';
     modal(TEXT[DATA.lang].confirm_bitir, endGame); 
 }
@@ -1155,7 +1148,7 @@ function initRacer() {
     cvs.height = document.getElementById('racer-wrap').offsetHeight;
     
     const spdOpt = document.querySelector('input[name="rSpeed"]:checked').value;
-    Game.r.speed = parseInt(spdOpt) || 6;
+    Game.r.speed = parseFloat(spdOpt) || 2.5;
 
     Game.r.lives=3; Game.r.lane=1;
     // Auto adjust player X on init
@@ -1165,6 +1158,7 @@ function initRacer() {
     
     Game.r.cars=[]; Game.r.particles=[]; 
     Game.r.inputLocked = false; 
+    Game.r.lastTime = 0; // Reset timer for new game
     
     AudioSys.startEngine(); // Start Engine Sound
     
@@ -1286,9 +1280,18 @@ function drawCar(x, y, color, isPlayer=false) {
     }
 }
 
-function racerLoop() {
-    if(Game.type !== 'racer' || Game.isPaused) return; // Duraklatıldıysa çizme
+/* === DELTA TIME FIX === */
+function racerLoop(timestamp) {
+    if(Game.type !== 'racer' || Game.isPaused) return; 
     
+    // Calculate Delta Time (Normalized to 60fps)
+    if (!Game.r.lastTime) Game.r.lastTime = timestamp;
+    const dt = (timestamp - Game.r.lastTime) / 16.67; 
+    Game.r.lastTime = timestamp;
+
+    // Cap dt to prevent huge jumps if tab was inactive
+    const safeDt = Math.min(dt, 3);
+
     ctx.clearRect(0,0,cvs.width, cvs.height);
     const lw = cvs.width/4;
     
@@ -1297,17 +1300,20 @@ function racerLoop() {
     ctx.strokeStyle = "#334155"; ctx.lineWidth=2; ctx.setLineDash([20,30]);
     for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
     
-    // OYUNCU HAREKET
+    // OYUNCU HAREKET (Delta time applied)
     const tx = (Game.r.lane * lw) + (lw/2);
-    Game.r.currX += (tx - Game.r.currX) * 0.2;
+    // Smooth transition logic with dt
+    Game.r.currX += (tx - Game.r.currX) * (0.2 * safeDt);
     const px = Game.r.currX; const py = cvs.height - 120;
     
     drawCar(px, py, "#10b981", true); 
 
-    // PARÇACIKLAR
+    // PARÇACIKLAR (Delta time applied)
     for(let i=Game.r.particles.length-1; i>=0; i--) {
         let p = Game.r.particles[i];
-        p.x += p.vx; p.y += p.vy; p.life--;
+        p.x += p.vx * safeDt; 
+        p.y += p.vy * safeDt; 
+        p.life -= 1 * safeDt;
         ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.life/5, p.life/5);
         if(p.life <= 0) Game.r.particles.splice(i,1);
     }
@@ -1317,10 +1323,11 @@ function racerLoop() {
         let c = Game.r.cars[i];
         
         if (c.hit) {
-            c.x += c.driftX;
-            c.y += c.driftY; 
+            c.x += c.driftX * safeDt;
+            c.y += c.driftY * safeDt; 
         } else {
-            c.y += Game.r.speed;
+            // Apply speed multiplied by Delta Time
+            c.y += Game.r.speed * safeDt;
         }
 
         let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
@@ -1338,7 +1345,7 @@ function racerLoop() {
             ctx.fillText(c.val, drawX, c.y + 70); 
         }
 
-        // ÇARPIŞMA MANTIĞI (Sadece dalga aktifse)
+        // ÇARPIŞMA MANTIĞI
         if(Game.r.isWaveActive && !c.hit && c.y+90 > py && c.y < py+90 && Math.abs(px - drawX) < 50) {
             
             Game.r.isWaveActive = false; // BU DALGADA BAŞKA ÇARPIŞMA OLAMAZ
@@ -1379,9 +1386,6 @@ function racerLoop() {
                 Game.errors++; 
                 db[k].score += 2; // Yanlış puanı (Hata listesi için, değişmedi)
                 
-                // YENİ PUANLAMA: Puan düşme YOK. Sadece can gider.
-                // Game.score değişmez.
-
                 document.getElementById('r-lives').innerText = Game.r.lives;
 
                 if(Game.r.lives <= 0) {
@@ -1389,7 +1393,6 @@ function racerLoop() {
                     setTimeout(endGame, 1000);
                 } else {
                     Game.idx++;
-                    // Yanlışta biraz daha uzun bekle ki diğer arabalar geçsin
                     setTimeout(spawnRacerQ, 1500); 
                 }
             }
