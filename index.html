@@ -18,6 +18,7 @@
             --primary-glow: rgba(16, 185, 129, 0.4);
             --accent: #8b5cf6;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --border: #334155;
@@ -485,7 +486,7 @@ const TEXT = {
         tab_klasik:"KLASİK", tab_yaris:"YARIŞ", dogru:"DOĞRU", yanlis:"YANLIŞ!",
         puan_kadar:"Puan", bir_kez:"1 Kez", can:"CAN", modal_evet:"EVET", modal_iptal:"İPTAL", sil:"SİL",
         hiz_ayari:"SÜRE / HIZ", otomatik:"OTOMATİK", sabit:"SABİT", yavas:"YAVAŞ", normal:"NORMAL", hizli:"HIZLI",
-        mod_limit_2: "tane sor"
+        mod_limit_2: "tane sor", sure_yavas:"YAVAŞ"
     },
     en: {
         carp_sayilar:"NUMBERS TO MULTIPLY", tumu:"SELECT ALL", temizle:"CLEAR", ayarlar:"GAME SETTINGS",
@@ -499,7 +500,7 @@ const TEXT = {
         tab_klasik:"CLASSIC", tab_yaris:"RACER", dogru:"CORRECT", yanlis:"WRONG!",
         puan_kadar:"Score", bir_kez:"Once", can:"HP", modal_evet:"YES", modal_iptal:"CANCEL", sil:"DEL",
         hiz_ayari:"SPEED", otomatik:"AUTO", sabit:"FIXED", yavas:"SLOW", normal:"NORMAL", hizli:"FAST",
-        mod_limit_2: "questions"
+        mod_limit_2: "questions", sure_yavas:"TOO SLOW"
     }
 };
 
@@ -607,6 +608,7 @@ function closeModal() { document.querySelector('.modal-wrap').style.display = 'n
 /* GAME ENGINE */
 let Game = {
     type: null, qList:[], total:0, idx:0, score:100, errors:0, times:[], startT:0, currQ:null,
+    timer: null, // Timer kontrolü
     r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, wait:false }
 };
 
@@ -653,12 +655,14 @@ function startErrorPractice() {
 }
 
 function resetState(t, len) {
+    if(Game.timer) clearTimeout(Game.timer);
     Game.type = t; Game.total = len; Game.idx = 0; Game.score = 100; Game.errors = 0; Game.times = [];
 }
 
 function confirmFinish() { modal(TEXT[DATA.lang].confirm_bitir, endGame); }
 
 function endGame() {
+    if(Game.timer) clearTimeout(Game.timer);
     if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
     
     if(Game.total > 0 && Game.idx < Game.total) {
@@ -680,6 +684,9 @@ function endGame() {
 /* CLASSIC */
 function nextQClassic() {
     if(Game.idx >= Game.total) return endGame();
+    
+    if(Game.timer) clearTimeout(Game.timer);
+
     Game.currQ = Game.qList[Game.idx];
     document.getElementById('c-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
     document.getElementById('c-curr').innerText = Game.idx + 1;
@@ -689,11 +696,62 @@ function nextQClassic() {
     const i = document.getElementById('c-input');
     i.value = ''; i.disabled = false; i.focus();
     Game.startT = Date.now();
+
+    // SÜRE KONTROLÜ
+    const speedMode = document.querySelector('input[name="cSpeed"]:checked').value;
+    let limit;
+    
+    if(speedMode === 'manual') {
+        // Sabit Mod
+        limit = parseFloat(document.getElementById('inp-speed').value) || 4;
+    } else {
+        // Otomatik Mod: Ortalama hıza göre dinamik
+        if(Game.times.length < 3) {
+            limit = 5; // İlk 3 soru için ısınma süresi
+        } else {
+            const avg = Game.times.reduce((a,b)=>a+b,0) / Game.times.length;
+            limit = avg * 1.5; // Ortalamanın %50 fazlası tolerans
+            if(limit < 2) limit = 2; // Asla 2 saniyeden az olmasın
+        }
+    }
+    
+    Game.timer = setTimeout(handleTimeout, limit * 1000);
+}
+
+function handleTimeout() {
+    const i = document.getElementById('c-input');
+    i.disabled = true;
+
+    const ans = Game.currQ.n1 * Game.currQ.n2;
+    const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
+    
+    if(!DATA.db[k]) DATA.db[k]={score:0};
+    
+    Game.errors++; 
+    DATA.db[k].score += 1; // GEÇ CEVAP İÇİN 1 PUAN
+    Game.score = Math.max(0, Game.score-2); // Geç cevap puan kırılması (Az)
+
+    const fb = document.getElementById('c-feedback');
+    // YAVAŞ UYARISI
+    fb.innerHTML = `<span style="font-size:30px; color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span><br><span style="color:#fff">${ans}</span>`;
+
+    localStorage.setItem('carptrik_data', JSON.stringify(DATA.db));
+    renderLists();
+
+    setTimeout(() => { 
+        i.disabled = false; 
+        Game.idx++; 
+        nextQClassic(); 
+    }, 1500);
 }
 
 document.getElementById('c-input').addEventListener('input', function() {
     const ans = Game.currQ.n1 * Game.currQ.n2;
     if(this.value.length >= ans.toString().length) {
+        
+        // SÜREYİ DURDUR
+        if(Game.timer) clearTimeout(Game.timer);
+
         const val = parseInt(this.value);
         const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
         if(!DATA.db[k]) DATA.db[k]={score:0};
@@ -709,16 +767,17 @@ document.getElementById('c-input').addEventListener('input', function() {
             document.getElementById('c-speed').innerText = avg.toFixed(1)+'s';
             Game.idx++; setTimeout(nextQClassic, 300);
         } else {
-            Game.errors++; DATA.db[k].score += 2;
-            Game.score = Math.max(0, Game.score-5);
+            // YANLIŞ CEVAP
+            Game.errors++; 
+            DATA.db[k].score += 2; // YANLIŞ CEVAP İÇİN 2 PUAN
+            Game.score = Math.max(0, Game.score-5); // Yanlış puan kırılması (Çok)
             
-            // FEEDBACK: SAME FONT, SAME RED COLOR
             fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`;
             fb.style.color = 'var(--danger)';
             
             const i = document.getElementById('c-input');
             i.disabled = true;
-            // AUTO ADVANCE
+            
             setTimeout(() => { 
                 i.disabled = false; Game.idx++; nextQClassic(); 
             }, 1500);
