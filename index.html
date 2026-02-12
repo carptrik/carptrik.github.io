@@ -97,6 +97,7 @@
         .panel {
             background: var(--bg-panel); border-radius: var(--radius); border: 1px solid var(--border);
             display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
         }
 
         /* --- SIDEBAR COMPONENTS --- */
@@ -302,6 +303,19 @@
         .mb-ok { background: var(--primary); color: #000; }
         .mb-no { background: var(--bg-card); color: #fff; border: 1px solid var(--border); }
 
+        /* PAUSE OVERLAY */
+        #pause-overlay {
+            display: none;
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(15, 23, 42, 0.4);
+            z-index: 100;
+            justify-content: center; align-items: center; flex-direction: column;
+            gap: 20px;
+        }
+        .paused-text { font-size: 40px; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
+        .btn-resume { padding: 20px 50px; background: var(--primary); color: #000; border: none; border-radius: 15px; font-size: 20px; font-weight: 900; cursor: pointer; box-shadow: 0 0 30px var(--primary-glow); transition: 0.2s; }
+        .btn-resume:hover { transform: scale(1.05); }
+
         footer { margin-top: auto; padding: 15px; text-align: center; font-size: 11px; color: var(--text-muted); background: var(--bg-body); border-top: 1px solid var(--border); }
         footer a { color: var(--text-muted); text-decoration: none; }
 
@@ -410,6 +424,11 @@
 
     <main class="panel">
         
+        <div id="pause-overlay">
+            <div class="paused-text" data-i18n="duraklatildi">DURAKLATILDI</div>
+            <button class="btn-resume" onclick="resumeGame(); AudioSys.playClick()" data-i18n="devam_et">DEVAM ET</button>
+        </div>
+
         <div id="view-setup" class="screen active">
             <div class="setup-container">
                 
@@ -500,7 +519,7 @@
             </div>
 
             <div class="foot-btns">
-                <button class="f-btn" onclick="showSetup(); AudioSys.playClick()" data-i18n="geri">GERİ</button>
+                <button class="f-btn" onclick="togglePause(); AudioSys.playClick()" data-i18n="duraklat">DURAKLAT</button>
                 <button class="f-btn danger" onclick="confirmFinish(); AudioSys.playClick()" data-i18n="bitir">BİTİR</button>
             </div>
         </div>
@@ -527,7 +546,7 @@
                 <button class="c-btn" onpointerdown="racerInput(1); event.preventDefault()">➡️</button>
             </div>
             <div class="foot-btns">
-                <button class="f-btn" onclick="showSetup(); AudioSys.stopEngine(); AudioSys.playClick()" data-i18n="geri">GERİ</button>
+                <button class="f-btn" onclick="togglePause(); AudioSys.stopEngine(); AudioSys.playClick()" data-i18n="duraklat">DURAKLAT</button>
                 <button class="f-btn danger" onclick="confirmFinish(); AudioSys.playClick()" data-i18n="bitir">BİTİR</button>
             </div>
         </div>
@@ -679,7 +698,7 @@ const TEXT = {
         baslat_klasik:"KLASİK BAŞLAT", baslat_yaris:"YARIŞ BAŞLAT", hata_listesi:"HATA LİSTESİ",
         hatalara_calis:"HATALARA ÇALIŞ", liste_temiz:"Hata listeniz temiz.", gecmis_skorlar:"GEÇMİŞ",
         gecmisi_sil:"SİL", tablo_puan:"P", tablo_hiz:"HZ", tablo_hata:"H", tablo_soru:"S",
-        gecmis_yok:"Kayıt yok.", geri:"GERİ", bitir:"BİTİR", seans_bitti:"SEANS BİTTİ", tamam_btn:"TAMAM",
+        gecmis_yok:"Kayıt yok.", geri:"GERİ", duraklat:"DURAKLAT", devam_et:"DEVAM ET", duraklatildi:"DURAKLATILDI", bitir:"BİTİR", seans_bitti:"SEANS BİTTİ", tamam_btn:"TAMAM",
         alert_sayi:"Lütfen en az bir sayı seçin!", alert_hata:"Hata listeniz temiz.",
         confirm_bitir:"Bitirmek istediğinize emin misiniz?", confirm_sil:"Silmek istiyor musunuz?",
         tab_klasik:"KLASİK", tab_yaris:"YARIŞ", dogru:"DOĞRU", yanlis:"YANLIŞ!",
@@ -693,7 +712,7 @@ const TEXT = {
         baslat_klasik:"START CLASSIC", baslat_yaris:"START RACER", hata_listesi:"ERRORS",
         hatalara_calis:"PRACTICE ERRORS", liste_temiz:"Clean.", gecmis_skorlar:"HISTORY",
         gecmisi_sil:"DEL", tablo_puan:"S", tablo_hiz:"SP", tablo_hata:"E", tablo_soru:"Q",
-        gecmis_yok:"Empty.", geri:"BACK", bitir:"FINISH", seans_bitti:"FINISHED", tamam_btn:"OK",
+        gecmis_yok:"Empty.", geri:"BACK", duraklat:"PAUSE", devam_et:"RESUME", duraklatildi:"PAUSED", bitir:"FINISH", seans_bitti:"FINISHED", tamam_btn:"OK",
         alert_sayi:"Select numbers first!", alert_hata:"No errors recorded.",
         confirm_bitir:"Are you sure?", confirm_sil:"Delete all?",
         tab_klasik:"CLASSIC", tab_yaris:"RACER", dogru:"CORRECT", yanlis:"WRONG!",
@@ -800,7 +819,12 @@ function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('view-'+id).classList.add('active');
 }
-function showSetup() { showScreen('setup'); }
+function showSetup() { 
+    Game.isPaused = false;
+    document.getElementById('pause-overlay').style.display = 'none';
+    document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
+    showScreen('setup'); 
+}
 
 function modal(msg, onYes) {
     const w = document.querySelector('.modal-wrap');
@@ -837,7 +861,7 @@ function updateProgress() {
 /* GAME ENGINE */
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
-    slowLimit: 0,
+    slowLimit: 0, isPaused: false, pauseStart: 0,
     r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false } 
 };
 
@@ -894,9 +918,66 @@ function resetState(t, len) {
     Game.unitScore = (len > 0) ? (100 / len) : 0; // Her soru kaç puan
     Game.errors = 0; 
     Game.times = [];
+    Game.isPaused = false;
+    document.getElementById('pause-overlay').style.display = 'none';
+    document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
 }
 
-function confirmFinish() { modal(TEXT[DATA.lang].confirm_bitir, endGame); }
+/* PAUSE LOGIC */
+function togglePause() {
+    if(Game.isPaused) resumeGame();
+    else pauseGame();
+}
+
+function pauseGame() {
+    Game.isPaused = true;
+    Game.pauseStart = Date.now();
+    
+    // Blur Effect
+    document.querySelector('.screen.active .q-area').style.filter = 'blur(10px)';
+    if(Game.type === 'racer') {
+        document.querySelector('#racer-wrap').style.filter = 'blur(10px)';
+        if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
+        AudioSys.stopEngine();
+    }
+    
+    // Disable inputs
+    if(Game.type === 'classic') document.getElementById('c-input').disabled = true;
+
+    // Show Overlay
+    document.getElementById('pause-overlay').style.display = 'flex';
+}
+
+function resumeGame() {
+    Game.isPaused = false;
+    const pausedDuration = Date.now() - Game.pauseStart;
+    
+    // Adjust start time so speed calculation is correct
+    Game.startT += pausedDuration;
+
+    // Remove Blur
+    document.querySelector('.screen.active .q-area').style.filter = 'none';
+    if(Game.type === 'racer') {
+        document.querySelector('#racer-wrap').style.filter = 'none';
+        AudioSys.startEngine();
+        Game.r.loop = requestAnimationFrame(racerLoop);
+    }
+    
+    // Enable inputs
+    if(Game.type === 'classic') {
+        const i = document.getElementById('c-input');
+        i.disabled = false;
+        i.focus();
+    }
+
+    // Hide Overlay
+    document.getElementById('pause-overlay').style.display = 'none';
+}
+
+function confirmFinish() { 
+    if(Game.isPaused) resumeGame();
+    modal(TEXT[DATA.lang].confirm_bitir, endGame); 
+}
 
 function endGame() {
     if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
@@ -954,6 +1035,8 @@ function nextQClassic() {
 }
 
 document.getElementById('c-input').addEventListener('input', function() {
+    if(Game.isPaused) return;
+
     const ans = Game.currQ.n1 * Game.currQ.n2;
     if(this.value.length >= ans.toString().length) {
         const now = Date.now();
@@ -1002,7 +1085,11 @@ document.getElementById('c-input').addEventListener('input', function() {
             fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)';
             AudioSys.playWrong();
             const i = document.getElementById('c-input'); i.disabled = true;
-            setTimeout(() => { i.disabled = false; Game.idx++; nextQClassic(); }, 1500);
+            setTimeout(() => { 
+                if(!Game.isPaused) {
+                    i.disabled = false; Game.idx++; nextQClassic(); 
+                }
+            }, 1500);
         }
         if(db[k].score <= 0) delete db[k];
         localStorage.setItem('carptrik_classic_db', JSON.stringify(db));
@@ -1098,24 +1185,25 @@ function spawnParticles(x, y, color) {
 function drawCar(x, y, color, isPlayer=false) {
     const w = 70; const h = 90;
     
-    // FAR HÜZMELERİ (Beam)
-    if(y > -150 && y < cvs.height + 100) { 
+    // FAR HÜZMELERİ (Sadece Oyuncu için)
+    if(isPlayer && y > -150 && y < cvs.height + 100) { 
         ctx.save();
         // Sol Beam
         ctx.beginPath();
         ctx.moveTo(x - (w/2) + 10, y);
         ctx.lineTo(x - (w/2) - 15, y - 200);
         ctx.lineTo(x - (w/2) + 35, y - 200);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+        // Daha şeffaf (0.08)
+        ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
         ctx.fill();
 
         // Sağ Beam (Can > 1 ise yanar)
-        if (!isPlayer || Game.r.lives > 1) {
+        if (Game.r.lives > 1) {
             ctx.beginPath();
             ctx.moveTo(x + (w/2) - 10, y);
             ctx.lineTo(x + (w/2) - 35, y - 200);
             ctx.lineTo(x + (w/2) + 15, y - 200);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
             ctx.fill();
         }
         ctx.restore();
@@ -1157,7 +1245,7 @@ function drawCar(x, y, color, isPlayer=false) {
 }
 
 function racerLoop() {
-    if(Game.type !== 'racer') return;
+    if(Game.type !== 'racer' || Game.isPaused) return; // Duraklatıldıysa çizme
     
     ctx.clearRect(0,0,cvs.width, cvs.height);
     const lw = cvs.width/4;
@@ -1201,7 +1289,7 @@ function racerLoop() {
             continue; 
         }
 
-        drawCar(drawX, c.y, c.color);
+        drawCar(drawX, c.y, c.color, false); // isPlayer=false
         
         if(!c.hit) {
             ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
@@ -1273,7 +1361,7 @@ function racerLoop() {
 }
 
 function racerInput(d) {
-    if(Game.r.inputLocked) return; // KİLİTLİYSE HAREKET ETME
+    if(Game.r.inputLocked || Game.isPaused) return; // KİLİTLİYSE HAREKET ETME
     let n = Game.r.lane + d; if(n>=0 && n<=3) Game.r.lane = n;
 }
 
