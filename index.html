@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <meta name="google-site-verification" content="DbvwD_t2D1ABQ64NDUNPVEbSpcshzLXZ9KIzWLaIF7E" />
-
+    
     <title>ÇARPTRİK - Çarpım Tablosu Oyunu & Araba Yarışı</title>
     
     <meta name="description" content="Çarpım tablosunu eğlenerek ezberleyin! Çarptrik ile ister Klasik modda pratik yapın, ister Araba Yarışı moduyla matematik hızınızı test edin. Ücretsiz eğitici çarpım tablosu oyunu.">
@@ -18,7 +18,7 @@
     <meta property="og:title" content="ÇARPTRİK - Çarpım Tablosu Yarışı">
     <meta property="og:description" content="Çarpım tablosunu araba yarışı yaparak öğren! Skorunu kaydet, kendini geliştir.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://carptrik.com"> <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3E text { fill: %2310b981; font-weight: bold; font-family: sans-serif; } %3C/style%3E%3Crect width='100%25' height='100%25' fill='%230f172a' rx='20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='80'%3E✖%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3E text { fill: %2310b981; font-weight: bold; font-family: sans-serif; } %3C/style%3E%3Crect width='100%25' height='100%25' fill='%230f172a' rx='20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='80'%3E✖%3C/text%3E%3C/svg%3E">
     
     <style>
         :root {
@@ -215,10 +215,32 @@
             text-align: center; line-height: 1.2; display: flex; flex-direction: column; justify-content: center;
         }
 
+        /* YARIŞ EKRANI VE YENİ HUD TASARIMI */
         #racer-wrap { flex: 1; margin: 20px; background: #111; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border); }
         canvas { width: 100%; height: 100%; display: block; }
-        .r-hud { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; font-weight: 900; font-size: 20px; text-shadow: 3px 3px 0 #000; pointer-events: none; z-index: 10; }
-        .r-q { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); padding: 10px 40px; border-radius: 50px; border: 3px solid var(--primary); font-size: 32px; font-weight: 900; color: #fff; z-index: 10; pointer-events: none; }
+        
+        /* YENİ KOMPAKT ÜST BAR */
+        .r-header {
+            position: absolute; top: 15px; left: 15px; right: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 20; pointer-events: none;
+        }
+        .r-stat {
+            font-weight: 900; font-size: 22px; text-shadow: 2px 2px 0 #000; color: #fff;
+            background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 12px;
+        }
+        .r-q-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid var(--primary);
+            color: #fff;
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-size: 28px;
+            font-weight: 900;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            letter-spacing: 2px;
+        }
+
         .mob-ctrl { display: none; gap: 15px; padding: 0 25px 25px 25px; height: 100px; }
         .c-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; font-size: 30px; color: #fff; cursor: pointer; }
 
@@ -255,6 +277,10 @@
             .toggle-group { flex-direction: column; height: auto; gap: 5px; padding: 10px; }
             .toggle-opt { padding: 15px; width: 100%; justify-content: center; }
             
+            /* Mobile Racer HUD */
+            .r-stat { font-size: 16px; padding: 4px 10px; }
+            .r-q-box { font-size: 20px; padding: 5px 15px; }
+
             #racer-wrap { margin: 15px; height: 50vh; min-height: 400px; } 
             .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
             .ans-inp { font-size: 40px; padding: 15px; }
@@ -415,11 +441,13 @@
         <div id="view-racer" class="screen">
             <div id="racer-wrap">
                 <canvas id="racerCanvas"></canvas>
-                <div class="r-hud">
-                    <span style="color:var(--primary)"><span data-i18n="tablo_puan">P</span>: <span id="r-score">0</span></span>
-                    <span style="color:var(--danger)">❤️ <span id="r-lives">3</span></span>
+                
+                <div class="r-header">
+                    <div class="r-stat" style="color:var(--primary)">P: <span id="r-score">0</span></div>
+                    <div class="r-q-box" id="r-q-text">2 x 2</div>
+                    <div class="r-stat" style="color:var(--danger)">❤️ <span id="r-lives">3</span></div>
                 </div>
-                <div class="r-q" id="r-q-text"></div>
+
             </div>
             <div class="mob-ctrl">
                 <button class="c-btn" onpointerdown="racerInput(-1); event.preventDefault()">⬅️</button>
@@ -624,11 +652,9 @@ function closeModal() { document.querySelector('.modal-wrap').style.display = 'n
 
 function shakeScreen() {
     document.body.classList.add('shake');
-    // Kırmızı çerçeve efekti
     const flash = document.createElement('div');
     flash.className = 'damage-flash';
     document.body.appendChild(flash);
-    
     setTimeout(() => {
         document.body.classList.remove('shake');
         if(flash) flash.remove();
