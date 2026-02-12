@@ -457,7 +457,7 @@
 
         <div id="view-classic" class="screen">
             <div class="hud">
-                <div><span class="hud-lbl" data-i18n="tablo_puan">PUAN</span><div class="hud-val" style="color:var(--primary)" id="c-score">100</div></div>
+                <div><span class="hud-lbl" data-i18n="tablo_puan">PUAN</span><div class="hud-val" style="color:var(--primary)" id="c-score">0</div></div>
                 <div><span class="hud-lbl" data-i18n="tablo_soru">SORU</span><div class="hud-val"><span id="c-curr">0</span>/<span id="c-total">0</span></div></div>
                 <div><span class="hud-lbl" data-i18n="tablo_hiz">HIZ</span><div class="hud-val" id="c-speed">0.0s</div></div>
             </div>
@@ -792,7 +792,7 @@ function shakeScreen() {
 
 /* GAME ENGINE */
 let Game = {
-    type: null, qList:[], total:0, idx:0, score:100, errors:0, times:[], startT:0, currQ:null,
+    type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
     slowLimit: 0,
     r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false } 
 };
@@ -843,7 +843,13 @@ function startErrorPractice() {
 }
 
 function resetState(t, len) {
-    Game.type = t; Game.total = len; Game.idx = 0; Game.score = 100; Game.errors = 0; Game.times = [];
+    Game.type = t; 
+    Game.total = len; 
+    Game.idx = 0; 
+    Game.score = 0; // Puan 0'dan başlar
+    Game.unitScore = (len > 0) ? (100 / len) : 0; // Her soru kaç puan
+    Game.errors = 0; 
+    Game.times = [];
 }
 
 function confirmFinish() { modal(TEXT[DATA.lang].confirm_bitir, endGame); }
@@ -852,9 +858,11 @@ function endGame() {
     if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
     AudioSys.stopEngine();
     
-    if(Game.total > 0 && Game.idx < Game.total) {
-        Game.score = Math.round(Game.score * (Game.idx / Game.total));
-    }
+    // Puan 0-100 arasına sabitlenir
+    Game.score = Math.round(Game.score);
+    if(Game.score < 0) Game.score = 0;
+    if(Game.score > 100) Game.score = 100;
+
     const avg = Game.times.length ? (Game.times.reduce((a,b)=>a+b,0)/Game.times.length).toFixed(1) : "0.0";
     
     const activeData = DATA[DATA.mode];
@@ -878,7 +886,10 @@ function nextQClassic() {
     document.getElementById('c-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
     document.getElementById('c-curr').innerText = Game.idx + 1;
     document.getElementById('c-total').innerText = Game.total;
-    document.getElementById('c-score').innerText = Game.score;
+    
+    // Puanı yuvarlayarak göster
+    document.getElementById('c-score').innerText = Math.round(Game.score);
+    
     document.getElementById('c-feedback').innerText = "";
     const i = document.getElementById('c-input');
     i.value = ''; i.disabled = false; i.focus();
@@ -916,18 +927,34 @@ document.getElementById('c-input').addEventListener('input', function() {
             Game.times.push(elapsed);
             const avg = Game.times.reduce((a,b)=>a+b,0)/Game.times.length;
             document.getElementById('c-speed').innerText = avg.toFixed(1)+'s';
+            
             if (isSlow) {
-                Game.errors++; db[k].score += 1; Game.score = Math.max(0, Game.score-2);
+                Game.errors++; 
+                db[k].score += 1; // Hata listesi puanı (Değişmedi)
+                
+                // YENİ PUANLAMA: Yavaşsa yarım puan
+                Game.score += (Game.unitScore / 2);
+
                 fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`;
-                AudioSys.playWrong(); // Yavaşsa uyarı sesi
+                AudioSys.playWrong(); 
             } else {
                 if(db[k].score > 0) db[k].score--;
+                
+                // YENİ PUANLAMA: Hızlıysa tam puan
+                Game.score += Game.unitScore;
+
                 fb.innerText = TEXT[DATA.lang].dogru; fb.style.color = 'var(--primary)';
                 AudioSys.playCorrect();
             }
             Game.idx++; setTimeout(nextQClassic, 500); 
         } else {
-            Game.errors++; db[k].score += 2; Game.score = Math.max(0, Game.score-5); 
+            Game.errors++; 
+            db[k].score += 2; // Hata listesi puanı (Değişmedi)
+            
+            // YENİ PUANLAMA: Yanlışsa yarım puan düş
+            Game.score -= (Game.unitScore / 2);
+            if(Game.score < 0) Game.score = 0; // Eksiye düşmesin
+
             fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)';
             AudioSys.playWrong();
             const i = document.getElementById('c-input'); i.disabled = true;
@@ -957,7 +984,7 @@ function initRacer() {
     const spdOpt = document.querySelector('input[name="rSpeed"]:checked').value;
     Game.r.speed = parseInt(spdOpt) || 6;
 
-    Game.r.lives=3; Game.r.score=0; Game.r.lane=1;
+    Game.r.lives=3; Game.r.lane=1;
     // Auto adjust player X on init
     const lw = cvs.width/4;
     Game.r.x = (1 * lw) + (lw/2); 
@@ -982,7 +1009,7 @@ function spawnRacerQ() {
 
     Game.currQ = Game.qList[Game.idx];
     document.getElementById('r-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
-    document.getElementById('r-score').innerText = Game.score;
+    document.getElementById('r-score').innerText = Math.round(Game.score);
     document.getElementById('r-lives').innerText = Game.r.lives;
     
     const ans = Game.currQ.n1 * Game.currQ.n2;
@@ -1151,6 +1178,9 @@ function racerLoop() {
                 
                 if(db[k].score > 0) db[k].score--; 
 
+                // YENİ PUANLAMA: Tam puan ekle
+                Game.score += Game.unitScore;
+
                 // Hemen yeni soru
                 setTimeout(spawnRacerQ, 800); 
 
@@ -1167,8 +1197,11 @@ function racerLoop() {
 
                 Game.r.lives--;
                 Game.errors++; 
-                db[k].score += 2; // Yanlış puanı ekle
-                Game.score = Math.max(0, Game.score-10);
+                db[k].score += 2; // Yanlış puanı (Hata listesi için, değişmedi)
+                
+                // YENİ PUANLAMA: Puan düşme YOK. Sadece can gider.
+                // Game.score değişmez.
+
                 document.getElementById('r-lives').innerText = Game.r.lives;
 
                 if(Game.r.lives <= 0) {
