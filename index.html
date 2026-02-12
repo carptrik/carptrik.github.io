@@ -410,8 +410,8 @@
                 <div class="r-q" id="r-q-text"></div>
             </div>
             <div class="mob-ctrl">
-                <button class="c-btn" ontouchstart="racerInput(-1)" onmousedown="racerInput(-1)">⬅️</button>
-                <button class="c-btn" ontouchstart="racerInput(1)" onmousedown="racerInput(1)">➡️</button>
+                <button class="c-btn" onpointerdown="racerInput(-1); event.preventDefault()">⬅️</button>
+                <button class="c-btn" onpointerdown="racerInput(1); event.preventDefault()">➡️</button>
             </div>
             <div class="foot-btns">
                 <button class="f-btn" onclick="showSetup()" data-i18n="geri">GERİ</button>
@@ -648,7 +648,10 @@ function startGame() {
     
     resetState(DATA.mode, Game.qList.length);
     if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); }
-    else { showScreen('racer'); initRacer(); }
+    else { 
+        showScreen('racer'); 
+        initRacer(); 
+    }
 }
 
 function startErrorPractice() {
@@ -768,6 +771,13 @@ const cvs = document.getElementById('racerCanvas');
 const ctx = cvs.getContext('2d');
 
 function initRacer() {
+    // Scroll to view on mobile
+    if(window.innerWidth <= 900) {
+        setTimeout(() => {
+            document.getElementById('racer-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    }
+
     cvs.width = document.getElementById('racer-wrap').offsetWidth;
     cvs.height = document.getElementById('racer-wrap').offsetHeight;
     
@@ -775,7 +785,11 @@ function initRacer() {
     Game.r.speed = parseInt(spdOpt) || 6;
 
     Game.r.lives=3; Game.r.score=0; Game.r.lane=1;
-    Game.r.x = (1 * (cvs.width/4)) + (cvs.width/8); Game.r.currX = Game.r.x;
+    // Auto adjust player X on init
+    const lw = cvs.width/4;
+    Game.r.x = (1 * lw) + (lw/2); 
+    Game.r.currX = Game.r.x;
+    
     Game.r.cars=[]; Game.r.particles=[]; 
     Game.r.inputLocked = false; 
     
@@ -786,7 +800,6 @@ function initRacer() {
 function spawnRacerQ() {
     if(Game.idx >= Game.total) { endGame(); return; }
     
-    // YENİ SORU İÇİN TEMİZLİK (Eskileri sil)
     Game.r.cars = []; 
     Game.r.isWaveActive = true; 
     Game.r.inputLocked = false; 
@@ -833,7 +846,6 @@ function drawCar(x, y, color, isPlayer=false) {
     
     if(y > -150 && y < cvs.height + 100) { 
         ctx.save();
-        // Sol Beam
         ctx.beginPath();
         ctx.moveTo(x - (w/2) + 10, y);
         ctx.lineTo(x - (w/2) - 15, y - 200);
@@ -841,7 +853,6 @@ function drawCar(x, y, color, isPlayer=false) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
         ctx.fill();
 
-        // Sağ Beam (Can > 1 ise yanar)
         if (!isPlayer || Game.r.lives > 1) {
             ctx.beginPath();
             ctx.moveTo(x + (w/2) - 10, y);
