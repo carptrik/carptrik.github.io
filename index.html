@@ -963,52 +963,47 @@ function togglePause() {
 function pauseGame() {
     Game.isPaused = true;
     Game.pauseStart = Date.now();
-    
-    // Hide Bottom Buttons
+
+    // 1. Show Overlay FIRST (Safest)
+    document.getElementById('pause-overlay').style.display = 'flex';
+
+    // 2. Hide Buttons
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'none');
 
-    // Blur Effect (Heavy)
-    document.querySelector('.screen.active .q-area').style.filter = 'blur(30px)';
-    if(Game.type === 'racer') {
-        document.querySelector('#racer-wrap').style.filter = 'blur(30px)';
-        if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
-        AudioSys.stopEngine();
+    // 3. Mode Specific Logic
+    if(Game.type === 'classic') {
+         // Safe check
+         const qArea = document.querySelector('#view-classic .q-area');
+         if(qArea) qArea.style.filter = 'blur(30px)';
+         document.getElementById('c-input').disabled = true;
+    } else if(Game.type === 'racer') {
+         document.querySelector('#racer-wrap').style.filter = 'blur(30px)';
+         if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
+         AudioSys.stopEngine();
     }
-    
-    // Disable inputs
-    if(Game.type === 'classic') document.getElementById('c-input').disabled = true;
-
-    // Show Overlay
-    document.getElementById('pause-overlay').style.display = 'flex';
 }
 
 function resumeGame() {
     Game.isPaused = false;
     const pausedDuration = Date.now() - Game.pauseStart;
     
-    // Show Bottom Buttons
+    // Hide overlay / Show buttons
+    document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
 
     // Adjust start time so speed calculation is correct
     Game.startT += pausedDuration;
 
-    // Remove Blur
-    document.querySelector('.screen.active .q-area').style.filter = 'none';
-    if(Game.type === 'racer') {
+    if(Game.type === 'classic') {
+        const qArea = document.querySelector('#view-classic .q-area');
+        if(qArea) qArea.style.filter = 'none';
+        document.getElementById('c-input').disabled = false;
+        document.getElementById('c-input').focus();
+    } else if(Game.type === 'racer') {
         document.querySelector('#racer-wrap').style.filter = 'none';
         AudioSys.startEngine();
         Game.r.loop = requestAnimationFrame(racerLoop);
     }
-    
-    // Enable inputs
-    if(Game.type === 'classic') {
-        const i = document.getElementById('c-input');
-        i.disabled = false;
-        i.focus();
-    }
-
-    // Hide Overlay
-    document.getElementById('pause-overlay').style.display = 'none';
 }
 
 function confirmFinish() { 
