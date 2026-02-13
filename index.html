@@ -715,20 +715,18 @@
 </footer>
 
 <script>
-/* DÜZELTME: Bu polyfill ile her tarayıcıda yuvarlak çizim yapılır */
-if (!CanvasRenderingContext2D.prototype.roundRect) {
-    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-        if (w < 2 * r) r = w / 2;
-        if (h < 2 * r) r = h / 2;
-        this.beginPath();
-        this.moveTo(x + r, y);
-        this.arcTo(x + w, y, x + w, y + h, r);
-        this.arcTo(x + w, y + h, x, y + h, r);
-        this.arcTo(x, y + h, x, y, r);
-        this.arcTo(x, y, x + w, y, r);
-        this.closePath();
-        return this;
-    };
+/* BASİT VE GÜVENLİ ÇİZİM YARDIMCISI (Donmayı önler) */
+function drawRoundedRect(ctx, x, y, width, height, radius) {
+    if (width < 2 * radius) radius = width / 2;
+    if (height < 2 * radius) radius = height / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + width, y, x + width, y + height, radius);
+    ctx.arcTo(x + width, y + height, x, y + height, radius);
+    ctx.arcTo(x, y + height, x, y, radius);
+    ctx.arcTo(x, y, x + width, y, radius);
+    ctx.closePath();
+    ctx.fill(); // Bu satır eklendi
 }
 
 const AudioSys = {
@@ -1000,12 +998,10 @@ function startGame() {
     }
     Game.qList.sort(()=>Math.random()-0.5);
     
-    // GÜNCELLEME: Önce ekranı hazırla, sonra başlat
     resetState(DATA.mode, Game.qList.length);
     if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); } 
     else { 
         showScreen('racer'); 
-        // Biraz bekle ki ekran otursun
         setTimeout(initRacer, 50); 
     }
 }
@@ -1057,7 +1053,7 @@ function pauseGame() {
     } else if(Game.type === 'racer') {
          document.querySelector('#racer-wrap').style.filter = 'blur(30px)';
          if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
-         AudioSys.stopEngine(); Game.r.lastTime = 0; 
+         AudioSys.stopEngine(); 
     }
 }
 
@@ -1073,7 +1069,7 @@ function resumeGame() {
         if(window.innerWidth > 900) document.getElementById('c-input').focus();
     } else if(Game.type === 'racer') {
         document.querySelector('#racer-wrap').style.filter = 'none';
-        AudioSys.startEngine(); Game.r.lastTime = 0; 
+        AudioSys.startEngine(); 
         Game.r.loop = requestAnimationFrame(racerLoop);
     }
 }
@@ -1160,6 +1156,10 @@ document.getElementById('c-input').addEventListener('input', function() {
     }
 });
 
+/* --- YARIŞ MODU (BASİT VE SAĞLAM) --- */
+const cvs = document.getElementById('racerCanvas');
+const ctx = cvs.getContext('2d');
+
 function initRacer() {
     if(window.innerWidth <= 900) setTimeout(() => { document.getElementById('racer-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
     cvs.width = document.getElementById('racer-wrap').offsetWidth;
@@ -1171,9 +1171,6 @@ function initRacer() {
     Game.r.lives=3; Game.r.lane=1;
     const lw = cvs.width/4; Game.r.x = (1 * lw) + (lw/2); Game.r.currX = Game.r.x;
     Game.r.cars=[]; Game.r.particles=[]; Game.r.inputLocked = false; 
-    
-    // GÜNCELLEME: Zamanlayıcıyı kesin sıfırla
-    Game.r.lastTime = 0; 
     
     AudioSys.startEngine(); updateProgress(); spawnRacerQ(); 
     if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
@@ -1206,44 +1203,30 @@ function spawnParticles(x, y, color) {
 function drawCar(x, y, color, isPlayer=false) {
     const w = 70; const h = 90;
     
-    // Farlar (Oyuncu ise)
     if(isPlayer && y > -150) { 
         ctx.save(); ctx.beginPath();
         ctx.moveTo(x - (w/2) + 10, y); ctx.lineTo(x - (w/2) - 15, y - 200); ctx.lineTo(x - (w/2) + 35, y - 200);
         ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; ctx.fill();
-        if (Game.r.lives > 1) {
-            ctx.beginPath(); ctx.moveTo(x + (w/2) - 10, y); ctx.lineTo(x + (w/2) - 35, y - 200); ctx.lineTo(x + (w/2) + 15, y - 200); ctx.fill();
-        }
         ctx.restore();
     }
 
-    // Gövde (Rounded Rect Polyfill)
     ctx.fillStyle = color; 
-    ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
+    drawRoundedRect(ctx, x - w/2, y, w, h, 10); // Gövde
     
-    // Ön Cam
     ctx.fillStyle = "rgba(0,0,0,0.5)"; 
-    ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
+    drawRoundedRect(ctx, x - (w/2)+5, y + 20, w-10, 20, 5); // Ön cam
 
-    // Tavan
     ctx.fillStyle = "rgba(0,0,0,0.3)"; 
-    ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
+    drawRoundedRect(ctx, x - (w/2)+5, y + 45, w-10, 35, 5); // Tavan
 
-    // Far Lambaları
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, 6.28); ctx.fill(); 
     if (!isPlayer || Game.r.lives > 1) { ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, 6.28); ctx.fill(); } 
     else { ctx.fillStyle = "#333"; ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, 6.28); ctx.fill(); }
 }
 
-function racerLoop(timestamp) {
+function racerLoop() {
     if(Game.type !== 'racer' || Game.isPaused) return; 
     
-    // GÜNCELLEME: Zaman sıfırlama hatasını önle
-    if (!Game.r.lastTime || timestamp - Game.r.lastTime > 1000) Game.r.lastTime = timestamp;
-    
-    const dt = (timestamp - Game.r.lastTime) / 16.67; 
-    Game.r.lastTime = timestamp;
-    const safeDt = Math.min(dt, 3); // Max hız sınırı (sıçramayı engelle)
     const lw = cvs.width/4;
 
     ctx.clearRect(0,0,cvs.width, cvs.height);
@@ -1252,22 +1235,23 @@ function racerLoop(timestamp) {
     for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
     
     const tx = (Game.r.lane * lw) + (lw/2);
-    Game.r.currX += (tx - Game.r.currX) * (0.2 * safeDt);
+    Game.r.currX += (tx - Game.r.currX) * 0.2;
     const px = Game.r.currX; const py = cvs.height - 120;
     
     drawCar(px, py, "#10b981", true); 
 
     for(let i=Game.r.particles.length-1; i>=0; i--) {
-        let p = Game.r.particles[i]; p.x += p.vx * safeDt; p.y += p.vy * safeDt; p.life -= 1 * safeDt;
+        let p = Game.r.particles[i]; p.x += p.vx; p.y += p.vy; p.life -= 1;
         ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.life/5, p.life/5);
         if(p.life <= 0) Game.r.particles.splice(i,1);
     }
 
     for(let i=Game.r.cars.length-1; i>=0; i--) {
         let c = Game.r.cars[i];
-        if (c.hit) { c.x += c.driftX * safeDt; c.y += c.driftY * safeDt; } else { c.y += Game.r.speed * safeDt; }
+        if (c.hit) { c.x += c.driftX; c.y += c.driftY; } else { c.y += Game.r.speed; }
         let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
         if (c.y > cvs.height + 100) { Game.r.cars.splice(i, 1); continue; }
+        
         drawCar(drawX, c.y, c.color, false); 
         if(!c.hit) { ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; ctx.fillText(c.val, drawX, c.y + 70); }
 
