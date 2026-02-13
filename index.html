@@ -46,15 +46,14 @@
             color: var(--text-main);
             margin: 0; padding: 0;
             
-            /* GÜNCELLEME: Mobil Tarayıcı Barı ve Çentik Ayarları */
             width: 100vw;
             min-height: 100vh;
-            height: 100dvh; /* Dynamic Viewport Height (Adres çubuğu sorununu çözer) */
+            height: 100dvh; /* Dynamic Viewport Height */
             
             display: flex; flex-direction: column;
             overflow: hidden;
 
-            /* Çentik (Notch) ve Alt Bar Güvenli Alanları */
+            /* Çentik ve genel güvenli alanlar */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
@@ -101,9 +100,9 @@
         .dashboard {
             display: grid; grid-template-columns: 280px 1fr 280px;
             gap: 25px; padding: 25px;
-            flex: 1; /* Dashboard kalan alanı kaplasın */
+            flex: 1; 
             max-width: 1600px; margin: 0 auto; width: 100%;
-            overflow: hidden; /* İçerik taşmasını engelle */
+            overflow: hidden; 
         }
 
         .panel {
@@ -465,11 +464,14 @@
                 flex-direction: column;
                 background: #0f172a;
                 border-top: 1px solid var(--border);
+                
+                /* DEĞİŞİKLİK: Alt boşluğu artırarak telefon butonlarından kurtardık */
                 padding: 10px;
+                padding-bottom: calc(25px + env(safe-area-inset-bottom));
+                
                 gap: 8px;
                 margin-top: auto; /* En alta it */
                 flex-shrink: 0;
-                padding-bottom: 20px; /* Alttan biraz boşluk */
             }
 
             .key-row {
@@ -495,7 +497,7 @@
             }
             .key-btn:active { background: var(--primary); color: #000; }
             
-            .key-btn.k-del { color: var(--danger); background: rgba(239, 68, 68, 0.1); border-color: var(--danger); }
+            /* DEĞİŞİKLİK: Silme tuşu (k-del) özel renkleri kaldırıldı, normal yapıldı */
             .key-btn.k-action { font-size: 14px; font-weight: 800; text-transform: uppercase; }
             .key-btn.k-pause { background: var(--warning); color: #000; }
             .key-btn.k-end { background: var(--danger); color: #fff; }
