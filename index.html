@@ -42,16 +42,11 @@
             padding-right: env(safe-area-inset-right);
         }
 
-        /* SCROLLBAR GİZLEME (PC İÇİN) */
+        /* SCROLLBAR GİZLEME */
         .setup-container::-webkit-scrollbar, 
         .list-content::-webkit-scrollbar,
-        .dashboard::-webkit-scrollbar {
-            display: none;
-        }
-        .setup-container, .list-content, .dashboard {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
+        .dashboard::-webkit-scrollbar { display: none; }
+        .setup-container, .list-content, .dashboard { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* --- HEADER --- */
         header {
@@ -373,10 +368,15 @@
             body.game-active { overflow: hidden; padding-top: env(safe-area-inset-top) !important; }
             body.game-active header, body.game-active footer { display: none !important; }
             body.game-active .dashboard { padding: 0; height: 100%; margin: 0; max-width: 100%; display: block; overflow: hidden; }
+            
+            /* DÜZELTME: Sadece görünür ekranı flex yap */
             body.game-active .panel { display: none; }
             body.game-active #panel-game { display: flex; height: 100%; border-radius: 0; border: none; }
             
-            body.game-active #view-classic { display: flex; flex-direction: column; height: 100%; padding-bottom: 0; }
+            /* DÜZELTME: Classic View sadece active ise görünür */
+            body.game-active #view-classic.active { display: flex; flex-direction: column; height: 100%; padding-bottom: 0; }
+            body.game-active #view-classic:not(.active) { display: none; }
+
             body.game-active #view-classic .hud { margin: 10px; padding: 10px 15px; }
             body.game-active #view-classic .q-area { justify-content: center; margin-bottom: 0; }
             body.game-active #view-classic .q-text { font-size: 80px; margin-bottom: 10px; }
@@ -674,6 +674,19 @@
 </footer>
 
 <script>
+/* DÜZELTME: Kendi Çizim Fonksiyonumuz (roundRect yerine) */
+function drawRoundedRect(ctx, x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+}
+
 const AudioSys = {
     ctx: null, osc: null, gain: null,
     init: function() {
@@ -1086,6 +1099,8 @@ function initRacer() {
     if(window.innerWidth <= 900) setTimeout(() => { document.getElementById('racer-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
     cvs.width = document.getElementById('racer-wrap').offsetWidth;
     cvs.height = document.getElementById('racer-wrap').offsetHeight;
+    if(cvs.width === 0) { setTimeout(initRacer, 50); return; } // Safety check
+
     const spdOpt = document.querySelector('input[name="rSpeed"]:checked').value;
     Game.r.speed = parseFloat(spdOpt) || 2.5;
     Game.r.lives=3; Game.r.lane=1;
@@ -1128,13 +1143,16 @@ function drawCar(x, y, color, isPlayer=false) {
         }
         ctx.restore();
     }
-    ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
-    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
+    ctx.fillStyle = color; 
+    drawRoundedRect(ctx, x - w/2, y, w, h, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; 
+    drawRoundedRect(ctx, x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
     if(isPlayer) {
         if (Game.r.lives <= 2) { ctx.strokeStyle = "rgba(0,0,0,0.7)"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(x-10, y+30); ctx.lineTo(x+15, y+40); ctx.stroke(); }
         if (Game.r.lives <= 1) { ctx.beginPath(); ctx.moveTo(x+10, y+25); ctx.lineTo(x-15, y+45); ctx.lineTo(x+5, y+55); ctx.stroke(); }
     }
-    ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.3)"; 
+    drawRoundedRect(ctx, x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); 
     if (!isPlayer || Game.r.lives > 1) { ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); } 
     else { ctx.fillStyle = "#333"; ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); }
