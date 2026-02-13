@@ -47,7 +47,6 @@
             margin: 0; padding: 0;
             
             width: 100vw;
-            min-height: 100vh;
             height: 100dvh; /* Dynamic Viewport Height */
             
             display: flex; flex-direction: column;
@@ -338,12 +337,13 @@
 
         /* --- MOBILE KEYPAD STYLES --- */
         .mobile-keypad { display: none; } /* Default hidden */
+        .mobile-stats-btn { display: none; } /* Default hidden */
+        .mobile-stats-back { display: none; } /* Default hidden */
 
         /* MOBILE FIXES & HEADER ADJUSTMENTS */
         @media (max-width: 900px) {
             body { 
                 padding: 0; 
-                /* Çentik Ayarı (Fallback için) */
                 padding-top: env(safe-area-inset-top); 
                 padding-bottom: env(safe-area-inset-bottom);
                 height: 100dvh; 
@@ -359,126 +359,130 @@
                 padding: 10px 15px; 
             }
             .header-left { order: 1; flex: 0 0 auto; }
-            .header-right { 
-                order: 2; 
-                flex: 0 0 auto; 
-                gap: 8px; 
-            }
-            .header-center { 
-                order: 3; 
-                width: 100%; 
-                margin-top: 10px; 
-                display: flex; 
-                justify-content: center; 
-            }
+            .header-right { order: 2; flex: 0 0 auto; gap: 8px; }
+            .header-center { order: 3; width: 100%; margin-top: 10px; display: flex; justify-content: center; }
             
             .mode-switch { transform: scale(1); width: 100%; } 
             .m-btn { flex: 1; justify-content: center; }
             
-            .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; gap: 15px; overflow-y: auto; }
-            .panel:nth-child(2) { order: 1; min-height: 600px; } .panel:nth-child(1) { order: 2; height: auto; } .panel:nth-child(3) { order: 3; height: auto; }
+            .dashboard { display: flex; flex-direction: column; height: auto; padding: 10px; gap: 10px; overflow-y: auto; }
             
-            /* Vertical Settings on Mobile */
-            .toggle-group { flex-direction: column; height: auto; gap: 5px; padding: 10px; }
-            .toggle-opt { padding: 15px; width: 100%; justify-content: center; }
+            /* Varsayılan Mobil Görünüm: Sadece Orta Panel Görünür */
+            .panel { order: unset !important; }
+            .dashboard > .panel:nth-child(1) { display: none; } /* Sol (Hata) Gizle */
+            .dashboard > .panel:nth-child(3) { display: none; } /* Sağ (Geçmiş) Gizle */
+            .dashboard > .panel:nth-child(2) { display: flex; flex: 1; min-height: 0; } /* Orta (Oyun/Setup) Göster */
+
+            /* --- İSTATİSTİK MODU (Body class 'stats-active' olunca) --- */
+            body.stats-active .dashboard > .panel:nth-child(2) { display: none; } /* Setup Gizle */
+            body.stats-active .dashboard > .panel:nth-child(1) { display: flex; height: 50%; } /* Sol Göster */
+            body.stats-active .dashboard > .panel:nth-child(3) { display: flex; height: 50%; } /* Sağ Göster */
+            body.stats-active .mobile-stats-back { display: block; margin-bottom: 10px; } /* Geri Butonu Göster */
+
+            /* --- KOMPAKT SETUP EKRANI --- */
+            .setup-container { 
+                padding: 15px; 
+                gap: 12px; /* Dikey boşlukları azalt */
+                height: auto; /* Scroll olabilsin ama sığsın */
+            }
+            .section-header { font-size: 14px; margin-bottom: 5px; }
+            .num-grid { gap: 8px; margin-bottom: 10px; }
+            .num-label { height: 40px; font-size: 16px; }
             
+            .settings-box { 
+                padding: 12px; 
+                gap: 8px;
+            }
+            .sb-title { font-size: 12px; margin-bottom: 2px; }
+            .toggle-group { 
+                flex-direction: row; /* Yan yana */
+                min-height: 50px; 
+                padding: 2px;
+                flex-wrap: nowrap; /* Sığdır */
+            }
+            .toggle-opt { 
+                padding: 5px; 
+                font-size: 11px; 
+                flex-direction: row; /* İçerik de yan yana */
+                gap: 5px;
+            }
+            .input-box { 
+                width: 50px; height: 30px; font-size: 14px; 
+            }
+
+            .btn-start { 
+                padding: 15px; font-size: 16px; margin-top: 10px; 
+            }
+
+            /* --- İSTATİSTİKLER BUTONU --- */
+            .mobile-stats-btn {
+                display: flex;
+                width: 100%;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid var(--border);
+                color: var(--text-muted);
+                padding: 10px;
+                border-radius: 10px;
+                font-weight: 800;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+                margin-bottom: 10px;
+            }
+            .mobile-stats-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+            .mobile-stats-back {
+                width: 100%;
+                background: var(--primary);
+                color: #000;
+                padding: 12px;
+                border-radius: 10px;
+                font-weight: 900;
+                text-align: center;
+                cursor: pointer;
+                border: none;
+            }
+
             /* Mobile Racer HUD */
             .r-stat { font-size: 16px; padding: 4px 10px; }
             .r-q-box { font-size: 20px; padding: 5px 15px; }
 
-            #racer-wrap { margin: 15px; height: 50vh; min-height: 400px; } 
+            #racer-wrap { margin: 15px; height: 40vh; min-height: 300px; } 
             .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
             .ans-inp { font-size: 40px; padding: 15px; }
 
             /* --- FULL SCREEN GAME MODE STYLES (Mobile Only) --- */
-            body.game-active {
-                overflow: hidden; /* Scroll yok */
-                /* Header gizlendiğinde safe-area korunsun */
-                padding-top: env(safe-area-inset-top) !important;
-            }
-            body.game-active header,
-            body.game-active footer {
-                display: none !important; /* Header ve footer gizle */
-            }
-            body.game-active .dashboard {
-                padding: 0;
-                height: 100%;
-                margin: 0;
-                max-width: 100%;
-                display: block; /* Flex/Grid yapısını boz, tek panel göstereceğiz */
-                overflow: hidden;
-            }
-            body.game-active .panel {
-                display: none; /* Tüm panelleri gizle */
-            }
-            body.game-active .panel:nth-child(2) { 
-                display: flex; /* Sadece ana paneli (oyun alanı) göster */
-                height: 100%;
-                border-radius: 0;
-                border: none;
-                order: unset; /* Sıralamayı sıfırla */
-            }
+            body.game-active { overflow: hidden; padding-top: env(safe-area-inset-top) !important; }
+            body.game-active header, body.game-active footer { display: none !important; }
+            body.game-active .dashboard { padding: 0; height: 100%; margin: 0; max-width: 100%; display: block; overflow: hidden; }
+            body.game-active .panel { display: none; }
+            body.game-active .panel:nth-child(2) { display: flex; height: 100%; border-radius: 0; border: none; }
             
-            /* Klasik Mod Görünümü Mobilde */
-            body.game-active #view-classic {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-                padding-bottom: 0;
-            }
-            
-            body.game-active #view-classic .hud {
-                margin: 10px;
-                padding: 10px 15px;
-            }
-            
-            body.game-active #view-classic .q-area {
-                justify-content: center;
-                margin-bottom: 0;
-            }
-            
-            body.game-active #view-classic .q-text {
-                font-size: 80px;
-                margin-bottom: 10px;
-            }
-            
-            body.game-active #view-classic .ans-inp {
-                max-width: 80%;
-                font-size: 50px;
-                background: #0f172a; /* Klavye ile karışmasın */
-            }
+            body.game-active #view-classic { display: flex; flex-direction: column; height: 100%; padding-bottom: 0; }
+            body.game-active #view-classic .hud { margin: 10px; padding: 10px 15px; }
+            body.game-active #view-classic .q-area { justify-content: center; margin-bottom: 0; }
+            body.game-active #view-classic .q-text { font-size: 80px; margin-bottom: 10px; }
+            body.game-active #view-classic .ans-inp { max-width: 80%; font-size: 50px; background: #0f172a; }
+            body.game-active #view-classic .feedback { font-size: 24px; min-height: 40px; margin-top: 10px; }
+            body.game-active #view-classic .foot-btns { display: none !important; }
 
-            body.game-active #view-classic .feedback {
-                font-size: 24px;
-                min-height: 40px;
-                margin-top: 10px;
-            }
-
-            body.game-active #view-classic .foot-btns {
-                display: none !important; /* Masaüstü butonlarını gizle */
-            }
-
-            /* --- MOBILE KEYPAD --- */
+            /* --- MOBILE KEYPAD (DÜZELTİLMİŞ) --- */
             .mobile-keypad {
                 display: flex;
                 flex-direction: column;
                 background: #0f172a;
                 border-top: 1px solid var(--border);
-                
-                /* DEĞİŞİKLİK: Alt boşluğu artırarak telefon butonlarından kurtardık */
                 padding: 10px;
-                padding-bottom: calc(25px + env(safe-area-inset-bottom));
-                
+                /* ÇOK ÖNEMLİ: Alt boşluk artırıldı + Safe Area eklendi */
+                padding-bottom: calc(40px + env(safe-area-inset-bottom)); 
                 gap: 8px;
-                margin-top: auto; /* En alta it */
+                margin-top: auto; 
                 flex-shrink: 0;
+                z-index: 100; /* Her şeyin üstünde */
             }
 
-            .key-row {
-                display: flex;
-                gap: 8px;
-                flex: 1;
-            }
+            .key-row { display: flex; gap: 8px; flex: 1; }
 
             .key-btn {
                 flex: 1;
@@ -497,7 +501,9 @@
             }
             .key-btn:active { background: var(--primary); color: #000; }
             
-            /* DEĞİŞİKLİK: Silme tuşu (k-del) özel renkleri kaldırıldı, normal yapıldı */
+            /* DÜZELTME: Silme tuşu normal renk */
+            .key-btn.k-del { color: #fff; background: var(--bg-card); border-color: var(--border); }
+            
             .key-btn.k-action { font-size: 14px; font-weight: 800; text-transform: uppercase; }
             .key-btn.k-pause { background: var(--warning); color: #000; }
             .key-btn.k-end { background: var(--danger); color: #fff; }
@@ -536,6 +542,8 @@
 
 <div class="dashboard">
     
+    <button class="mobile-stats-back" onclick="toggleStats()">⬅ GERİ DÖN</button>
+
     <aside class="panel">
         <div class="practice-area">
             <div class="pill-group">
@@ -567,6 +575,10 @@
         <div id="view-setup" class="screen active">
             <div class="setup-container">
                 
+                <div class="mobile-stats-btn" onclick="toggleStats(); AudioSys.playClick()">
+                    📊 İSTATİSTİKLER & GEÇMİŞ
+                </div>
+
                 <div class="section-header" data-i18n="carp_sayilar">ÇARPILACAK SAYILAR</div>
                 <div class="num-grid">
                     <label><input type="checkbox" class="num-chk" value="2" checked onchange="calcTotal(); AudioSys.playClick()"><div class="num-label">2</div></label>
@@ -589,14 +601,12 @@
                         <div class="toggle-opt selected" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="mod_tekrar_1">Tümünü</span>
                             <input type="number" id="inp-repeat" value="1" class="input-box" onchange="calcTotal()" onclick="event.stopPropagation()">
-                            <span data-i18n="mod_tekrar_2">kez</span>
                             <span id="total-info" class="total-info">(1)</span>
                             <input type="radio" name="gMode" value="repeat" checked>
                         </div>
                         <div class="toggle-opt" onclick="selectToggle(this); AudioSys.playClick()">
                             <span data-i18n="mod_limit_1">Rastgele</span>
                             <input type="number" id="inp-limit" value="20" class="input-box" onclick="event.stopPropagation()">
-                            <span data-i18n="mod_limit_2">tane sor</span>
                             <input type="radio" name="gMode" value="limit">
                         </div>
                     </div>
@@ -1011,6 +1021,11 @@ function calcTotal() {
     }
 }
 
+/* --- MOBILE STATS TOGGLE --- */
+function toggleStats() {
+    document.body.classList.toggle('stats-active');
+}
+
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('view-'+id).classList.add('active');
@@ -1022,6 +1037,8 @@ function showSetup() {
     
     // Remove FULL SCREEN mobile class
     document.body.classList.remove('game-active');
+    // Remove Stats View if open
+    document.body.classList.remove('stats-active');
 
     document.getElementById('pause-overlay').style.display = 'none';
     // Remove blur filters
