@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <meta name="google-site-verification" content="DbvwD_t2D1ABQ64NDUNPVEbSpcshzLXZ9KIzWLaIF7E" />
     
@@ -45,18 +45,28 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             margin: 0; padding: 0;
-            height: 100vh;
+            
+            /* GÜNCELLEME: Mobil Tarayıcı Barı ve Çentik Ayarları */
+            width: 100vw;
+            min-height: 100vh;
+            height: 100dvh; /* Dynamic Viewport Height (Adres çubuğu sorununu çözer) */
+            
             display: flex; flex-direction: column;
             overflow: hidden;
+
+            /* Çentik (Notch) ve Alt Bar Güvenli Alanları */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         /* --- HEADER --- */
         header {
-            height: 70px; flex-shrink: 0;
+            height: auto; min-height: 70px; flex-shrink: 0;
             background: rgba(30, 41, 59, 0.95); border-bottom: 1px solid var(--border);
             display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-            padding: 0 25px; backdrop-filter: blur(10px); z-index: 50;
-            transition: transform 0.3s ease;
+            padding: 10px 25px; backdrop-filter: blur(10px); z-index: 50;
         }
         .header-left { justify-self: start; }
         .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: var(--primary); display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
@@ -91,8 +101,9 @@
         .dashboard {
             display: grid; grid-template-columns: 280px 1fr 280px;
             gap: 25px; padding: 25px;
-            height: calc(100vh - 70px);
+            flex: 1; /* Dashboard kalan alanı kaplasın */
             max-width: 1600px; margin: 0 auto; width: 100%;
+            overflow: hidden; /* İçerik taşmasını engelle */
         }
 
         .panel {
@@ -331,7 +342,13 @@
 
         /* MOBILE FIXES & HEADER ADJUSTMENTS */
         @media (max-width: 900px) {
-            body { padding: 0; overflow-y: auto; height: 100vh; }
+            body { 
+                padding: 0; 
+                /* Çentik Ayarı (Fallback için) */
+                padding-top: env(safe-area-inset-top); 
+                padding-bottom: env(safe-area-inset-bottom);
+                height: 100dvh; 
+            }
             
             /* Düzeltilmiş Mobile Header */
             header { 
@@ -346,7 +363,7 @@
             .header-right { 
                 order: 2; 
                 flex: 0 0 auto; 
-                gap: 8px; /* Sağ tarafı sıkıştırmamak için boşluk azaltıldı */
+                gap: 8px; 
             }
             .header-center { 
                 order: 3; 
@@ -359,7 +376,7 @@
             .mode-switch { transform: scale(1); width: 100%; } 
             .m-btn { flex: 1; justify-content: center; }
             
-            .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; gap: 15px; }
+            .dashboard { display: flex; flex-direction: column; height: auto; padding: 15px; gap: 15px; overflow-y: auto; }
             .panel:nth-child(2) { order: 1; min-height: 600px; } .panel:nth-child(1) { order: 2; height: auto; } .panel:nth-child(3) { order: 3; height: auto; }
             
             /* Vertical Settings on Mobile */
@@ -377,6 +394,8 @@
             /* --- FULL SCREEN GAME MODE STYLES (Mobile Only) --- */
             body.game-active {
                 overflow: hidden; /* Scroll yok */
+                /* Header gizlendiğinde safe-area korunsun */
+                padding-top: env(safe-area-inset-top) !important;
             }
             body.game-active header,
             body.game-active footer {
@@ -384,10 +403,11 @@
             }
             body.game-active .dashboard {
                 padding: 0;
-                height: 100vh;
+                height: 100%;
                 margin: 0;
                 max-width: 100%;
                 display: block; /* Flex/Grid yapısını boz, tek panel göstereceğiz */
+                overflow: hidden;
             }
             body.game-active .panel {
                 display: none; /* Tüm panelleri gizle */
@@ -449,6 +469,7 @@
                 gap: 8px;
                 margin-top: auto; /* En alta it */
                 flex-shrink: 0;
+                padding-bottom: 20px; /* Alttan biraz boşluk */
             }
 
             .key-row {
