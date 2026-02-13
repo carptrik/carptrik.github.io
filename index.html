@@ -715,18 +715,20 @@
 </footer>
 
 <script>
-/* DÜZELTME: Bu fonksiyon sayesinde her tarayıcıda yuvarlak çizim yapılır */
-function drawRoundedRect(ctx, x, y, width, height, radius) {
-    if (width < 2 * radius) radius = width / 2;
-    if (height < 2 * radius) radius = height / 2;
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.arcTo(x + width, y, x + width, y + height, radius);
-    ctx.arcTo(x + width, y + height, x, y + height, radius);
-    ctx.arcTo(x, y + height, x, y, radius);
-    ctx.arcTo(x, y, x + width, y, radius);
-    ctx.closePath();
-    return ctx;
+/* DÜZELTME: Bu polyfill ile her tarayıcıda yuvarlak çizim yapılır */
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+        return this;
+    };
 }
 
 const AudioSys = {
@@ -1170,7 +1172,8 @@ function initRacer() {
     const lw = cvs.width/4; Game.r.x = (1 * lw) + (lw/2); Game.r.currX = Game.r.x;
     Game.r.cars=[]; Game.r.particles=[]; Game.r.inputLocked = false; 
     
-    Game.r.lastTime = 0; // Zamanlayıcıyı kesin sıfırla
+    // GÜNCELLEME: Zamanlayıcıyı kesin sıfırla
+    Game.r.lastTime = 0; 
     
     AudioSys.startEngine(); updateProgress(); spawnRacerQ(); 
     if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
@@ -1216,15 +1219,15 @@ function drawCar(x, y, color, isPlayer=false) {
 
     // Gövde (Rounded Rect Polyfill)
     ctx.fillStyle = color; 
-    drawRoundedRect(ctx, x - w/2, y, w, h, 10); ctx.fill();
+    ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
     
     // Ön Cam
     ctx.fillStyle = "rgba(0,0,0,0.5)"; 
-    drawRoundedRect(ctx, x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
+    ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
 
     // Tavan
     ctx.fillStyle = "rgba(0,0,0,0.3)"; 
-    drawRoundedRect(ctx, x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
+    ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
 
     // Far Lambaları
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, 6.28); ctx.fill(); 
@@ -1235,7 +1238,9 @@ function drawCar(x, y, color, isPlayer=false) {
 function racerLoop(timestamp) {
     if(Game.type !== 'racer' || Game.isPaused) return; 
     
-    if (!Game.r.lastTime) Game.r.lastTime = timestamp;
+    // GÜNCELLEME: Zaman sıfırlama hatasını önle
+    if (!Game.r.lastTime || timestamp - Game.r.lastTime > 1000) Game.r.lastTime = timestamp;
+    
     const dt = (timestamp - Game.r.lastTime) / 16.67; 
     Game.r.lastTime = timestamp;
     const safeDt = Math.min(dt, 3); // Max hız sınırı (sıçramayı engelle)
