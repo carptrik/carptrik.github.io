@@ -38,7 +38,7 @@
             --radius: 14px;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         
         body {
             font-family: 'Inter', system-ui, sans-serif;
@@ -56,6 +56,7 @@
             background: rgba(30, 41, 59, 0.95); border-bottom: 1px solid var(--border);
             display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
             padding: 0 25px; backdrop-filter: blur(10px); z-index: 50;
+            transition: transform 0.3s ease;
         }
         .header-left { justify-self: start; }
         .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: var(--primary); display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
@@ -220,7 +221,8 @@
         .q-text { font-size: 120px; font-weight: 900; color: #fff; margin-bottom: 30px; text-shadow: 0 0 50px rgba(255,255,255,0.05); }
         .ans-inp { width: 100%; max-width: 400px; background: #000; border: 3px solid var(--border); color: var(--primary); font-size: 60px; padding: 20px; text-align: center; border-radius: 20px; outline: none; font-family: monospace; font-weight: bold; transition: 0.2s; }
         .ans-inp:focus { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
-        
+        .ans-inp[readonly] { caret-color: transparent; } /* Mobilde imleci gizle */
+
         .feedback { 
             min-height: 80px; margin-top: 20px; font-weight: 900; font-size: 40px; 
             text-align: center; line-height: 1.2; display: flex; flex-direction: column; justify-content: center;
@@ -321,12 +323,15 @@
         .mb-ok { background: var(--primary); color: #000; }
         .mb-no { background: var(--bg-card); color: #fff; border: 1px solid var(--border); }
 
-        footer { margin-top: auto; padding: 15px; text-align: center; font-size: 11px; color: var(--text-muted); background: var(--bg-body); border-top: 1px solid var(--border); }
+        footer { margin-top: auto; padding: 15px; text-align: center; font-size: 11px; color: var(--text-muted); background: var(--bg-body); border-top: 1px solid var(--border); transition: transform 0.3s ease; }
         footer a { color: var(--text-muted); text-decoration: none; }
+
+        /* --- MOBILE KEYPAD STYLES --- */
+        .mobile-keypad { display: none; } /* Default hidden */
 
         /* MOBILE FIXES & HEADER ADJUSTMENTS */
         @media (max-width: 900px) {
-            body { padding: 0; overflow-y: auto; height: auto; }
+            body { padding: 0; overflow-y: auto; height: 100vh; }
             
             /* Düzeltilmiş Mobile Header */
             header { 
@@ -368,6 +373,113 @@
             #racer-wrap { margin: 15px; height: 50vh; min-height: 400px; } 
             .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
             .ans-inp { font-size: 40px; padding: 15px; }
+
+            /* --- FULL SCREEN GAME MODE STYLES (Mobile Only) --- */
+            body.game-active {
+                overflow: hidden; /* Scroll yok */
+            }
+            body.game-active header,
+            body.game-active footer {
+                display: none !important; /* Header ve footer gizle */
+            }
+            body.game-active .dashboard {
+                padding: 0;
+                height: 100vh;
+                margin: 0;
+                max-width: 100%;
+                display: block; /* Flex/Grid yapısını boz, tek panel göstereceğiz */
+            }
+            body.game-active .panel {
+                display: none; /* Tüm panelleri gizle */
+            }
+            body.game-active .panel:nth-child(2) { 
+                display: flex; /* Sadece ana paneli (oyun alanı) göster */
+                height: 100%;
+                border-radius: 0;
+                border: none;
+                order: unset; /* Sıralamayı sıfırla */
+            }
+            
+            /* Klasik Mod Görünümü Mobilde */
+            body.game-active #view-classic {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                padding-bottom: 0;
+            }
+            
+            body.game-active #view-classic .hud {
+                margin: 10px;
+                padding: 10px 15px;
+            }
+            
+            body.game-active #view-classic .q-area {
+                justify-content: center;
+                margin-bottom: 0;
+            }
+            
+            body.game-active #view-classic .q-text {
+                font-size: 80px;
+                margin-bottom: 10px;
+            }
+            
+            body.game-active #view-classic .ans-inp {
+                max-width: 80%;
+                font-size: 50px;
+                background: #0f172a; /* Klavye ile karışmasın */
+            }
+
+            body.game-active #view-classic .feedback {
+                font-size: 24px;
+                min-height: 40px;
+                margin-top: 10px;
+            }
+
+            body.game-active #view-classic .foot-btns {
+                display: none !important; /* Masaüstü butonlarını gizle */
+            }
+
+            /* --- MOBILE KEYPAD --- */
+            .mobile-keypad {
+                display: flex;
+                flex-direction: column;
+                background: #0f172a;
+                border-top: 1px solid var(--border);
+                padding: 10px;
+                gap: 8px;
+                margin-top: auto; /* En alta it */
+                flex-shrink: 0;
+            }
+
+            .key-row {
+                display: flex;
+                gap: 8px;
+                flex: 1;
+            }
+
+            .key-btn {
+                flex: 1;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                color: #fff;
+                font-size: 24px;
+                font-weight: bold;
+                border-radius: 8px;
+                padding: 12px 0;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                touch-action: manipulation;
+            }
+            .key-btn:active { background: var(--primary); color: #000; }
+            
+            .key-btn.k-del { color: var(--danger); background: rgba(239, 68, 68, 0.1); border-color: var(--danger); }
+            .key-btn.k-action { font-size: 14px; font-weight: 800; text-transform: uppercase; }
+            .key-btn.k-pause { background: var(--warning); color: #000; }
+            .key-btn.k-end { background: var(--danger); color: #fff; }
+            .key-btn.k-sound { font-size: 20px; }
+            .key-btn.k-sound.muted { opacity: 0.5; text-decoration: line-through; }
         }
     </style>
 </head>
@@ -521,6 +633,33 @@
             <div class="foot-btns">
                 <button class="f-btn" onclick="togglePause(); AudioSys.playClick()" data-i18n="duraklat">DURAKLAT</button>
                 <button class="f-btn danger" onclick="confirmFinish(); AudioSys.playClick()" data-i18n="bitir">BİTİR</button>
+            </div>
+
+            <div class="mobile-keypad">
+                <div class="key-row">
+                    <button class="key-btn" onpointerdown="handleKeyInput(1)">1</button>
+                    <button class="key-btn" onpointerdown="handleKeyInput(2)">2</button>
+                    <button class="key-btn" onpointerdown="handleKeyInput(3)">3</button>
+                </div>
+                <div class="key-row">
+                    <button class="key-btn" onpointerdown="handleKeyInput(4)">4</button>
+                    <button class="key-btn" onpointerdown="handleKeyInput(5)">5</button>
+                    <button class="key-btn" onpointerdown="handleKeyInput(6)">6</button>
+                </div>
+                <div class="key-row">
+                    <button class="key-btn" onpointerdown="handleKeyInput(7)">7</button>
+                    <button class="key-btn" onpointerdown="handleKeyInput(8)">8</button>
+                    <button class="key-btn" onpointerdown="handleKeyInput(9)">9</button>
+                </div>
+                <div class="key-row">
+                    <button class="key-btn k-sound" id="m-sound-btn" onclick="toggleSound(); handleKeyAction('sound')">🔊</button>
+                    <button class="key-btn" onpointerdown="handleKeyInput(0)">0</button>
+                    <button class="key-btn k-del" onpointerdown="handleKeyAction('del')">⌫</button>
+                </div>
+                <div class="key-row">
+                    <button class="key-btn k-action k-pause" onclick="togglePause(); AudioSys.playClick()" data-i18n="duraklat">II</button>
+                    <button class="key-btn k-action k-end" onclick="confirmFinish(); AudioSys.playClick()" data-i18n="bitir">X</button>
+                </div>
             </div>
         </div>
 
@@ -753,6 +892,14 @@ function updateSoundBtn() {
     const btn = document.getElementById('btn-sound');
     btn.innerHTML = DATA.sound ? '🔊' : '🔇';
     btn.classList.toggle('active', DATA.sound);
+
+    // Update Keypad Sound Button
+    const kBtn = document.getElementById('m-sound-btn');
+    if(kBtn) {
+        kBtn.innerText = DATA.sound ? '🔊' : '🔇';
+        if(!DATA.sound) kBtn.classList.add('muted');
+        else kBtn.classList.remove('muted');
+    }
 }
 
 function setLang(l) {
@@ -850,6 +997,9 @@ function showSetup() {
     AudioSys.stopEngine(); // Ensure engine stops when returning to setup
     if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
     
+    // Remove FULL SCREEN mobile class
+    document.body.classList.remove('game-active');
+
     document.getElementById('pause-overlay').style.display = 'none';
     // Remove blur filters
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
@@ -889,6 +1039,27 @@ function updateProgress() {
     if(car) car.style.bottom = p + '%';
 }
 
+/* KEYPAD HANDLING */
+function handleKeyInput(val) {
+    if(Game.isPaused || document.getElementById('c-input').disabled) return;
+    const i = document.getElementById('c-input');
+    i.value += val;
+    AudioSys.playClick();
+    
+    // Trigger input event manually for logic
+    i.dispatchEvent(new Event('input'));
+}
+
+function handleKeyAction(action) {
+    if(Game.isPaused) return;
+    if(action === 'del') {
+        const i = document.getElementById('c-input');
+        i.value = i.value.slice(0, -1);
+        AudioSys.playClick();
+        i.dispatchEvent(new Event('input'));
+    }
+}
+
 /* GAME ENGINE */
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
@@ -900,6 +1071,11 @@ function startGame() {
     const nums = getNums();
     if(nums.length === 0) return modal(TEXT[DATA.lang].alert_sayi);
     
+    // MOBIL CİHAZDA TAM EKRAN MODUNU AKTİF ET
+    if(window.innerWidth <= 900) {
+        document.body.classList.add('game-active');
+    }
+
     let pool = [];
     nums.forEach(n1 => nums.forEach(n2 => pool.push({n1, n2})));
     
@@ -927,6 +1103,11 @@ function startErrorPractice() {
     const keys = Object.keys(currentDB);
     if(keys.length === 0) return modal(TEXT[DATA.lang].alert_hata);
     
+    // MOBIL CİHAZDA TAM EKRAN MODUNU AKTİF ET
+    if(window.innerWidth <= 900) {
+        document.body.classList.add('game-active');
+    }
+
     Game.qList = [];
     const mode = document.querySelector('input[name="errMode"]:checked').value;
     keys.forEach(k => {
@@ -1001,7 +1182,11 @@ function resumeGame() {
         const qArea = document.querySelector('#view-classic .q-area');
         if(qArea) qArea.style.filter = 'none';
         document.getElementById('c-input').disabled = false;
-        document.getElementById('c-input').focus();
+        
+        // Sadece desktop'ta odakla
+        if(window.innerWidth > 900) {
+            document.getElementById('c-input').focus();
+        }
     } else if(Game.type === 'racer') {
         document.querySelector('#racer-wrap').style.filter = 'none';
         AudioSys.startEngine();
@@ -1019,6 +1204,10 @@ function confirmFinish() {
 function endGame() {
     // Clean up pause state
     Game.isPaused = false;
+    
+    // Remove Full screen class
+    document.body.classList.remove('game-active');
+
     document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
@@ -1060,7 +1249,16 @@ function nextQClassic() {
     
     document.getElementById('c-feedback').innerText = "";
     const i = document.getElementById('c-input');
-    i.value = ''; i.disabled = false; i.focus();
+    i.value = ''; i.disabled = false; 
+
+    // Mobilde klavye açılmasın
+    if(window.innerWidth <= 900) {
+        i.readOnly = true;
+    } else {
+        i.readOnly = false;
+        i.focus();
+    }
+    
     Game.startT = Date.now();
 
     const speedMode = document.querySelector('input[name="cSpeed"]:checked').value;
