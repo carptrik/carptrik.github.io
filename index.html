@@ -715,18 +715,20 @@
 </footer>
 
 <script>
-/* BASİT VE GÜVENLİ ÇİZİM YARDIMCISI (Donmayı önler) */
-function drawRoundedRect(ctx, x, y, width, height, radius) {
-    if (width < 2 * radius) radius = width / 2;
-    if (height < 2 * radius) radius = height / 2;
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.arcTo(x + width, y, x + width, y + height, radius);
-    ctx.arcTo(x + width, y + height, x, y + height, radius);
-    ctx.arcTo(x, y + height, x, y, radius);
-    ctx.arcTo(x, y, x + width, y, radius);
-    ctx.closePath();
-    ctx.fill(); // Bu satır eklendi
+/* POLYFILL: Donmayı önleyen manuel yuvarlak dikdörtgen çizimi */
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+        return this;
+    };
 }
 
 const AudioSys = {
@@ -982,7 +984,6 @@ let Game = {
 function startGame() {
     const nums = getNums();
     if(nums.length === 0) return modal(TEXT[DATA.lang].alert_sayi);
-    // GÜNCELLEME: İstatistik modunu kapat
     document.body.classList.remove('stats-active');
     if(window.innerWidth <= 900) document.body.classList.add('game-active');
     
@@ -997,7 +998,6 @@ function startGame() {
         for(let i=0; i<lim; i++) Game.qList.push(pool[Math.floor(Math.random()*pool.length)]);
     }
     Game.qList.sort(()=>Math.random()-0.5);
-    
     resetState(DATA.mode, Game.qList.length);
     if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); } 
     else { 
@@ -1010,7 +1010,6 @@ function startErrorPractice() {
     const currentDB = DATA[DATA.mode].db;
     const keys = Object.keys(currentDB);
     if(keys.length === 0) return modal(TEXT[DATA.lang].alert_hata);
-    // GÜNCELLEME: İstatistik modunu kapat
     document.body.classList.remove('stats-active');
     if(window.innerWidth <= 900) document.body.classList.add('game-active');
 
@@ -1023,7 +1022,6 @@ function startErrorPractice() {
     });
     Game.qList.sort(()=>Math.random()-0.5);
     
-    // GÜNCELLEME: Önce ekranı hazırla
     resetState(DATA.mode, Game.qList.length);
     if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); } 
     else { 
@@ -1207,21 +1205,36 @@ function drawCar(x, y, color, isPlayer=false) {
         ctx.save(); ctx.beginPath();
         ctx.moveTo(x - (w/2) + 10, y); ctx.lineTo(x - (w/2) - 15, y - 200); ctx.lineTo(x - (w/2) + 35, y - 200);
         ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; ctx.fill();
+        
+        // Right headlight logic: On if lives > 1
+        if (Game.r.lives > 1) {
+            ctx.beginPath(); 
+            ctx.moveTo(x + (w/2) - 10, y); ctx.lineTo(x + (w/2) - 35, y - 200); ctx.lineTo(x + (w/2) + 15, y - 200); 
+            ctx.fill();
+        }
         ctx.restore();
     }
 
     ctx.fillStyle = color; 
-    drawRoundedRect(ctx, x - w/2, y, w, h, 10); // Gövde
+    ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill(); // Body
     
     ctx.fillStyle = "rgba(0,0,0,0.5)"; 
-    drawRoundedRect(ctx, x - (w/2)+5, y + 20, w-10, 20, 5); // Ön cam
+    ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill(); // Windshield
+
+    // Damage Cracks
+    if(isPlayer) {
+        ctx.strokeStyle = "rgba(255,255,255,0.6)"; ctx.lineWidth=2;
+        if (Game.r.lives <= 2) { ctx.beginPath(); ctx.moveTo(x - 10, y + 25); ctx.lineTo(x + 5, y + 35); ctx.stroke(); }
+        if (Game.r.lives <= 1) { ctx.beginPath(); ctx.moveTo(x + 15, y + 22); ctx.lineTo(x - 5, y + 38); ctx.lineTo(x + 5, y + 42); ctx.stroke(); }
+    }
 
     ctx.fillStyle = "rgba(0,0,0,0.3)"; 
-    drawRoundedRect(ctx, x - (w/2)+5, y + 45, w-10, 35, 5); // Tavan
+    ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill(); // Roof
 
+    // Lights
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, 6.28); ctx.fill(); 
-    if (!isPlayer || Game.r.lives > 1) { ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, 6.28); ctx.fill(); } 
-    else { ctx.fillStyle = "#333"; ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, 6.28); ctx.fill(); }
+    if (!isPlayer || Game.r.lives > 1) { ctx.fillStyle = "#fff"; } else { ctx.fillStyle = "#333"; }
+    ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, 6.28); ctx.fill();
 }
 
 function racerLoop() {
