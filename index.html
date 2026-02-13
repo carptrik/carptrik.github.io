@@ -8,19 +8,6 @@
     
     <title>ÇARPTRİK - Çarpım Tablosu Oyunu & Araba Yarışı</title>
     
-    <meta name="description" content="Çarpım tablosunu eğlenerek ezberleyin! Çarptrik ile ister Klasik modda pratik yapın, ister Araba Yarışı moduyla matematik hızınızı test edin. Ücretsiz eğitici çarpım tablosu oyunu.">
-    
-    <meta name="keywords" content="çarptrik, çarpım tablosu oyunu, çarpım tablosu ezberleme, çarpım tablosu araba yarışı, matematik oyunu, eğitici oyunlar, 3. sınıf matematik, 4. sınıf matematik, multiplication table game, math racer, learn multiplication, math games for kids, multiplication racer">
-    
-    <meta name="author" content="Çarptrik">
-    <meta name="robots" content="index, follow">
-
-    <meta property="og:title" content="ÇARPTRİK - Çarpım Tablosu Yarışı">
-    <meta property="og:description" content="Çarpım tablosunu araba yarışı yaparak öğren! Skorunu kaydet, kendini geliştir.">
-    <meta property="og:type" content="website">
-
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3E text { fill: %2310b981; font-weight: bold; font-family: sans-serif; } %3C/style%3E%3Crect width='100%25' height='100%25' fill='%230f172a' rx='20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='80'%3E✖%3C/text%3E%3C/svg%3E">
-    
     <style>
         :root {
             --bg-body: #0f172a;
@@ -45,18 +32,25 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             margin: 0; padding: 0;
-            
             width: 100vw;
-            height: 100dvh; /* Dynamic Viewport Height */
-            
+            height: 100dvh;
             display: flex; flex-direction: column;
             overflow: hidden;
-
-            /* Çentik ve genel güvenli alanlar */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
+        }
+
+        /* SCROLLBAR GİZLEME (PC İÇİN) */
+        .setup-container::-webkit-scrollbar, 
+        .list-content::-webkit-scrollbar,
+        .dashboard::-webkit-scrollbar {
+            display: none;
+        }
+        .setup-container, .list-content, .dashboard {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
 
         /* --- HEADER --- */
@@ -83,7 +77,6 @@
 
         .header-right { justify-self: end; display: flex; align-items: center; gap: 15px; }
         
-        /* SOUND BUTTON */
         .sound-btn {
             background: transparent; border: 1px solid var(--border); color: var(--text-muted);
             padding: 5px 10px; border-radius: 8px; font-size: 16px; cursor: pointer;
@@ -230,49 +223,30 @@
         .q-text { font-size: 120px; font-weight: 900; color: #fff; margin-bottom: 30px; text-shadow: 0 0 50px rgba(255,255,255,0.05); }
         .ans-inp { width: 100%; max-width: 400px; background: #000; border: 3px solid var(--border); color: var(--primary); font-size: 60px; padding: 20px; text-align: center; border-radius: 20px; outline: none; font-family: monospace; font-weight: bold; transition: 0.2s; }
         .ans-inp:focus { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
-        .ans-inp[readonly] { caret-color: transparent; } /* Mobilde imleci gizle */
+        .ans-inp[readonly] { caret-color: transparent; }
 
         .feedback { 
             min-height: 80px; margin-top: 20px; font-weight: 900; font-size: 40px; 
             text-align: center; line-height: 1.2; display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* YARIŞ EKRANI VE YENİ HUD TASARIMI */
         #racer-wrap { flex: 1; margin: 20px; background: #111; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border); }
         canvas { width: 100%; height: 100%; display: block; }
         
-        /* ROAD FIGHTER STYLE PROGRESS BAR */
         .progress-strip {
-            position: absolute;
-            left: 15px;
-            top: 70px; /* Header'ın biraz altı */
-            bottom: 40px;
-            width: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            z-index: 50;
+            position: absolute; left: 15px; top: 70px; bottom: 40px; width: 4px;
+            background: rgba(255,255,255,0.2); border-radius: 2px; z-index: 50;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
         }
-        .prog-flag {
-            position: absolute;
-            left: -6px;
-            font-size: 16px;
-            line-height: 1;
-        }
-        .pf-start { bottom: -20px; }
-        .pf-end { top: -20px; }
+        .prog-flag { position: absolute; left: -6px; font-size: 16px; line-height: 1; }
+        .pf-start { bottom: -20px; } .pf-end { top: -20px; }
         
         .prog-car {
-            position: absolute;
-            left: -8px; /* Çizgiyi ortalamak için */
-            bottom: 0%;
-            font-size: 20px;
-            line-height: 1;
+            position: absolute; left: -8px; bottom: 0%; font-size: 20px; line-height: 1;
             transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        /* YENİ KOMPAKT ÜST BAR */
         .r-header {
             position: absolute; top: 15px; left: 15px; right: 15px;
             display: flex; justify-content: space-between; align-items: center;
@@ -283,15 +257,9 @@
             background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 12px;
         }
         .r-q-box {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid var(--primary);
-            color: #fff;
-            padding: 8px 25px;
-            border-radius: 25px;
-            font-size: 28px;
-            font-weight: 900;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-            letter-spacing: 2px;
+            background: rgba(15, 23, 42, 0.9); border: 2px solid var(--primary); color: #fff;
+            padding: 8px 25px; border-radius: 25px; font-size: 28px; font-weight: 900;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6); letter-spacing: 2px;
         }
 
         .mob-ctrl { display: none; gap: 15px; padding: 0 25px 25px 25px; height: 100px; }
@@ -307,24 +275,16 @@
         .f-btn:hover { background: var(--bg-panel); }
         .f-btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.05); }
 
-        /* PAUSE OVERLAY - FIXED POSITION TO COVER EVERYTHING */
         #pause-overlay {
-            display: none;
-            position: fixed; /* Fixed is key here */
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 2000; /* Higher than anything else */
-            justify-content: center; align-items: center; flex-direction: column;
-            gap: 20px;
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(15, 23, 42, 0.95); z-index: 2000;
+            justify-content: center; align-items: center; flex-direction: column; gap: 20px;
         }
         .paused-text { font-size: 40px; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
         .pause-menu { display: flex; flex-direction: column; gap: 15px; width: 250px; }
         .btn-resume { padding: 15px 30px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; box-shadow: 0 0 30px var(--primary-glow); transition: 0.2s; width: 100%; }
-        .btn-resume:hover { transform: scale(1.05); }
         .btn-quit { padding: 15px 30px; background: transparent; border: 2px solid var(--danger); color: var(--danger); border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; transition: 0.2s; width: 100%; }
-        .btn-quit:hover { background: rgba(239,68,68,0.1); }
 
-        /* RESTORED MODAL STYLES */
         .modal-wrap { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal { background: var(--bg-panel); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
         .m-btns { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
@@ -335,29 +295,17 @@
         footer { margin-top: auto; padding: 15px; text-align: center; font-size: 11px; color: var(--text-muted); background: var(--bg-body); border-top: 1px solid var(--border); transition: transform 0.3s ease; }
         footer a { color: var(--text-muted); text-decoration: none; }
 
-        /* --- MOBILE KEYPAD STYLES --- */
-        .mobile-keypad { display: none; } /* Default hidden */
-        .mobile-stats-btn { display: none; } /* Default hidden */
-        .mobile-stats-back { display: none; } /* Default hidden */
+        .mobile-keypad { display: none; }
+        .mobile-stats-btn { display: none; }
+        .mobile-stats-back { display: none; }
 
-        /* MOBILE FIXES & HEADER ADJUSTMENTS */
+        /* --- MOBILE STYLES --- */
         @media (max-width: 900px) {
             body { 
-                padding: 0; 
-                padding-top: env(safe-area-inset-top); 
-                padding-bottom: env(safe-area-inset-bottom);
-                height: 100dvh; 
+                padding: 0; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); height: 100dvh; 
             }
             
-            /* Düzeltilmiş Mobile Header */
-            header { 
-                display: flex; 
-                flex-wrap: wrap; 
-                justify-content: space-between; 
-                align-items: center;
-                height: auto; 
-                padding: 10px 15px; 
-            }
+            header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; height: auto; padding: 10px 15px; }
             .header-left { order: 1; flex: 0 0 auto; }
             .header-right { order: 2; flex: 0 0 auto; gap: 8px; }
             .header-center { order: 3; width: 100%; margin-top: 10px; display: flex; justify-content: center; }
@@ -367,97 +315,66 @@
             
             .dashboard { display: flex; flex-direction: column; height: auto; padding: 10px; gap: 10px; overflow-y: auto; }
             
-            /* Varsayılan Mobil Görünüm: Sadece Orta Panel Görünür */
-            .panel { order: unset !important; }
-            .dashboard > .panel:nth-child(1) { display: none; } /* Sol (Hata) Gizle */
-            .dashboard > .panel:nth-child(3) { display: none; } /* Sağ (Geçmiş) Gizle */
-            .dashboard > .panel:nth-child(2) { display: flex; flex: 1; min-height: 0; } /* Orta (Oyun/Setup) Göster */
+            /* DÜZELTME: Yan Panelleri Başlangıçta KESİN GİZLE */
+            #panel-errors, #panel-history { display: none; }
+            #panel-game { display: flex; flex: 1; min-height: 0; }
 
-            /* --- İSTATİSTİK MODU (Body class 'stats-active' olunca) --- */
-            body.stats-active .dashboard > .panel:nth-child(2) { display: none; } /* Setup Gizle */
-            body.stats-active .dashboard > .panel:nth-child(1) { display: flex; height: 50%; } /* Sol Göster */
-            body.stats-active .dashboard > .panel:nth-child(3) { display: flex; height: 50%; } /* Sağ Göster */
-            body.stats-active .mobile-stats-back { display: block; margin-bottom: 10px; } /* Geri Butonu Göster */
-
-            /* --- KOMPAKT SETUP EKRANI --- */
-            .setup-container { 
-                padding: 15px; 
-                gap: 12px; /* Dikey boşlukları azalt */
-                height: auto; /* Scroll olabilsin ama sığsın */
+            /* --- İSTATİSTİK MODU --- */
+            body.stats-active .dashboard {
+                display: block; /* Flex yerine block, scroll için */
+                overflow-y: auto;
+                padding-bottom: 80px;
             }
+            body.stats-active #panel-game { display: none !important; }
+            body.stats-active #panel-errors { 
+                display: flex !important; 
+                height: auto; 
+                min-height: 400px; /* İçerik kadar yer kaplasın */
+                margin-bottom: 20px;
+            }
+            body.stats-active #panel-history { 
+                display: flex !important; 
+                height: auto;
+                min-height: 400px;
+            }
+            body.stats-active .mobile-stats-back { display: block; margin-bottom: 15px; }
+
+            /* --- KOMPAKT SETUP --- */
+            .setup-container { padding: 15px; gap: 12px; height: auto; }
             .section-header { font-size: 14px; margin-bottom: 5px; }
             .num-grid { gap: 8px; margin-bottom: 10px; }
             .num-label { height: 40px; font-size: 16px; }
             
-            .settings-box { 
-                padding: 12px; 
-                gap: 8px;
-            }
+            .settings-box { padding: 12px; gap: 8px; }
             .sb-title { font-size: 12px; margin-bottom: 2px; }
-            .toggle-group { 
-                flex-direction: row; /* Yan yana */
-                min-height: 50px; 
-                padding: 2px;
-                flex-wrap: nowrap; /* Sığdır */
-            }
-            .toggle-opt { 
-                padding: 5px; 
-                font-size: 11px; 
-                flex-direction: row; /* İçerik de yan yana */
-                gap: 5px;
-            }
-            .input-box { 
-                width: 50px; height: 30px; font-size: 14px; 
-            }
+            .toggle-group { flex-direction: row; min-height: 50px; padding: 2px; flex-wrap: nowrap; }
+            .toggle-opt { padding: 5px; font-size: 11px; flex-direction: row; gap: 5px; }
+            .input-box { width: 50px; height: 30px; font-size: 14px; }
+            .btn-start { padding: 15px; font-size: 16px; margin-top: 10px; }
 
-            .btn-start { 
-                padding: 15px; font-size: 16px; margin-top: 10px; 
-            }
-
-            /* --- İSTATİSTİKLER BUTONU --- */
             .mobile-stats-btn {
-                display: flex;
-                width: 100%;
-                background: rgba(255,255,255,0.1);
-                border: 1px solid var(--border);
-                color: var(--text-muted);
-                padding: 10px;
-                border-radius: 10px;
-                font-weight: 800;
-                justify-content: center;
-                align-items: center;
-                gap: 10px;
-                cursor: pointer;
-                margin-bottom: 10px;
+                display: flex; width: 100%; background: rgba(255,255,255,0.1);
+                border: 1px solid var(--border); color: var(--text-muted);
+                padding: 10px; border-radius: 10px; font-weight: 800;
+                justify-content: center; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 10px;
             }
-            .mobile-stats-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
-
             .mobile-stats-back {
-                width: 100%;
-                background: var(--primary);
-                color: #000;
-                padding: 12px;
-                border-radius: 10px;
-                font-weight: 900;
-                text-align: center;
-                cursor: pointer;
-                border: none;
+                width: 100%; background: var(--primary); color: #000;
+                padding: 12px; border-radius: 10px; font-weight: 900; text-align: center; cursor: pointer; border: none;
             }
 
-            /* Mobile Racer HUD */
+            /* --- OYUN MODU --- */
             .r-stat { font-size: 16px; padding: 4px 10px; }
             .r-q-box { font-size: 20px; padding: 5px 15px; }
-
             #racer-wrap { margin: 15px; height: 40vh; min-height: 300px; } 
             .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
             .ans-inp { font-size: 40px; padding: 15px; }
 
-            /* --- FULL SCREEN GAME MODE STYLES (Mobile Only) --- */
             body.game-active { overflow: hidden; padding-top: env(safe-area-inset-top) !important; }
             body.game-active header, body.game-active footer { display: none !important; }
             body.game-active .dashboard { padding: 0; height: 100%; margin: 0; max-width: 100%; display: block; overflow: hidden; }
             body.game-active .panel { display: none; }
-            body.game-active .panel:nth-child(2) { display: flex; height: 100%; border-radius: 0; border: none; }
+            body.game-active #panel-game { display: flex; height: 100%; border-radius: 0; border: none; }
             
             body.game-active #view-classic { display: flex; flex-direction: column; height: 100%; padding-bottom: 0; }
             body.game-active #view-classic .hud { margin: 10px; padding: 10px 15px; }
@@ -467,43 +384,20 @@
             body.game-active #view-classic .feedback { font-size: 24px; min-height: 40px; margin-top: 10px; }
             body.game-active #view-classic .foot-btns { display: none !important; }
 
-            /* --- MOBILE KEYPAD (DÜZELTİLMİŞ) --- */
             .mobile-keypad {
-                display: flex;
-                flex-direction: column;
-                background: #0f172a;
-                border-top: 1px solid var(--border);
-                padding: 10px;
-                /* ÇOK ÖNEMLİ: Alt boşluk artırıldı + Safe Area eklendi */
+                display: flex; flex-direction: column; background: #0f172a;
+                border-top: 1px solid var(--border); padding: 10px;
                 padding-bottom: calc(40px + env(safe-area-inset-bottom)); 
-                gap: 8px;
-                margin-top: auto; 
-                flex-shrink: 0;
-                z-index: 100; /* Her şeyin üstünde */
+                gap: 8px; margin-top: auto; flex-shrink: 0; z-index: 100;
             }
-
             .key-row { display: flex; gap: 8px; flex: 1; }
-
             .key-btn {
-                flex: 1;
-                background: var(--bg-card);
-                border: 1px solid var(--border);
-                color: #fff;
-                font-size: 24px;
-                font-weight: bold;
-                border-radius: 8px;
-                padding: 12px 0;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                touch-action: manipulation;
+                flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff;
+                font-size: 24px; font-weight: bold; border-radius: 8px; padding: 12px 0;
+                cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation;
             }
             .key-btn:active { background: var(--primary); color: #000; }
-            
-            /* DÜZELTME: Silme tuşu normal renk */
             .key-btn.k-del { color: #fff; background: var(--bg-card); border-color: var(--border); }
-            
             .key-btn.k-action { font-size: 14px; font-weight: 800; text-transform: uppercase; }
             .key-btn.k-pause { background: var(--warning); color: #000; }
             .key-btn.k-end { background: var(--danger); color: #fff; }
@@ -544,7 +438,7 @@
     
     <button class="mobile-stats-back" onclick="toggleStats()">⬅ GERİ DÖN</button>
 
-    <aside class="panel">
+    <aside class="panel" id="panel-errors">
         <div class="practice-area">
             <div class="pill-group">
                 <div class="pill selected" onclick="setErrMode('weighted', this); AudioSys.playClick()">
@@ -570,7 +464,7 @@
         </div>
     </aside>
 
-    <main class="panel">
+    <main class="panel" id="panel-game">
         
         <div id="view-setup" class="screen active">
             <div class="setup-container">
@@ -743,7 +637,7 @@
 
     </main>
 
-    <aside class="panel">
+    <aside class="panel" id="panel-history">
         <div class="graph-area" id="score-graph"></div>
         <div class="panel-head">
             <span data-i18n="gecmis_skorlar">GEÇMİŞ</span>
@@ -780,12 +674,8 @@
 </footer>
 
 <script>
-/* AUDIO SYSTEM (SYNTHESIZED) */
 const AudioSys = {
-    ctx: null,
-    osc: null, // Engine oscillator
-    gain: null,
-    
+    ctx: null, osc: null, gain: null,
     init: function() {
         if(!this.ctx) {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -793,7 +683,6 @@ const AudioSys = {
         }
         if(this.ctx.state === 'suspended') this.ctx.resume();
     },
-
     playTone: function(freq, type, duration, vol=0.1) {
         if(!DATA.sound) return;
         this.init();
@@ -803,12 +692,9 @@ const AudioSys = {
         o.frequency.setValueAtTime(freq, this.ctx.currentTime);
         g.gain.setValueAtTime(vol, this.ctx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-        o.connect(g);
-        g.connect(this.ctx.destination);
-        o.start();
-        o.stop(this.ctx.currentTime + duration);
+        o.connect(g); g.connect(this.ctx.destination);
+        o.start(); o.stop(this.ctx.currentTime + duration);
     },
-
     playClick: function() { this.playTone(800, 'sine', 0.1, 0.05); },
     playCorrect: function() { 
         if(!DATA.sound) return;
@@ -824,51 +710,30 @@ const AudioSys = {
         o.start(); o.stop(now + 0.3);
     },
     playWrong: function() { this.playTone(150, 'sawtooth', 0.3, 0.1); },
-
     startEngine: function() {
         if(!DATA.sound || this.osc) return;
         this.init();
         this.osc = this.ctx.createOscillator();
         this.gain = this.ctx.createGain();
         this.osc.type = 'sawtooth';
-        this.osc.frequency.value = 60; // Low rumble
-        
-        // Lowpass filter to muffle it
+        this.osc.frequency.value = 60; 
         const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 120;
-
-        this.gain.gain.value = 0.05; // Very quiet
-        
-        this.osc.connect(filter);
-        filter.connect(this.gain);
+        filter.type = 'lowpass'; filter.frequency.value = 120;
+        this.gain.gain.value = 0.05; 
+        this.osc.connect(filter); filter.connect(this.gain);
         this.gain.connect(this.ctx.destination);
         this.osc.start();
     },
-
     stopEngine: function() {
-        if(this.osc) {
-            this.osc.stop();
-            this.osc.disconnect();
-            this.osc = null;
-        }
+        if(this.osc) { this.osc.stop(); this.osc.disconnect(); this.osc = null; }
     }
 };
 
-/* STATE */
 const DATA = {
     lang: 'tr', mode: 'classic', sound: true,
-    classic: {
-        db: JSON.parse(localStorage.getItem('carptrik_classic_db')) || {},
-        history: JSON.parse(localStorage.getItem('carptrik_classic_history')) || []
-    },
-    racer: {
-        db: JSON.parse(localStorage.getItem('carptrik_racer_db')) || {},
-        history: JSON.parse(localStorage.getItem('carptrik_racer_history')) || []
-    }
+    classic: { db: JSON.parse(localStorage.getItem('carptrik_classic_db')) || {}, history: JSON.parse(localStorage.getItem('carptrik_classic_history')) || [] },
+    racer: { db: JSON.parse(localStorage.getItem('carptrik_racer_db')) || {}, history: JSON.parse(localStorage.getItem('carptrik_racer_history')) || [] }
 };
-
-// Check Sound Pref
 if(localStorage.getItem('carptrik_sound') === 'false') DATA.sound = false;
 
 const TEXT = {
@@ -904,7 +769,6 @@ const TEXT = {
     }
 };
 
-/* INIT */
 function init() {
     const l = localStorage.getItem('carptrik_lang');
     if(l) DATA.lang = l;
@@ -917,21 +781,17 @@ function toggleSound() {
     DATA.sound = !DATA.sound;
     localStorage.setItem('carptrik_sound', DATA.sound);
     updateSoundBtn();
-    if(DATA.sound) AudioSys.init(); 
-    else AudioSys.stopEngine();
+    if(DATA.sound) AudioSys.init(); else AudioSys.stopEngine();
 }
 
 function updateSoundBtn() {
     const btn = document.getElementById('btn-sound');
     btn.innerHTML = DATA.sound ? '🔊' : '🔇';
     btn.classList.toggle('active', DATA.sound);
-
-    // Update Keypad Sound Button
     const kBtn = document.getElementById('m-sound-btn');
     if(kBtn) {
         kBtn.innerText = DATA.sound ? '🔊' : '🔇';
-        if(!DATA.sound) kBtn.classList.add('muted');
-        else kBtn.classList.remove('muted');
+        if(!DATA.sound) kBtn.classList.add('muted'); else kBtn.classList.remove('muted');
     }
 }
 
@@ -948,19 +808,12 @@ function setLang(l) {
     updateStartBtn();
 }
 
-/* NEW TAB SWITCHING LOGIC */
 function requestModeChange(m) {
-    if(DATA.mode === m) return; // Already on this mode
-    
-    // Check if we are on Setup Screen
+    if(DATA.mode === m) return;
     if(document.getElementById('view-setup').classList.contains('active')) {
         setMode(m);
     } else {
-        // We are playing or seeing results. Ask confirmation.
-        modal(TEXT[DATA.lang].mod_degistir_onay, () => {
-             showSetup(); // Reset UI
-             setMode(m);  // Switch Mode
-        });
+        modal(TEXT[DATA.lang].mod_degistir_onay, () => { showSetup(); setMode(m); });
     }
 }
 
@@ -968,13 +821,9 @@ function setMode(m) {
     DATA.mode = m;
     document.getElementById('tab-classic').classList.toggle('active', m==='classic');
     document.getElementById('tab-racer').classList.toggle('active', m==='racer');
-    
     document.getElementById('opt-speed-classic').style.display = m==='classic' ? 'flex' : 'none';
     document.getElementById('opt-speed-racer').style.display = m==='racer' ? 'flex' : 'none';
-    
-    updateStartBtn();
-    renderLists();
-    calcTotal();
+    updateStartBtn(); renderLists(); calcTotal();
 }
 
 function updateStartBtn() {
@@ -990,21 +839,15 @@ function updateStartBtn() {
 
 function selectToggle(el) {
     el.parentElement.querySelectorAll('.toggle-opt').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    el.querySelector('input').checked = true;
-    calcTotal();
+    el.classList.add('selected'); el.querySelector('input').checked = true; calcTotal();
 }
 
 function setErrMode(val, el) {
     document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
-    el.classList.add('selected');
-    el.querySelector('input').checked = true;
+    el.classList.add('selected'); el.querySelector('input').checked = true;
 }
 
-function toggleAll(v) { 
-    document.querySelectorAll('.num-chk').forEach(c => c.checked=v); 
-    calcTotal();
-}
+function toggleAll(v) { document.querySelectorAll('.num-chk').forEach(c => c.checked=v); calcTotal(); }
 function getNums() { return Array.from(document.querySelectorAll('.num-chk:checked')).map(c=>parseInt(c.value)); }
 
 function calcTotal() {
@@ -1013,35 +856,19 @@ function calcTotal() {
     const total = nums * nums * rep;
     const mode = document.querySelector('input[name="gMode"]:checked').value;
     const infoSpan = document.getElementById('total-info');
-    if (mode === 'repeat') {
-        infoSpan.style.display = 'inline';
-        infoSpan.innerText = `(${total})`;
-    } else {
-        infoSpan.style.display = 'none';
-    }
+    if (mode === 'repeat') { infoSpan.style.display = 'inline'; infoSpan.innerText = `(${total})`; } else { infoSpan.style.display = 'none'; }
 }
 
-/* --- MOBILE STATS TOGGLE --- */
-function toggleStats() {
-    document.body.classList.toggle('stats-active');
-}
+function toggleStats() { document.body.classList.toggle('stats-active'); }
 
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('view-'+id).classList.add('active');
 }
 function showSetup() { 
-    Game.isPaused = false;
-    AudioSys.stopEngine(); // Ensure engine stops when returning to setup
-    if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
-    
-    // Remove FULL SCREEN mobile class
-    document.body.classList.remove('game-active');
-    // Remove Stats View if open
-    document.body.classList.remove('stats-active');
-
+    Game.isPaused = false; AudioSys.stopEngine(); if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
+    document.body.classList.remove('game-active'); document.body.classList.remove('stats-active');
     document.getElementById('pause-overlay').style.display = 'none';
-    // Remove blur filters
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
     showScreen('setup'); 
@@ -1063,44 +890,30 @@ function closeModal() { document.querySelector('.modal-wrap').style.display = 'n
 
 function shakeScreen() {
     document.body.classList.add('shake');
-    const flash = document.createElement('div');
-    flash.className = 'damage-flash';
+    const flash = document.createElement('div'); flash.className = 'damage-flash';
     document.body.appendChild(flash);
-    setTimeout(() => {
-        document.body.classList.remove('shake');
-        if(flash) flash.remove();
-    }, 500);
+    setTimeout(() => { document.body.classList.remove('shake'); if(flash) flash.remove(); }, 500);
 }
 
 function updateProgress() {
-    // 0-100 arası yüzde hesapla
     const p = (Game.total > 0) ? Math.min(100, (Game.idx / Game.total) * 100) : 0;
-    const car = document.getElementById('prog-car');
-    if(car) car.style.bottom = p + '%';
+    const car = document.getElementById('prog-car'); if(car) car.style.bottom = p + '%';
 }
 
-/* KEYPAD HANDLING */
 function handleKeyInput(val) {
     if(Game.isPaused || document.getElementById('c-input').disabled) return;
-    const i = document.getElementById('c-input');
-    i.value += val;
-    AudioSys.playClick();
-    
-    // Trigger input event manually for logic
+    const i = document.getElementById('c-input'); i.value += val; AudioSys.playClick();
     i.dispatchEvent(new Event('input'));
 }
 
 function handleKeyAction(action) {
     if(Game.isPaused) return;
     if(action === 'del') {
-        const i = document.getElementById('c-input');
-        i.value = i.value.slice(0, -1);
-        AudioSys.playClick();
-        i.dispatchEvent(new Event('input'));
+        const i = document.getElementById('c-input'); i.value = i.value.slice(0, -1);
+        AudioSys.playClick(); i.dispatchEvent(new Event('input'));
     }
 }
 
-/* GAME ENGINE */
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
     slowLimit: 0, isPaused: false, pauseStart: 0,
@@ -1110,15 +923,9 @@ let Game = {
 function startGame() {
     const nums = getNums();
     if(nums.length === 0) return modal(TEXT[DATA.lang].alert_sayi);
+    if(window.innerWidth <= 900) document.body.classList.add('game-active');
     
-    // MOBIL CİHAZDA TAM EKRAN MODUNU AKTİF ET
-    if(window.innerWidth <= 900) {
-        document.body.classList.add('game-active');
-    }
-
-    let pool = [];
-    nums.forEach(n1 => nums.forEach(n2 => pool.push({n1, n2})));
-    
+    let pool = []; nums.forEach(n1 => nums.forEach(n2 => pool.push({n1, n2})));
     Game.qList = [];
     const mode = document.querySelector('input[name="gMode"]:checked').value;
     if(mode === 'repeat') {
@@ -1129,24 +936,15 @@ function startGame() {
         for(let i=0; i<lim; i++) Game.qList.push(pool[Math.floor(Math.random()*pool.length)]);
     }
     Game.qList.sort(()=>Math.random()-0.5);
-    
     resetState(DATA.mode, Game.qList.length);
-    if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); }
-    else { 
-        showScreen('racer'); 
-        initRacer(); 
-    }
+    if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); } else { showScreen('racer'); initRacer(); }
 }
 
 function startErrorPractice() {
     const currentDB = DATA[DATA.mode].db;
     const keys = Object.keys(currentDB);
     if(keys.length === 0) return modal(TEXT[DATA.lang].alert_hata);
-    
-    // MOBIL CİHAZDA TAM EKRAN MODUNU AKTİF ET
-    if(window.innerWidth <= 900) {
-        document.body.classList.add('game-active');
-    }
+    if(window.innerWidth <= 900) document.body.classList.add('game-active');
 
     Game.qList = [];
     const mode = document.querySelector('input[name="errMode"]:checked').value;
@@ -1156,116 +954,67 @@ function startErrorPractice() {
         for(let i=0; i<c; i++) Game.qList.push({n1,n2});
     });
     Game.qList.sort(()=>Math.random()-0.5);
-    
     resetState(DATA.mode, Game.qList.length);
-    if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); }
-    else { showScreen('racer'); initRacer(); }
+    if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); } else { showScreen('racer'); initRacer(); }
 }
 
 function resetState(t, len) {
-    Game.type = t; 
-    Game.total = len; 
-    Game.idx = 0; 
-    Game.score = 0; // Puan 0'dan başlar
-    Game.unitScore = (len > 0) ? (100 / len) : 0; // Her soru kaç puan
-    Game.errors = 0; 
-    Game.times = [];
-    Game.isPaused = false;
-    document.getElementById('pause-overlay').style.display = 'none';
+    Game.type = t; Game.total = len; Game.idx = 0; Game.score = 0; 
+    Game.unitScore = (len > 0) ? (100 / len) : 0; Game.errors = 0; Game.times = [];
+    Game.isPaused = false; document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
 }
 
-/* PAUSE LOGIC */
-function togglePause() {
-    if(Game.isPaused) resumeGame();
-    else pauseGame();
-}
+function togglePause() { if(Game.isPaused) resumeGame(); else pauseGame(); }
 
 function pauseGame() {
-    Game.isPaused = true;
-    Game.pauseStart = Date.now();
-
-    // 1. Show Overlay FIRST (Safest)
+    Game.isPaused = true; Game.pauseStart = Date.now();
     document.getElementById('pause-overlay').style.display = 'flex';
-
-    // 2. Hide Buttons
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'none');
-
-    // 3. Mode Specific Logic
     if(Game.type === 'classic') {
-         // Safe check
          const qArea = document.querySelector('#view-classic .q-area');
          if(qArea) qArea.style.filter = 'blur(30px)';
          document.getElementById('c-input').disabled = true;
     } else if(Game.type === 'racer') {
          document.querySelector('#racer-wrap').style.filter = 'blur(30px)';
          if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
-         AudioSys.stopEngine();
-         // Reset delta time on pause so we don't jump when resuming
-         Game.r.lastTime = 0; 
+         AudioSys.stopEngine(); Game.r.lastTime = 0; 
     }
 }
 
 function resumeGame() {
     Game.isPaused = false;
-    const pausedDuration = Date.now() - Game.pauseStart;
-    
-    // Hide overlay / Show buttons
+    Game.startT += (Date.now() - Game.pauseStart);
     document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
-
-    // Adjust start time so speed calculation is correct
-    Game.startT += pausedDuration;
-
     if(Game.type === 'classic') {
         const qArea = document.querySelector('#view-classic .q-area');
         if(qArea) qArea.style.filter = 'none';
         document.getElementById('c-input').disabled = false;
-        
-        // Sadece desktop'ta odakla
-        if(window.innerWidth > 900) {
-            document.getElementById('c-input').focus();
-        }
+        if(window.innerWidth > 900) document.getElementById('c-input').focus();
     } else if(Game.type === 'racer') {
         document.querySelector('#racer-wrap').style.filter = 'none';
-        AudioSys.startEngine();
-        Game.r.lastTime = 0; // Reset for fresh DT
+        AudioSys.startEngine(); Game.r.lastTime = 0; 
         Game.r.loop = requestAnimationFrame(racerLoop);
     }
 }
 
-function confirmFinish() { 
-    // Hide pause overlay temporarily to show modal
-    document.getElementById('pause-overlay').style.display = 'none';
-    modal(TEXT[DATA.lang].confirm_bitir, endGame); 
-}
+function confirmFinish() { document.getElementById('pause-overlay').style.display = 'none'; modal(TEXT[DATA.lang].confirm_bitir, endGame); }
 
 function endGame() {
-    // Clean up pause state
-    Game.isPaused = false;
-    
-    // Remove Full screen class
-    document.body.classList.remove('game-active');
-
+    Game.isPaused = false; document.body.classList.remove('game-active');
     document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
-
-    if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
-    AudioSys.stopEngine();
+    if(Game.r.loop) cancelAnimationFrame(Game.r.loop); AudioSys.stopEngine();
     
-    // Puan 0-100 arasına sabitlenir
-    Game.score = Math.round(Game.score);
-    if(Game.score < 0) Game.score = 0;
-    if(Game.score > 100) Game.score = 100;
-
+    Game.score = Math.round(Math.max(0, Math.min(100, Game.score)));
     const avg = Game.times.length ? (Game.times.reduce((a,b)=>a+b,0)/Game.times.length).toFixed(1) : "0.0";
     
     const activeData = DATA[DATA.mode];
     activeData.history.unshift({score:Game.score, speed:avg, errors:Game.errors, q:Game.idx});
     if(activeData.history.length > 20) activeData.history.pop();
-    
     localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify(activeData.history));
     renderLists();
     
@@ -1275,102 +1024,57 @@ function endGame() {
     showScreen('result');
 }
 
-/* CLASSIC */
 function nextQClassic() {
     if(Game.idx >= Game.total) return endGame();
-    
     Game.currQ = Game.qList[Game.idx];
     document.getElementById('c-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
     document.getElementById('c-curr').innerText = Game.idx + 1;
     document.getElementById('c-total').innerText = Game.total;
-    
-    // Puanı yuvarlayarak göster
     document.getElementById('c-score').innerText = Math.round(Game.score);
-    
     document.getElementById('c-feedback').innerText = "";
-    const i = document.getElementById('c-input');
-    i.value = ''; i.disabled = false; 
-
-    // Mobilde klavye açılmasın
-    if(window.innerWidth <= 900) {
-        i.readOnly = true;
-    } else {
-        i.readOnly = false;
-        i.focus();
-    }
+    const i = document.getElementById('c-input'); i.value = ''; i.disabled = false; 
+    if(window.innerWidth <= 900) i.readOnly = true; else { i.readOnly = false; i.focus(); }
     
     Game.startT = Date.now();
-
     const speedMode = document.querySelector('input[name="cSpeed"]:checked').value;
-    if(speedMode === 'manual') {
-        Game.slowLimit = parseFloat(document.getElementById('inp-speed').value) || 4;
-    } else {
-        if(Game.times.length < 3) {
-            Game.slowLimit = 5; 
-        } else {
+    if(speedMode === 'manual') Game.slowLimit = parseFloat(document.getElementById('inp-speed').value) || 4;
+    else {
+        if(Game.times.length < 3) Game.slowLimit = 5; 
+        else {
             const avg = Game.times.reduce((a,b)=>a+b,0) / Game.times.length;
-            Game.slowLimit = avg * 1.5; 
-            if(Game.slowLimit < 2) Game.slowLimit = 2;
+            Game.slowLimit = Math.max(2, avg * 1.5); 
         }
     }
 }
 
 document.getElementById('c-input').addEventListener('input', function() {
     if(Game.isPaused) return;
-
     const ans = Game.currQ.n1 * Game.currQ.n2;
     if(this.value.length >= ans.toString().length) {
-        const now = Date.now();
-        const elapsed = (now - Game.startT) / 1000;
+        const elapsed = (Date.now() - Game.startT) / 1000;
         const isSlow = elapsed > Game.slowLimit;
         const val = parseInt(this.value);
         const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
-        
-        const db = DATA.classic.db;
-        if(!db[k]) db[k]={score:0};
-        
+        const db = DATA.classic.db; if(!db[k]) db[k]={score:0};
         const fb = document.getElementById('c-feedback');
         
         if(val === ans) {
             Game.times.push(elapsed);
             const avg = Game.times.reduce((a,b)=>a+b,0)/Game.times.length;
             document.getElementById('c-speed').innerText = avg.toFixed(1)+'s';
-            
             if (isSlow) {
-                Game.errors++; 
-                db[k].score += 1; // Hata listesi puanı (Değişmedi)
-                
-                // YENİ PUANLAMA: Yavaşsa yarım puan
-                Game.score += (Game.unitScore / 2);
-
-                fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`;
-                AudioSys.playWrong(); 
+                Game.errors++; db[k].score += 1; Game.score += (Game.unitScore / 2);
+                fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`; AudioSys.playWrong(); 
             } else {
-                if(db[k].score > 0) db[k].score--;
-                
-                // YENİ PUANLAMA: Hızlıysa tam puan
-                Game.score += Game.unitScore;
-
-                fb.innerText = TEXT[DATA.lang].dogru; fb.style.color = 'var(--primary)';
-                AudioSys.playCorrect();
+                if(db[k].score > 0) db[k].score--; Game.score += Game.unitScore;
+                fb.innerText = TEXT[DATA.lang].dogru; fb.style.color = 'var(--primary)'; AudioSys.playCorrect();
             }
             Game.idx++; setTimeout(nextQClassic, 500); 
         } else {
-            Game.errors++; 
-            db[k].score += 2; // Hata listesi puanı (Değişmedi)
-            
-            // YENİ PUANLAMA: Yanlışsa yarım puan düş
-            Game.score -= (Game.unitScore / 2);
-            if(Game.score < 0) Game.score = 0; // Eksiye düşmesin
-
-            fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)';
-            AudioSys.playWrong();
+            Game.errors++; db[k].score += 2; Game.score -= (Game.unitScore / 2); if(Game.score < 0) Game.score = 0;
+            fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)'; AudioSys.playWrong();
             const i = document.getElementById('c-input'); i.disabled = true;
-            setTimeout(() => { 
-                if(!Game.isPaused) {
-                    i.disabled = false; Game.idx++; nextQClassic(); 
-                }
-            }, 1500);
+            setTimeout(() => { if(!Game.isPaused) { i.disabled = false; Game.idx++; nextQClassic(); } }, 1500);
         }
         if(db[k].score <= 0) delete db[k];
         localStorage.setItem('carptrik_classic_db', JSON.stringify(db));
@@ -1378,297 +1082,131 @@ document.getElementById('c-input').addEventListener('input', function() {
     }
 });
 
-/* RACER */
-const cvs = document.getElementById('racerCanvas');
-const ctx = cvs.getContext('2d');
-
 function initRacer() {
-    // Scroll to view on mobile
-    if(window.innerWidth <= 900) {
-        setTimeout(() => {
-            document.getElementById('racer-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
-    }
-
+    if(window.innerWidth <= 900) setTimeout(() => { document.getElementById('racer-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
     cvs.width = document.getElementById('racer-wrap').offsetWidth;
     cvs.height = document.getElementById('racer-wrap').offsetHeight;
-    
     const spdOpt = document.querySelector('input[name="rSpeed"]:checked').value;
     Game.r.speed = parseFloat(spdOpt) || 2.5;
-
     Game.r.lives=3; Game.r.lane=1;
-    // Auto adjust player X on init
-    const lw = cvs.width/4;
-    Game.r.x = (1 * lw) + (lw/2); 
-    Game.r.currX = Game.r.x;
-    
-    Game.r.cars=[]; Game.r.particles=[]; 
-    Game.r.inputLocked = false; 
-    Game.r.lastTime = 0; // Reset timer for new game
-    
-    AudioSys.startEngine(); // Start Engine Sound
-    
-    // PROGRESS INITIALIZE
-    updateProgress();
-
-    spawnRacerQ();
-    Game.r.loop = requestAnimationFrame(racerLoop);
+    const lw = cvs.width/4; Game.r.x = (1 * lw) + (lw/2); Game.r.currX = Game.r.x;
+    Game.r.cars=[]; Game.r.particles=[]; Game.r.inputLocked = false; Game.r.lastTime = 0; 
+    AudioSys.startEngine(); updateProgress(); spawnRacerQ(); Game.r.loop = requestAnimationFrame(racerLoop);
 }
 
 function spawnRacerQ() {
     if(Game.idx >= Game.total) { endGame(); return; }
-    
-    // UPDATE PROGRESS
     updateProgress();
-
-    // YENİ SORU İÇİN TEMİZLİK (Eskileri sil)
-    Game.r.cars = []; 
-    Game.r.isWaveActive = true; // Dalga aktif, çarpışma olabilir
-    Game.r.inputLocked = false; // Input kilidini aç
-
+    Game.r.cars = []; Game.r.isWaveActive = true; Game.r.inputLocked = false;
     Game.currQ = Game.qList[Game.idx];
     document.getElementById('r-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
     document.getElementById('r-score').innerText = Math.round(Game.score);
     document.getElementById('r-lives').innerText = Game.r.lives;
-    
     const ans = Game.currQ.n1 * Game.currQ.n2;
     let opts = [ans];
-    while(opts.length < 4) {
-        let f = ans + (Math.floor(Math.random()*10)-5);
-        if(f>0 && f!==ans && !opts.includes(f)) opts.push(f);
-    }
+    while(opts.length < 4) { let f = ans + (Math.floor(Math.random()*10)-5); if(f>0 && f!==ans && !opts.includes(f)) opts.push(f); }
     opts.sort(()=>Math.random()-0.5);
-    
     const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
-    
-    // Araçlar
     for(let i=0; i<4; i++) {
-        Game.r.cars.push({
-            lane: i, y: -300, 
-            val: opts[i], isCorrect: opts[i]===ans,
-            color: colors[Math.floor(Math.random()*colors.length)],
-            hit: false, driftX: 0, driftY: 0 
-        });
+        Game.r.cars.push({ lane: i, y: -300, val: opts[i], isCorrect: opts[i]===ans, color: colors[Math.floor(Math.random()*colors.length)], hit: false, driftX: 0, driftY: 0 });
     }
     Game.startT = Date.now(); 
 }
 
 function spawnParticles(x, y, color) {
-    for(let i=0; i<20; i++) {
-        Game.r.particles.push({
-            x: x, y: y,
-            vx: (Math.random()-0.5) * 15,
-            vy: (Math.random()-0.5) * 15,
-            life: 40, color: color
-        });
-    }
+    for(let i=0; i<20; i++) { Game.r.particles.push({ x: x, y: y, vx: (Math.random()-0.5) * 15, vy: (Math.random()-0.5) * 15, life: 40, color: color }); }
 }
 
 function drawCar(x, y, color, isPlayer=false) {
     const w = 70; const h = 90;
-    
-    // FAR HÜZMELERİ (Sadece Oyuncu için)
     if(isPlayer && y > -150 && y < cvs.height + 100) { 
-        ctx.save();
-        // Sol Beam
-        ctx.beginPath();
-        ctx.moveTo(x - (w/2) + 10, y);
-        ctx.lineTo(x - (w/2) - 15, y - 200);
-        ctx.lineTo(x - (w/2) + 35, y - 200);
-        // Daha şeffaf (0.08)
-        ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-        ctx.fill();
-
-        // Sağ Beam (Can > 1 ise yanar)
+        ctx.save(); ctx.beginPath();
+        ctx.moveTo(x - (w/2) + 10, y); ctx.lineTo(x - (w/2) - 15, y - 200); ctx.lineTo(x - (w/2) + 35, y - 200);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; ctx.fill();
         if (Game.r.lives > 1) {
-            ctx.beginPath();
-            ctx.moveTo(x + (w/2) - 10, y);
-            ctx.lineTo(x + (w/2) - 35, y - 200);
-            ctx.lineTo(x + (w/2) + 15, y - 200);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-            ctx.fill();
+            ctx.beginPath(); ctx.moveTo(x + (w/2) - 10, y); ctx.lineTo(x + (w/2) - 35, y - 200); ctx.lineTo(x + (w/2) + 15, y - 200); ctx.fill();
         }
         ctx.restore();
     }
-
-    // Gövde
-    ctx.fillStyle = color; 
-    ctx.beginPath(); ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
-    
-    // Ön Cam
-    ctx.fillStyle = "rgba(0,0,0,0.5)"; 
-    ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
-
-    // Hasar Efektleri
+    ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
     if(isPlayer) {
-        if (Game.r.lives <= 2) {
-            ctx.strokeStyle = "rgba(0,0,0,0.7)"; ctx.lineWidth=3;
-            ctx.beginPath(); ctx.moveTo(x-10, y+30); ctx.lineTo(x+15, y+40); ctx.stroke();
-        }
-        if (Game.r.lives <= 1) {
-            ctx.beginPath(); ctx.moveTo(x+10, y+25); ctx.lineTo(x-15, y+45); ctx.lineTo(x+5, y+55); ctx.stroke();
-        }
+        if (Game.r.lives <= 2) { ctx.strokeStyle = "rgba(0,0,0,0.7)"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(x-10, y+30); ctx.lineTo(x+15, y+40); ctx.stroke(); }
+        if (Game.r.lives <= 1) { ctx.beginPath(); ctx.moveTo(x+10, y+25); ctx.lineTo(x-15, y+45); ctx.lineTo(x+5, y+55); ctx.stroke(); }
     }
-
-    // Tavan (Genişletildi)
-    ctx.fillStyle = "rgba(0,0,0,0.3)"; 
-    ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
-    
-    // Far Noktaları
-    ctx.fillStyle = "#fff";
-    ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); // Sol
-    
-    if (!isPlayer || Game.r.lives > 1) {
-        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); // Sağ
-    } else {
-        ctx.fillStyle = "#333"; // Sönük
-        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
-    }
+    ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); 
+    if (!isPlayer || Game.r.lives > 1) { ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); } 
+    else { ctx.fillStyle = "#333"; ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); }
 }
 
-/* === DELTA TIME FIX === */
 function racerLoop(timestamp) {
     if(Game.type !== 'racer' || Game.isPaused) return; 
-    
-    // Calculate Delta Time (Normalized to 60fps)
     if (!Game.r.lastTime) Game.r.lastTime = timestamp;
-    const dt = (timestamp - Game.r.lastTime) / 16.67; 
-    Game.r.lastTime = timestamp;
-
-    // Cap dt to prevent huge jumps if tab was inactive
+    const dt = (timestamp - Game.r.lastTime) / 16.67; Game.r.lastTime = timestamp;
     const safeDt = Math.min(dt, 3);
+    const lw = cvs.width/4;
 
     ctx.clearRect(0,0,cvs.width, cvs.height);
-    const lw = cvs.width/4;
-    
-    // YOL
     ctx.fillStyle = "#1e293b"; ctx.fillRect(0,0,cvs.width,cvs.height);
     ctx.strokeStyle = "#334155"; ctx.lineWidth=2; ctx.setLineDash([20,30]);
     for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
     
-    // OYUNCU HAREKET (Delta time applied)
     const tx = (Game.r.lane * lw) + (lw/2);
-    // Smooth transition logic with dt
     Game.r.currX += (tx - Game.r.currX) * (0.2 * safeDt);
     const px = Game.r.currX; const py = cvs.height - 120;
     
     drawCar(px, py, "#10b981", true); 
 
-    // PARÇACIKLAR (Delta time applied)
     for(let i=Game.r.particles.length-1; i>=0; i--) {
-        let p = Game.r.particles[i];
-        p.x += p.vx * safeDt; 
-        p.y += p.vy * safeDt; 
-        p.life -= 1 * safeDt;
+        let p = Game.r.particles[i]; p.x += p.vx * safeDt; p.y += p.vy * safeDt; p.life -= 1 * safeDt;
         ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.life/5, p.life/5);
         if(p.life <= 0) Game.r.particles.splice(i,1);
     }
 
-    // DÜŞMAN ARABALARI
     for(let i=Game.r.cars.length-1; i>=0; i--) {
         let c = Game.r.cars[i];
-        
-        if (c.hit) {
-            c.x += c.driftX * safeDt;
-            c.y += c.driftY * safeDt; 
-        } else {
-            // Apply speed multiplied by Delta Time
-            c.y += Game.r.speed * safeDt;
-        }
-
+        if (c.hit) { c.x += c.driftX * safeDt; c.y += c.driftY * safeDt; } else { c.y += Game.r.speed * safeDt; }
         let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
-        
-        // EKRAN DIŞI KONTROL
-        if (c.y > cvs.height + 100) {
-            Game.r.cars.splice(i, 1);
-            continue; 
-        }
+        if (c.y > cvs.height + 100) { Game.r.cars.splice(i, 1); continue; }
+        drawCar(drawX, c.y, c.color, false); 
+        if(!c.hit) { ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; ctx.fillText(c.val, drawX, c.y + 70); }
 
-        drawCar(drawX, c.y, c.color, false); // isPlayer=false
-        
-        if(!c.hit) {
-            ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
-            ctx.fillText(c.val, drawX, c.y + 70); 
-        }
-
-        // ÇARPIŞMA MANTIĞI
         if(Game.r.isWaveActive && !c.hit && c.y+90 > py && c.y < py+90 && Math.abs(px - drawX) < 50) {
-            
-            Game.r.isWaveActive = false; // BU DALGADA BAŞKA ÇARPIŞMA OLAMAZ
-            Game.r.inputLocked = true;   // INPUT KİLİTLE (Şeritte kal)
-
-            const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
-            const db = DATA.racer.db;
-            if(!db[k]) db[k]={score:0};
+            Game.r.isWaveActive = false; Game.r.inputLocked = true;
+            const k = `${Game.currQ.n1}x${Game.currQ.n2}`; const db = DATA.racer.db; if(!db[k]) db[k]={score:0};
 
             if(c.isCorrect) {
-                // DOĞRU
-                spawnParticles(drawX, c.y + 45, c.color);
-                Game.r.cars.splice(i, 1); 
-                Game.times.push((Date.now()-Game.startT)/1000);
-                Game.idx++;
-                AudioSys.playCorrect();
-                
-                if(db[k].score > 0) db[k].score--; 
-
-                // YENİ PUANLAMA: Tam puan ekle
-                Game.score += Game.unitScore;
-
-                // Hemen yeni soru
+                spawnParticles(drawX, c.y + 45, c.color); Game.r.cars.splice(i, 1); 
+                Game.times.push((Date.now()-Game.startT)/1000); Game.idx++; AudioSys.playCorrect();
+                if(db[k].score > 0) db[k].score--; Game.score += Game.unitScore;
                 setTimeout(spawnRacerQ, 800); 
-
             } else {
-                // YANLIŞ
-                c.hit = true;
-                c.x = drawX; 
-                c.driftX = (drawX < px) ? -8 : 8; // Yana savrul
-                c.driftY = Game.r.speed * 1.2; 
-
-                shakeScreen(); // SARSINTI & KIRMIZI EFEKT
-                spawnParticles(px, py + 45, "#ef4444");
-                AudioSys.playWrong();
-
-                Game.r.lives--;
-                Game.errors++; 
-                db[k].score += 2; // Yanlış puanı (Hata listesi için, değişmedi)
-                
-                document.getElementById('r-lives').innerText = Game.r.lives;
-
-                if(Game.r.lives <= 0) {
-                    spawnParticles(px, py, "#10b981"); // Oyuncu patlar
-                    setTimeout(endGame, 1000);
-                } else {
-                    Game.idx++;
-                    setTimeout(spawnRacerQ, 1500); 
-                }
+                c.hit = true; c.x = drawX; c.driftX = (drawX < px) ? -8 : 8; c.driftY = Game.r.speed * 1.2; 
+                shakeScreen(); spawnParticles(px, py + 45, "#ef4444"); AudioSys.playWrong();
+                Game.r.lives--; Game.errors++; db[k].score += 2; document.getElementById('r-lives').innerText = Game.r.lives;
+                if(Game.r.lives <= 0) { spawnParticles(px, py, "#10b981"); setTimeout(endGame, 1000); } else { Game.idx++; setTimeout(spawnRacerQ, 1500); }
             }
-            if(db[k].score <= 0) delete db[k];
-            localStorage.setItem('carptrik_racer_db', JSON.stringify(db));
-            renderLists();
+            if(db[k].score <= 0) delete db[k]; localStorage.setItem('carptrik_racer_db', JSON.stringify(db)); renderLists();
         }
     }
-    
     Game.r.loop = requestAnimationFrame(racerLoop);
 }
 
 function racerInput(d) {
-    if(Game.r.inputLocked || Game.isPaused) return; // KİLİTLİYSE HAREKET ETME
+    if(Game.r.inputLocked || Game.isPaused) return; 
     let n = Game.r.lane + d; if(n>=0 && n<=3) Game.r.lane = n;
 }
 
 window.addEventListener('keydown', e => {
     if(Game.type === 'racer') {
-        const k = e.key.toLowerCase(); // CAPS LOCK FIX
-        if(k === 'arrowleft' || k === 'a') racerInput(-1);
-        if(k === 'arrowright' || k === 'd') racerInput(1);
+        const k = e.key.toLowerCase(); 
+        if(k === 'arrowleft' || k === 'a') racerInput(-1); if(k === 'arrowright' || k === 'd') racerInput(1);
     }
 });
 
-/* LISTS & GRAPH */
 function renderLists() {
-    // Determine active data set based on mode
     const activeData = DATA[DATA.mode];
-    
     const el = document.getElementById('list-errors');
     if(Object.keys(activeData.db).length === 0) el.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].liste_temiz}</div>`;
     else {
@@ -1681,29 +1219,21 @@ function renderLists() {
     
     const hl = document.getElementById('list-history');
     const graphBox = document.getElementById('score-graph');
-    
     if(activeData.history.length === 0) {
-        hl.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].gecmis_yok}</div>`;
-        graphBox.innerHTML = "";
+        hl.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].gecmis_yok}</div>`; graphBox.innerHTML = "";
     } else {
         let h = "";
         const points = activeData.history.slice(0, 10).reverse().map(x => x.score);
-        
         if(points.length > 1) {
-            const w = graphBox.offsetWidth;
-            const hg = graphBox.offsetHeight;
-            let d = `M 0 ${hg - (points[0]/100 * hg)}`;
-            const step = w / (points.length - 1);
+            const w = graphBox.offsetWidth; const hg = graphBox.offsetHeight;
+            let d = `M 0 ${hg - (points[0]/100 * hg)}`; const step = w / (points.length - 1);
             let circles = "";
             points.forEach((p, i) => {
-                const x = i * step;
-                const y = hg - (p/100 * hg);
-                d += ` L ${x} ${y}`;
-                circles += `<circle cx="${x}" cy="${y}" class="chart-dot" />`;
+                const x = i * step; const y = hg - (p/100 * hg);
+                d += ` L ${x} ${y}`; circles += `<circle cx="${x}" cy="${y}" class="chart-dot" />`;
             });
             graphBox.innerHTML = `<svg><path d="${d}" class="chart-line" />${circles}</svg>`;
         }
-
         activeData.history.forEach(x => {
             h += `<div class="grid-row"><span class="col" style="color:var(--primary);font-weight:bold">${x.score}</span><span class="col">${x.speed}s</span><span class="col" style="color:${x.errors>0?'var(--danger)':'#666'}">${x.errors}</span><span class="col">${x.q}</span></div>`;
         });
@@ -1711,23 +1241,10 @@ function renderLists() {
     }
 }
 
-function clearHistory() { 
-    modal(TEXT[DATA.lang].confirm_sil, () => { 
-        DATA[DATA.mode].history = []; 
-        localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify([])); 
-        renderLists(); 
-    }); 
-}
-function resetData() { 
-    modal(TEXT[DATA.lang].confirm_sil, () => { 
-        DATA[DATA.mode].db = {}; 
-        localStorage.removeItem(`carptrik_${DATA.mode}_db`); 
-        renderLists(); 
-    }); 
-}
+function clearHistory() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA[DATA.mode].history = []; localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify([])); renderLists(); }); }
+function resetData() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA[DATA.mode].db = {}; localStorage.removeItem(`carptrik_${DATA.mode}_db`); renderLists(); }); }
 
-calcTotal(); 
-init();
+calcTotal(); init();
 window.addEventListener('resize', ()=>{ 
     if(Game.type==='racer') { cvs.width=document.getElementById('racer-wrap').offsetWidth; cvs.height=document.getElementById('racer-wrap').offsetHeight; }
     renderLists();
