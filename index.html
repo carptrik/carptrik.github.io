@@ -239,42 +239,23 @@
             text-align: center; line-height: 1.2; display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* YARIŞ EKRANI VE YENİ HUD TASARIMI */
         #racer-wrap { flex: 1; margin: 20px; background: #111; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border); }
         canvas { width: 100%; height: 100%; display: block; }
         
-        /* ROAD FIGHTER STYLE PROGRESS BAR */
         .progress-strip {
-            position: absolute;
-            left: 15px;
-            top: 70px; /* Header'ın biraz altı */
-            bottom: 40px;
-            width: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            z-index: 50;
+            position: absolute; left: 15px; top: 70px; bottom: 40px; width: 4px;
+            background: rgba(255,255,255,0.2); border-radius: 2px; z-index: 50;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
         }
-        .prog-flag {
-            position: absolute;
-            left: -6px;
-            font-size: 16px;
-            line-height: 1;
-        }
-        .pf-start { bottom: -20px; }
-        .pf-end { top: -20px; }
+        .prog-flag { position: absolute; left: -6px; font-size: 16px; line-height: 1; }
+        .pf-start { bottom: -20px; } .pf-end { top: -20px; }
         
         .prog-car {
-            position: absolute;
-            left: -8px; /* Çizgiyi ortalamak için */
-            bottom: 0%;
-            font-size: 20px;
-            line-height: 1;
+            position: absolute; left: -8px; bottom: 0%; font-size: 20px; line-height: 1;
             transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        /* YENİ KOMPAKT ÜST BAR */
         .r-header {
             position: absolute; top: 15px; left: 15px; right: 15px;
             display: flex; justify-content: space-between; align-items: center;
@@ -285,15 +266,9 @@
             background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 12px;
         }
         .r-q-box {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid var(--primary);
-            color: #fff;
-            padding: 8px 25px;
-            border-radius: 25px;
-            font-size: 28px;
-            font-weight: 900;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-            letter-spacing: 2px;
+            background: rgba(15, 23, 42, 0.9); border: 2px solid var(--primary); color: #fff;
+            padding: 8px 25px; border-radius: 25px; font-size: 28px; font-weight: 900;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6); letter-spacing: 2px;
         }
 
         .mob-ctrl { display: none; gap: 15px; padding: 0 25px 25px 25px; height: 100px; }
@@ -309,24 +284,16 @@
         .f-btn:hover { background: var(--bg-panel); }
         .f-btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.05); }
 
-        /* PAUSE OVERLAY - FIXED POSITION TO COVER EVERYTHING */
         #pause-overlay {
-            display: none;
-            position: fixed; /* Fixed is key here */
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 2000; /* Higher than anything else */
-            justify-content: center; align-items: center; flex-direction: column;
-            gap: 20px;
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(15, 23, 42, 0.95); z-index: 2000;
+            justify-content: center; align-items: center; flex-direction: column; gap: 20px;
         }
         .paused-text { font-size: 40px; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
         .pause-menu { display: flex; flex-direction: column; gap: 15px; width: 250px; }
         .btn-resume { padding: 15px 30px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; box-shadow: 0 0 30px var(--primary-glow); transition: 0.2s; width: 100%; }
-        .btn-resume:hover { transform: scale(1.05); }
         .btn-quit { padding: 15px 30px; background: transparent; border: 2px solid var(--danger); color: var(--danger); border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; transition: 0.2s; width: 100%; }
-        .btn-quit:hover { background: rgba(239,68,68,0.1); }
 
-        /* RESTORED MODAL STYLES */
         .modal-wrap { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal { background: var(--bg-panel); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
         .m-btns { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
@@ -386,7 +353,6 @@
             .section-header { font-size: 14px; margin-bottom: 5px; }
             .num-grid { gap: 8px; margin-bottom: 10px; }
             .num-label { height: 40px; font-size: 16px; }
-            
             .settings-box { padding: 12px; gap: 8px; }
             .sb-title { font-size: 12px; margin-bottom: 2px; }
             .toggle-group { flex-direction: row; min-height: 50px; padding: 2px; flex-wrap: nowrap; }
@@ -394,16 +360,8 @@
             .input-box { width: 50px; height: 30px; font-size: 14px; }
             .btn-start { padding: 15px; font-size: 16px; margin-top: 10px; }
 
-            .mobile-stats-btn {
-                display: flex; width: 100%; background: rgba(255,255,255,0.1);
-                border: 1px solid var(--border); color: var(--text-muted);
-                padding: 10px; border-radius: 10px; font-weight: 800;
-                justify-content: center; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 10px;
-            }
-            .mobile-stats-back {
-                width: 100%; background: var(--primary); color: #000;
-                padding: 12px; border-radius: 10px; font-weight: 900; text-align: center; cursor: pointer; border: none;
-            }
+            .mobile-stats-btn { display: flex; width: 100%; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: var(--text-muted); padding: 10px; border-radius: 10px; font-weight: 800; justify-content: center; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 10px; }
+            .mobile-stats-back { width: 100%; background: var(--primary); color: #000; padding: 12px; border-radius: 10px; font-weight: 900; text-align: center; cursor: pointer; border: none; }
 
             /* --- OYUN MODU --- */
             .r-stat { font-size: 16px; padding: 4px 10px; }
@@ -415,8 +373,6 @@
             body.game-active { overflow: hidden; padding-top: env(safe-area-inset-top) !important; }
             body.game-active header, body.game-active footer { display: none !important; }
             body.game-active .dashboard { padding: 0; height: 100%; margin: 0; max-width: 100%; display: block; overflow: hidden; }
-            
-            /* DÜZELTME: Sadece görünür ekranı flex yap */
             body.game-active .panel { display: none; }
             body.game-active #panel-game { display: flex; height: 100%; border-radius: 0; border: none; }
             
@@ -431,42 +387,11 @@
             body.game-active #view-classic .feedback { font-size: 24px; min-height: 40px; margin-top: 10px; }
             body.game-active #view-classic .foot-btns { display: none !important; }
 
-            /* MOBIL KLAVYE SADECE KLASIK MODDA */
-            .mobile-keypad {
-                display: none;
-                flex-direction: column;
-                background: #0f172a;
-                border-top: 1px solid var(--border);
-                padding: 10px;
-                padding-bottom: calc(40px + env(safe-area-inset-bottom)); 
-                gap: 8px;
-                margin-top: auto; 
-                flex-shrink: 0;
-                z-index: 100;
-            }
-            #view-classic.active .mobile-keypad { display: flex; } /* Sadece klasikte görünür */
-
+            .mobile-keypad { display: flex; flex-direction: column; background: #0f172a; border-top: 1px solid var(--border); padding: 10px; padding-bottom: calc(40px + env(safe-area-inset-bottom)); gap: 8px; margin-top: auto; flex-shrink: 0; z-index: 100; }
             .key-row { display: flex; gap: 8px; flex: 1; }
-
-            .key-btn {
-                flex: 1;
-                background: var(--bg-card);
-                border: 1px solid var(--border);
-                color: #fff;
-                font-size: 24px;
-                font-weight: bold;
-                border-radius: 8px;
-                padding: 12px 0;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                touch-action: manipulation;
-            }
+            .key-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; font-size: 24px; font-weight: bold; border-radius: 8px; padding: 12px 0; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
             .key-btn:active { background: var(--primary); color: #000; }
-            
             .key-btn.k-del { color: #fff; background: var(--bg-card); border-color: var(--border); }
-            
             .key-btn.k-action { font-size: 14px; font-weight: 800; text-transform: uppercase; }
             .key-btn.k-pause { background: var(--warning); color: #000; }
             .key-btn.k-end { background: var(--danger); color: #fff; }
@@ -743,7 +668,7 @@
 </footer>
 
 <script>
-/* GÜVENLİ ÇİZİM YARDIMCISI (Eski kod çalışsın diye ekledik) */
+/* DÜZELTME: Bu polyfill ile her tarayıcıda yuvarlak çizim yapılır */
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
         if (w < 2 * r) r = w / 2;
@@ -761,6 +686,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 
 const AudioSys = {
     ctx: null, osc: null, gain: null,
+    
     init: function() {
         if(!this.ctx) {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -768,6 +694,7 @@ const AudioSys = {
         }
         if(this.ctx.state === 'suspended') this.ctx.resume();
     },
+
     playTone: function(freq, type, duration, vol=0.1) {
         if(!DATA.sound) return;
         this.init();
@@ -777,9 +704,12 @@ const AudioSys = {
         o.frequency.setValueAtTime(freq, this.ctx.currentTime);
         g.gain.setValueAtTime(vol, this.ctx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-        o.connect(g); g.connect(this.ctx.destination);
-        o.start(); o.stop(this.ctx.currentTime + duration);
+        o.connect(g);
+        g.connect(this.ctx.destination);
+        o.start();
+        o.stop(this.ctx.currentTime + duration);
     },
+
     playClick: function() { this.playTone(800, 'sine', 0.1, 0.05); },
     playCorrect: function() { 
         if(!DATA.sound) return;
@@ -795,30 +725,51 @@ const AudioSys = {
         o.start(); o.stop(now + 0.3);
     },
     playWrong: function() { this.playTone(150, 'sawtooth', 0.3, 0.1); },
+
     startEngine: function() {
         if(!DATA.sound || this.osc) return;
         this.init();
         this.osc = this.ctx.createOscillator();
         this.gain = this.ctx.createGain();
         this.osc.type = 'sawtooth';
-        this.osc.frequency.value = 60; 
+        this.osc.frequency.value = 60; // Low rumble
+        
+        // Lowpass filter to muffle it
         const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass'; filter.frequency.value = 120;
-        this.gain.gain.value = 0.05; 
-        this.osc.connect(filter); filter.connect(this.gain);
+        filter.type = 'lowpass';
+        filter.frequency.value = 120;
+
+        this.gain.gain.value = 0.05; // Very quiet
+        
+        this.osc.connect(filter);
+        filter.connect(this.gain);
         this.gain.connect(this.ctx.destination);
         this.osc.start();
     },
+
     stopEngine: function() {
-        if(this.osc) { this.osc.stop(); this.osc.disconnect(); this.osc = null; }
+        if(this.osc) {
+            this.osc.stop();
+            this.osc.disconnect();
+            this.osc = null;
+        }
     }
 };
 
+/* STATE */
 const DATA = {
     lang: 'tr', mode: 'classic', sound: true,
-    classic: { db: JSON.parse(localStorage.getItem('carptrik_classic_db')) || {}, history: JSON.parse(localStorage.getItem('carptrik_classic_history')) || [] },
-    racer: { db: JSON.parse(localStorage.getItem('carptrik_racer_db')) || {}, history: JSON.parse(localStorage.getItem('carptrik_racer_history')) || [] }
+    classic: {
+        db: JSON.parse(localStorage.getItem('carptrik_classic_db')) || {},
+        history: JSON.parse(localStorage.getItem('carptrik_classic_history')) || []
+    },
+    racer: {
+        db: JSON.parse(localStorage.getItem('carptrik_racer_db')) || {},
+        history: JSON.parse(localStorage.getItem('carptrik_racer_history')) || []
+    }
 };
+
+// Check Sound Pref
 if(localStorage.getItem('carptrik_sound') === 'false') DATA.sound = false;
 
 const TEXT = {
@@ -1076,11 +1027,13 @@ function startGame() {
     }
     Game.qList.sort(()=>Math.random()-0.5);
     
+    // GÜNCELLEME: Önce ekranı hazırla, sonra başlat
     resetState(DATA.mode, Game.qList.length);
-    if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); }
+    if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); } 
     else { 
         showScreen('racer'); 
-        initRacer(); 
+        // Biraz bekle ki ekran otursun
+        setTimeout(initRacer, 50); 
     }
 }
 
@@ -1101,9 +1054,13 @@ function startErrorPractice() {
     });
     Game.qList.sort(()=>Math.random()-0.5);
     
+    // GÜNCELLEME: Önce ekranı hazırla
     resetState(DATA.mode, Game.qList.length);
-    if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); }
-    else { showScreen('racer'); initRacer(); }
+    if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); } 
+    else { 
+        showScreen('racer'); 
+        setTimeout(initRacer, 50);
+    }
 }
 
 function resetState(t, len) {
@@ -1636,16 +1593,18 @@ function renderLists() {
         if(points.length > 1) {
             const w = graphBox.offsetWidth;
             const hg = graphBox.offsetHeight;
-            let d = `M 0 ${hg - (points[0]/100 * hg)}`;
-            const step = w / (points.length - 1);
-            let circles = "";
-            points.forEach((p, i) => {
-                const x = i * step;
-                const y = hg - (p/100 * hg);
-                d += ` L ${x} ${y}`;
-                circles += `<circle cx="${x}" cy="${y}" class="chart-dot" />`;
-            });
-            graphBox.innerHTML = `<svg><path d="${d}" class="chart-line" />${circles}</svg>`;
+            if(w > 0 && hg > 0) { // GÜNCELLEME: Sadece görünürse çiz
+                let d = `M 0 ${hg - (points[0]/100 * hg)}`;
+                const step = w / (points.length - 1);
+                let circles = "";
+                points.forEach((p, i) => {
+                    const x = i * step;
+                    const y = hg - (p/100 * hg);
+                    d += ` L ${x} ${y}`;
+                    circles += `<circle cx="${x}" cy="${y}" class="chart-dot" />`;
+                });
+                graphBox.innerHTML = `<svg><path d="${d}" class="chart-line" />${circles}</svg>`;
+            }
         }
 
         activeData.history.forEach(x => {
