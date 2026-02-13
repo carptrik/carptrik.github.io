@@ -85,6 +85,7 @@
 
         .header-right { justify-self: end; display: flex; align-items: center; gap: 15px; }
         
+        /* SOUND BUTTON */
         .sound-btn {
             background: transparent; border: 1px solid var(--border); color: var(--text-muted);
             padding: 5px 10px; border-radius: 8px; font-size: 16px; cursor: pointer;
@@ -238,23 +239,42 @@
             text-align: center; line-height: 1.2; display: flex; flex-direction: column; justify-content: center;
         }
 
+        /* YARIŞ EKRANI VE YENİ HUD TASARIMI */
         #racer-wrap { flex: 1; margin: 20px; background: #111; border-radius: 16px; position: relative; overflow: hidden; border: 2px solid var(--border); }
         canvas { width: 100%; height: 100%; display: block; }
         
+        /* ROAD FIGHTER STYLE PROGRESS BAR */
         .progress-strip {
-            position: absolute; left: 15px; top: 70px; bottom: 40px; width: 4px;
-            background: rgba(255,255,255,0.2); border-radius: 2px; z-index: 50;
+            position: absolute;
+            left: 15px;
+            top: 70px; /* Header'ın biraz altı */
+            bottom: 40px;
+            width: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            z-index: 50;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
         }
-        .prog-flag { position: absolute; left: -6px; font-size: 16px; line-height: 1; }
-        .pf-start { bottom: -20px; } .pf-end { top: -20px; }
+        .prog-flag {
+            position: absolute;
+            left: -6px;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .pf-start { bottom: -20px; }
+        .pf-end { top: -20px; }
         
         .prog-car {
-            position: absolute; left: -8px; bottom: 0%; font-size: 20px; line-height: 1;
+            position: absolute;
+            left: -8px; /* Çizgiyi ortalamak için */
+            bottom: 0%;
+            font-size: 20px;
+            line-height: 1;
             transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
+        /* YENİ KOMPAKT ÜST BAR */
         .r-header {
             position: absolute; top: 15px; left: 15px; right: 15px;
             display: flex; justify-content: space-between; align-items: center;
@@ -289,16 +309,24 @@
         .f-btn:hover { background: var(--bg-panel); }
         .f-btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.05); }
 
+        /* PAUSE OVERLAY - FIXED POSITION TO COVER EVERYTHING */
         #pause-overlay {
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(15, 23, 42, 0.95); z-index: 2000;
-            justify-content: center; align-items: center; flex-direction: column; gap: 20px;
+            display: none;
+            position: fixed; /* Fixed is key here */
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 2000; /* Higher than anything else */
+            justify-content: center; align-items: center; flex-direction: column;
+            gap: 20px;
         }
         .paused-text { font-size: 40px; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
         .pause-menu { display: flex; flex-direction: column; gap: 15px; width: 250px; }
         .btn-resume { padding: 15px 30px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; box-shadow: 0 0 30px var(--primary-glow); transition: 0.2s; width: 100%; }
+        .btn-resume:hover { transform: scale(1.05); }
         .btn-quit { padding: 15px 30px; background: transparent; border: 2px solid var(--danger); color: var(--danger); border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; transition: 0.2s; width: 100%; }
+        .btn-quit:hover { background: rgba(239,68,68,0.1); }
 
+        /* RESTORED MODAL STYLES */
         .modal-wrap { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal { background: var(--bg-panel); padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
         .m-btns { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
@@ -715,7 +743,7 @@
 </footer>
 
 <script>
-/* POLYFILL: Donmayı önleyen manuel yuvarlak dikdörtgen çizimi */
+/* GÜVENLİ ÇİZİM YARDIMCISI (Eski kod çalışsın diye ekledik) */
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
         if (w < 2 * r) r = w / 2;
@@ -839,7 +867,8 @@ function toggleSound() {
     DATA.sound = !DATA.sound;
     localStorage.setItem('carptrik_sound', DATA.sound);
     updateSoundBtn();
-    if(DATA.sound) AudioSys.init(); else AudioSys.stopEngine();
+    if(DATA.sound) AudioSys.init(); 
+    else AudioSys.stopEngine();
 }
 
 function updateSoundBtn() {
@@ -866,12 +895,19 @@ function setLang(l) {
     updateStartBtn();
 }
 
+/* NEW TAB SWITCHING LOGIC */
 function requestModeChange(m) {
-    if(DATA.mode === m) return;
+    if(DATA.mode === m) return; // Already on this mode
+    
+    // Check if we are on Setup Screen
     if(document.getElementById('view-setup').classList.contains('active')) {
         setMode(m);
     } else {
-        modal(TEXT[DATA.lang].mod_degistir_onay, () => { showSetup(); setMode(m); });
+        // We are playing or seeing results. Ask confirmation.
+        modal(TEXT[DATA.lang].mod_degistir_onay, () => {
+             showSetup(); // Reset UI
+             setMode(m);  // Switch Mode
+        });
     }
 }
 
@@ -879,9 +915,13 @@ function setMode(m) {
     DATA.mode = m;
     document.getElementById('tab-classic').classList.toggle('active', m==='classic');
     document.getElementById('tab-racer').classList.toggle('active', m==='racer');
+    
     document.getElementById('opt-speed-classic').style.display = m==='classic' ? 'flex' : 'none';
     document.getElementById('opt-speed-racer').style.display = m==='racer' ? 'flex' : 'none';
-    updateStartBtn(); renderLists(); calcTotal();
+    
+    updateStartBtn();
+    renderLists();
+    calcTotal();
 }
 
 function updateStartBtn() {
@@ -897,15 +937,21 @@ function updateStartBtn() {
 
 function selectToggle(el) {
     el.parentElement.querySelectorAll('.toggle-opt').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected'); el.querySelector('input').checked = true; calcTotal();
+    el.classList.add('selected');
+    el.querySelector('input').checked = true;
+    calcTotal();
 }
 
 function setErrMode(val, el) {
     document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
-    el.classList.add('selected'); el.querySelector('input').checked = true;
+    el.classList.add('selected');
+    el.querySelector('input').checked = true;
 }
 
-function toggleAll(v) { document.querySelectorAll('.num-chk').forEach(c => c.checked=v); calcTotal(); }
+function toggleAll(v) { 
+    document.querySelectorAll('.num-chk').forEach(c => c.checked=v); 
+    calcTotal();
+}
 function getNums() { return Array.from(document.querySelectorAll('.num-chk:checked')).map(c=>parseInt(c.value)); }
 
 function calcTotal() {
@@ -914,12 +960,18 @@ function calcTotal() {
     const total = nums * nums * rep;
     const mode = document.querySelector('input[name="gMode"]:checked').value;
     const infoSpan = document.getElementById('total-info');
-    if (mode === 'repeat') { infoSpan.style.display = 'inline'; infoSpan.innerText = `(${total})`; } else { infoSpan.style.display = 'none'; }
+    if (mode === 'repeat') {
+        infoSpan.style.display = 'inline';
+        infoSpan.innerText = `(${total})`;
+    } else {
+        infoSpan.style.display = 'none';
+    }
 }
 
-function toggleStats() { 
-    document.body.classList.toggle('stats-active'); 
-    renderLists(); // Grafik yeniden çizilsin
+/* --- MOBILE STATS TOGGLE --- */
+function toggleStats() {
+    document.body.classList.toggle('stats-active');
+    renderLists(); // GÜNCELLEME: Grafiği yeniden çiz
 }
 
 function showScreen(id) {
@@ -927,9 +979,17 @@ function showScreen(id) {
     document.getElementById('view-'+id).classList.add('active');
 }
 function showSetup() { 
-    Game.isPaused = false; AudioSys.stopEngine(); if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
-    document.body.classList.remove('game-active'); document.body.classList.remove('stats-active');
+    Game.isPaused = false;
+    AudioSys.stopEngine(); // Ensure engine stops when returning to setup
+    if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
+    
+    // Remove FULL SCREEN mobile class
+    document.body.classList.remove('game-active');
+    // Remove Stats View if open
+    document.body.classList.remove('stats-active');
+
     document.getElementById('pause-overlay').style.display = 'none';
+    // Remove blur filters
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
     showScreen('setup'); 
@@ -951,30 +1011,44 @@ function closeModal() { document.querySelector('.modal-wrap').style.display = 'n
 
 function shakeScreen() {
     document.body.classList.add('shake');
-    const flash = document.createElement('div'); flash.className = 'damage-flash';
+    const flash = document.createElement('div');
+    flash.className = 'damage-flash';
     document.body.appendChild(flash);
-    setTimeout(() => { document.body.classList.remove('shake'); if(flash) flash.remove(); }, 500);
+    setTimeout(() => {
+        document.body.classList.remove('shake');
+        if(flash) flash.remove();
+    }, 500);
 }
 
 function updateProgress() {
+    // 0-100 arası yüzde hesapla
     const p = (Game.total > 0) ? Math.min(100, (Game.idx / Game.total) * 100) : 0;
-    const car = document.getElementById('prog-car'); if(car) car.style.bottom = p + '%';
+    const car = document.getElementById('prog-car');
+    if(car) car.style.bottom = p + '%';
 }
 
+/* KEYPAD HANDLING */
 function handleKeyInput(val) {
     if(Game.isPaused || document.getElementById('c-input').disabled) return;
-    const i = document.getElementById('c-input'); i.value += val; AudioSys.playClick();
+    const i = document.getElementById('c-input');
+    i.value += val;
+    AudioSys.playClick();
+    
+    // Trigger input event manually for logic
     i.dispatchEvent(new Event('input'));
 }
 
 function handleKeyAction(action) {
     if(Game.isPaused) return;
     if(action === 'del') {
-        const i = document.getElementById('c-input'); i.value = i.value.slice(0, -1);
-        AudioSys.playClick(); i.dispatchEvent(new Event('input'));
+        const i = document.getElementById('c-input');
+        i.value = i.value.slice(0, -1);
+        AudioSys.playClick();
+        i.dispatchEvent(new Event('input'));
     }
 }
 
+/* GAME ENGINE */
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
     slowLimit: 0, isPaused: false, pauseStart: 0,
@@ -984,10 +1058,13 @@ let Game = {
 function startGame() {
     const nums = getNums();
     if(nums.length === 0) return modal(TEXT[DATA.lang].alert_sayi);
+    // GÜNCELLEME: İstatistik modunu kapat
     document.body.classList.remove('stats-active');
     if(window.innerWidth <= 900) document.body.classList.add('game-active');
     
-    let pool = []; nums.forEach(n1 => nums.forEach(n2 => pool.push({n1, n2})));
+    let pool = [];
+    nums.forEach(n1 => nums.forEach(n2 => pool.push({n1, n2})));
+    
     Game.qList = [];
     const mode = document.querySelector('input[name="gMode"]:checked').value;
     if(mode === 'repeat') {
@@ -998,11 +1075,12 @@ function startGame() {
         for(let i=0; i<lim; i++) Game.qList.push(pool[Math.floor(Math.random()*pool.length)]);
     }
     Game.qList.sort(()=>Math.random()-0.5);
+    
     resetState(DATA.mode, Game.qList.length);
-    if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); } 
+    if(Game.type === 'classic') { showScreen('classic'); nextQClassic(); }
     else { 
         showScreen('racer'); 
-        setTimeout(initRacer, 50); 
+        initRacer(); 
     }
 }
 
@@ -1010,6 +1088,7 @@ function startErrorPractice() {
     const currentDB = DATA[DATA.mode].db;
     const keys = Object.keys(currentDB);
     if(keys.length === 0) return modal(TEXT[DATA.lang].alert_hata);
+    // GÜNCELLEME: İstatistik modunu kapat
     document.body.classList.remove('stats-active');
     if(window.innerWidth <= 900) document.body.classList.add('game-active');
 
@@ -1023,70 +1102,114 @@ function startErrorPractice() {
     Game.qList.sort(()=>Math.random()-0.5);
     
     resetState(DATA.mode, Game.qList.length);
-    if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); } 
-    else { 
-        showScreen('racer'); 
-        setTimeout(initRacer, 50);
-    }
+    if(DATA.mode === 'classic') { showScreen('classic'); nextQClassic(); }
+    else { showScreen('racer'); initRacer(); }
 }
 
 function resetState(t, len) {
-    Game.type = t; Game.total = len; Game.idx = 0; Game.score = 0; 
-    Game.unitScore = (len > 0) ? (100 / len) : 0; Game.errors = 0; Game.times = [];
-    Game.isPaused = false; document.getElementById('pause-overlay').style.display = 'none';
+    Game.type = t; 
+    Game.total = len; 
+    Game.idx = 0; 
+    Game.score = 0; // Puan 0'dan başlar
+    Game.unitScore = (len > 0) ? (100 / len) : 0; // Her soru kaç puan
+    Game.errors = 0; 
+    Game.times = [];
+    Game.isPaused = false;
+    document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
 }
 
-function togglePause() { if(Game.isPaused) resumeGame(); else pauseGame(); }
+/* PAUSE LOGIC */
+function togglePause() {
+    if(Game.isPaused) resumeGame();
+    else pauseGame();
+}
 
 function pauseGame() {
-    Game.isPaused = true; Game.pauseStart = Date.now();
+    Game.isPaused = true;
+    Game.pauseStart = Date.now();
+
+    // 1. Show Overlay FIRST (Safest)
     document.getElementById('pause-overlay').style.display = 'flex';
+
+    // 2. Hide Buttons
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'none');
+
+    // 3. Mode Specific Logic
     if(Game.type === 'classic') {
+         // Safe check
          const qArea = document.querySelector('#view-classic .q-area');
          if(qArea) qArea.style.filter = 'blur(30px)';
          document.getElementById('c-input').disabled = true;
     } else if(Game.type === 'racer') {
          document.querySelector('#racer-wrap').style.filter = 'blur(30px)';
          if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
-         AudioSys.stopEngine(); 
+         AudioSys.stopEngine();
+         // Reset delta time on pause so we don't jump when resuming
+         Game.r.lastTime = 0; 
     }
 }
 
 function resumeGame() {
     Game.isPaused = false;
-    Game.startT += (Date.now() - Game.pauseStart);
+    const pausedDuration = Date.now() - Game.pauseStart;
+    
+    // Hide overlay / Show buttons
     document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
+
+    // Adjust start time so speed calculation is correct
+    Game.startT += pausedDuration;
+
     if(Game.type === 'classic') {
         const qArea = document.querySelector('#view-classic .q-area');
         if(qArea) qArea.style.filter = 'none';
         document.getElementById('c-input').disabled = false;
-        if(window.innerWidth > 900) document.getElementById('c-input').focus();
+        
+        // Sadece desktop'ta odakla
+        if(window.innerWidth > 900) {
+            document.getElementById('c-input').focus();
+        }
     } else if(Game.type === 'racer') {
         document.querySelector('#racer-wrap').style.filter = 'none';
-        AudioSys.startEngine(); 
+        AudioSys.startEngine();
+        Game.r.lastTime = 0; // Reset for fresh DT
         Game.r.loop = requestAnimationFrame(racerLoop);
     }
 }
 
-function confirmFinish() { document.getElementById('pause-overlay').style.display = 'none'; modal(TEXT[DATA.lang].confirm_bitir, endGame); }
+function confirmFinish() { 
+    // Hide pause overlay temporarily to show modal
+    document.getElementById('pause-overlay').style.display = 'none';
+    modal(TEXT[DATA.lang].confirm_bitir, endGame); 
+}
 
 function endGame() {
-    Game.isPaused = false; document.body.classList.remove('game-active');
+    // Clean up pause state
+    Game.isPaused = false;
+    
+    // Remove Full screen class
+    document.body.classList.remove('game-active');
+
     document.getElementById('pause-overlay').style.display = 'none';
     document.querySelectorAll('.foot-btns').forEach(b => b.style.display = 'flex');
     document.querySelectorAll('.q-area, #racer-wrap').forEach(el => el.style.filter = 'none');
-    if(Game.r.loop) cancelAnimationFrame(Game.r.loop); AudioSys.stopEngine();
+
+    if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
+    AudioSys.stopEngine();
     
-    Game.score = Math.round(Math.max(0, Math.min(100, Game.score)));
+    // Puan 0-100 arasına sabitlenir
+    Game.score = Math.round(Game.score);
+    if(Game.score < 0) Game.score = 0;
+    if(Game.score > 100) Game.score = 100;
+
     const avg = Game.times.length ? (Game.times.reduce((a,b)=>a+b,0)/Game.times.length).toFixed(1) : "0.0";
     
     const activeData = DATA[DATA.mode];
     activeData.history.unshift({score:Game.score, speed:avg, errors:Game.errors, q:Game.idx});
     if(activeData.history.length > 20) activeData.history.pop();
+    
     localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify(activeData.history));
     renderLists();
     
@@ -1096,57 +1219,102 @@ function endGame() {
     showScreen('result');
 }
 
+/* CLASSIC */
 function nextQClassic() {
     if(Game.idx >= Game.total) return endGame();
+    
     Game.currQ = Game.qList[Game.idx];
     document.getElementById('c-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
     document.getElementById('c-curr').innerText = Game.idx + 1;
     document.getElementById('c-total').innerText = Game.total;
+    
+    // Puanı yuvarlayarak göster
     document.getElementById('c-score').innerText = Math.round(Game.score);
+    
     document.getElementById('c-feedback').innerText = "";
-    const i = document.getElementById('c-input'); i.value = ''; i.disabled = false; 
-    if(window.innerWidth <= 900) i.readOnly = true; else { i.readOnly = false; i.focus(); }
+    const i = document.getElementById('c-input');
+    i.value = ''; i.disabled = false; 
+
+    // Mobilde klavye açılmasın
+    if(window.innerWidth <= 900) {
+        i.readOnly = true;
+    } else {
+        i.readOnly = false;
+        i.focus();
+    }
     
     Game.startT = Date.now();
+
     const speedMode = document.querySelector('input[name="cSpeed"]:checked').value;
-    if(speedMode === 'manual') Game.slowLimit = parseFloat(document.getElementById('inp-speed').value) || 4;
-    else {
-        if(Game.times.length < 3) Game.slowLimit = 5; 
-        else {
+    if(speedMode === 'manual') {
+        Game.slowLimit = parseFloat(document.getElementById('inp-speed').value) || 4;
+    } else {
+        if(Game.times.length < 3) {
+            Game.slowLimit = 5; 
+        } else {
             const avg = Game.times.reduce((a,b)=>a+b,0) / Game.times.length;
-            Game.slowLimit = Math.max(2, avg * 1.5); 
+            Game.slowLimit = avg * 1.5; 
+            if(Game.slowLimit < 2) Game.slowLimit = 2;
         }
     }
 }
 
 document.getElementById('c-input').addEventListener('input', function() {
     if(Game.isPaused) return;
+
     const ans = Game.currQ.n1 * Game.currQ.n2;
     if(this.value.length >= ans.toString().length) {
-        const elapsed = (Date.now() - Game.startT) / 1000;
+        const now = Date.now();
+        const elapsed = (now - Game.startT) / 1000;
         const isSlow = elapsed > Game.slowLimit;
         const val = parseInt(this.value);
         const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
-        const db = DATA.classic.db; if(!db[k]) db[k]={score:0};
+        
+        const db = DATA.classic.db;
+        if(!db[k]) db[k]={score:0};
+        
         const fb = document.getElementById('c-feedback');
         
         if(val === ans) {
             Game.times.push(elapsed);
             const avg = Game.times.reduce((a,b)=>a+b,0)/Game.times.length;
             document.getElementById('c-speed').innerText = avg.toFixed(1)+'s';
+            
             if (isSlow) {
-                Game.errors++; db[k].score += 1; Game.score += (Game.unitScore / 2);
-                fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`; AudioSys.playWrong(); 
+                Game.errors++; 
+                db[k].score += 1; // Hata listesi puanı (Değişmedi)
+                
+                // YENİ PUANLAMA: Yavaşsa yarım puan
+                Game.score += (Game.unitScore / 2);
+
+                fb.innerHTML = `<span style="color:var(--warning)">${TEXT[DATA.lang].sure_yavas}</span>`;
+                AudioSys.playWrong(); 
             } else {
-                if(db[k].score > 0) db[k].score--; Game.score += Game.unitScore;
-                fb.innerText = TEXT[DATA.lang].dogru; fb.style.color = 'var(--primary)'; AudioSys.playCorrect();
+                if(db[k].score > 0) db[k].score--;
+                
+                // YENİ PUANLAMA: Hızlıysa tam puan
+                Game.score += Game.unitScore;
+
+                fb.innerText = TEXT[DATA.lang].dogru; fb.style.color = 'var(--primary)';
+                AudioSys.playCorrect();
             }
             Game.idx++; setTimeout(nextQClassic, 500); 
         } else {
-            Game.errors++; db[k].score += 2; Game.score -= (Game.unitScore / 2); if(Game.score < 0) Game.score = 0;
-            fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)'; AudioSys.playWrong();
+            Game.errors++; 
+            db[k].score += 2; // Hata listesi puanı (Değişmedi)
+            
+            // YENİ PUANLAMA: Yanlışsa yarım puan düş
+            Game.score -= (Game.unitScore / 2);
+            if(Game.score < 0) Game.score = 0; // Eksiye düşmesin
+
+            fb.innerHTML = `${TEXT[DATA.lang].yanlis}<br>${ans}`; fb.style.color = 'var(--danger)';
+            AudioSys.playWrong();
             const i = document.getElementById('c-input'); i.disabled = true;
-            setTimeout(() => { if(!Game.isPaused) { i.disabled = false; Game.idx++; nextQClassic(); } }, 1500);
+            setTimeout(() => { 
+                if(!Game.isPaused) {
+                    i.disabled = false; Game.idx++; nextQClassic(); 
+                }
+            }, 1500);
         }
         if(db[k].score <= 0) delete db[k];
         localStorage.setItem('carptrik_classic_db', JSON.stringify(db));
@@ -1154,155 +1322,297 @@ document.getElementById('c-input').addEventListener('input', function() {
     }
 });
 
-/* --- YARIŞ MODU (BASİT VE SAĞLAM) --- */
+/* RACER */
 const cvs = document.getElementById('racerCanvas');
 const ctx = cvs.getContext('2d');
 
 function initRacer() {
-    if(window.innerWidth <= 900) setTimeout(() => { document.getElementById('racer-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+    // Scroll to view on mobile
+    if(window.innerWidth <= 900) {
+        setTimeout(() => {
+            document.getElementById('racer-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    }
+
     cvs.width = document.getElementById('racer-wrap').offsetWidth;
     cvs.height = document.getElementById('racer-wrap').offsetHeight;
-    if(cvs.width === 0) { setTimeout(initRacer, 50); return; } 
-
+    
     const spdOpt = document.querySelector('input[name="rSpeed"]:checked').value;
     Game.r.speed = parseFloat(spdOpt) || 2.5;
+
     Game.r.lives=3; Game.r.lane=1;
-    const lw = cvs.width/4; Game.r.x = (1 * lw) + (lw/2); Game.r.currX = Game.r.x;
-    Game.r.cars=[]; Game.r.particles=[]; Game.r.inputLocked = false; 
+    // Auto adjust player X on init
+    const lw = cvs.width/4;
+    Game.r.x = (1 * lw) + (lw/2); 
+    Game.r.currX = Game.r.x;
     
-    AudioSys.startEngine(); updateProgress(); spawnRacerQ(); 
-    if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
+    Game.r.cars=[]; Game.r.particles=[]; 
+    Game.r.inputLocked = false; 
+    Game.r.lastTime = 0; // Reset timer for new game
+    
+    AudioSys.startEngine(); // Start Engine Sound
+    
+    // PROGRESS INITIALIZE
+    updateProgress();
+
+    spawnRacerQ();
     Game.r.loop = requestAnimationFrame(racerLoop);
 }
 
 function spawnRacerQ() {
     if(Game.idx >= Game.total) { endGame(); return; }
+    
+    // UPDATE PROGRESS
     updateProgress();
-    Game.r.cars = []; Game.r.isWaveActive = true; Game.r.inputLocked = false;
+
+    // YENİ SORU İÇİN TEMİZLİK (Eskileri sil)
+    Game.r.cars = []; 
+    Game.r.isWaveActive = true; // Dalga aktif, çarpışma olabilir
+    Game.r.inputLocked = false; // Input kilidini aç
+
     Game.currQ = Game.qList[Game.idx];
     document.getElementById('r-q-text').innerText = `${Game.currQ.n1} x ${Game.currQ.n2}`;
     document.getElementById('r-score').innerText = Math.round(Game.score);
     document.getElementById('r-lives').innerText = Game.r.lives;
+    
     const ans = Game.currQ.n1 * Game.currQ.n2;
     let opts = [ans];
-    while(opts.length < 4) { let f = ans + (Math.floor(Math.random()*10)-5); if(f>0 && f!==ans && !opts.includes(f)) opts.push(f); }
+    while(opts.length < 4) {
+        let f = ans + (Math.floor(Math.random()*10)-5);
+        if(f>0 && f!==ans && !opts.includes(f)) opts.push(f);
+    }
     opts.sort(()=>Math.random()-0.5);
+    
     const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
+    
+    // Araçlar
     for(let i=0; i<4; i++) {
-        Game.r.cars.push({ lane: i, y: -300, val: opts[i], isCorrect: opts[i]===ans, color: colors[Math.floor(Math.random()*colors.length)], hit: false, driftX: 0, driftY: 0 });
+        Game.r.cars.push({
+            lane: i, y: -300, 
+            val: opts[i], isCorrect: opts[i]===ans,
+            color: colors[Math.floor(Math.random()*colors.length)],
+            hit: false, driftX: 0, driftY: 0 
+        });
     }
     Game.startT = Date.now(); 
 }
 
 function spawnParticles(x, y, color) {
-    for(let i=0; i<20; i++) { Game.r.particles.push({ x: x, y: y, vx: (Math.random()-0.5) * 15, vy: (Math.random()-0.5) * 15, life: 40, color: color }); }
+    for(let i=0; i<20; i++) {
+        Game.r.particles.push({
+            x: x, y: y,
+            vx: (Math.random()-0.5) * 15,
+            vy: (Math.random()-0.5) * 15,
+            life: 40, color: color
+        });
+    }
 }
 
 function drawCar(x, y, color, isPlayer=false) {
     const w = 70; const h = 90;
     
-    if(isPlayer && y > -150) { 
-        ctx.save(); ctx.beginPath();
-        ctx.moveTo(x - (w/2) + 10, y); ctx.lineTo(x - (w/2) - 15, y - 200); ctx.lineTo(x - (w/2) + 35, y - 200);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; ctx.fill();
-        
-        // Right headlight logic: On if lives > 1
+    // FAR HÜZMELERİ (Sadece Oyuncu için)
+    if(isPlayer && y > -150 && y < cvs.height + 100) { 
+        ctx.save();
+        // Sol Beam
+        ctx.beginPath();
+        ctx.moveTo(x - (w/2) + 10, y);
+        ctx.lineTo(x - (w/2) - 15, y - 200);
+        ctx.lineTo(x - (w/2) + 35, y - 200);
+        // Daha şeffaf (0.08)
+        ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+        ctx.fill();
+
+        // Sağ Beam (Can > 1 ise yanar)
         if (Game.r.lives > 1) {
-            ctx.beginPath(); 
-            ctx.moveTo(x + (w/2) - 10, y); ctx.lineTo(x + (w/2) - 35, y - 200); ctx.lineTo(x + (w/2) + 15, y - 200); 
+            ctx.beginPath();
+            ctx.moveTo(x + (w/2) - 10, y);
+            ctx.lineTo(x + (w/2) - 35, y - 200);
+            ctx.lineTo(x + (w/2) + 15, y - 200);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
             ctx.fill();
         }
         ctx.restore();
     }
 
+    // Gövde
     ctx.fillStyle = color; 
-    ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill(); // Body
+    ctx.beginPath(); ctx.roundRect(x - w/2, y, w, h, 10); ctx.fill();
     
+    // Ön Cam
     ctx.fillStyle = "rgba(0,0,0,0.5)"; 
-    ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill(); // Windshield
+    ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 20, w-10, 20, 5); ctx.fill();
 
-    // Damage Cracks
+    // Hasar Efektleri
     if(isPlayer) {
-        ctx.strokeStyle = "rgba(255,255,255,0.6)"; ctx.lineWidth=2;
-        if (Game.r.lives <= 2) { ctx.beginPath(); ctx.moveTo(x - 10, y + 25); ctx.lineTo(x + 5, y + 35); ctx.stroke(); }
-        if (Game.r.lives <= 1) { ctx.beginPath(); ctx.moveTo(x + 15, y + 22); ctx.lineTo(x - 5, y + 38); ctx.lineTo(x + 5, y + 42); ctx.stroke(); }
+        if (Game.r.lives <= 2) {
+            ctx.strokeStyle = "rgba(0,0,0,0.7)"; ctx.lineWidth=3;
+            ctx.beginPath(); ctx.moveTo(x-10, y+30); ctx.lineTo(x+15, y+40); ctx.stroke();
+        }
+        if (Game.r.lives <= 1) {
+            ctx.beginPath(); ctx.moveTo(x+10, y+25); ctx.lineTo(x-15, y+45); ctx.lineTo(x+5, y+55); ctx.stroke();
+        }
     }
 
+    // Tavan (Genişletildi)
     ctx.fillStyle = "rgba(0,0,0,0.3)"; 
-    ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill(); // Roof
-
-    // Lights
-    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, 6.28); ctx.fill(); 
-    if (!isPlayer || Game.r.lives > 1) { ctx.fillStyle = "#fff"; } else { ctx.fillStyle = "#333"; }
-    ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, 6.28); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
+    
+    // Far Noktaları
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); // Sol
+    
+    if (!isPlayer || Game.r.lives > 1) {
+        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); // Sağ
+    } else {
+        ctx.fillStyle = "#333"; // Sönük
+        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
+    }
 }
 
-function racerLoop() {
+/* === DELTA TIME FIX === */
+function racerLoop(timestamp) {
     if(Game.type !== 'racer' || Game.isPaused) return; 
     
-    const lw = cvs.width/4;
+    // Calculate Delta Time (Normalized to 60fps)
+    if (!Game.r.lastTime) Game.r.lastTime = timestamp;
+    const dt = (timestamp - Game.r.lastTime) / 16.67; 
+    Game.r.lastTime = timestamp;
+
+    // Cap dt to prevent huge jumps if tab was inactive
+    const safeDt = Math.min(dt, 3);
 
     ctx.clearRect(0,0,cvs.width, cvs.height);
+    const lw = cvs.width/4;
+    
+    // YOL
     ctx.fillStyle = "#1e293b"; ctx.fillRect(0,0,cvs.width,cvs.height);
     ctx.strokeStyle = "#334155"; ctx.lineWidth=2; ctx.setLineDash([20,30]);
     for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
     
+    // OYUNCU HAREKET (Delta time applied)
     const tx = (Game.r.lane * lw) + (lw/2);
-    Game.r.currX += (tx - Game.r.currX) * 0.2;
+    // Smooth transition logic with dt
+    Game.r.currX += (tx - Game.r.currX) * (0.2 * safeDt);
     const px = Game.r.currX; const py = cvs.height - 120;
     
     drawCar(px, py, "#10b981", true); 
 
+    // PARÇACIKLAR (Delta time applied)
     for(let i=Game.r.particles.length-1; i>=0; i--) {
-        let p = Game.r.particles[i]; p.x += p.vx; p.y += p.vy; p.life -= 1;
+        let p = Game.r.particles[i];
+        p.x += p.vx * safeDt; 
+        p.y += p.vy * safeDt; 
+        p.life -= 1 * safeDt;
         ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.life/5, p.life/5);
         if(p.life <= 0) Game.r.particles.splice(i,1);
     }
 
+    // DÜŞMAN ARABALARI
     for(let i=Game.r.cars.length-1; i>=0; i--) {
         let c = Game.r.cars[i];
-        if (c.hit) { c.x += c.driftX; c.y += c.driftY; } else { c.y += Game.r.speed; }
-        let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
-        if (c.y > cvs.height + 100) { Game.r.cars.splice(i, 1); continue; }
         
-        drawCar(drawX, c.y, c.color, false); 
-        if(!c.hit) { ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; ctx.fillText(c.val, drawX, c.y + 70); }
+        if (c.hit) {
+            c.x += c.driftX * safeDt;
+            c.y += c.driftY * safeDt; 
+        } else {
+            // Apply speed multiplied by Delta Time
+            c.y += Game.r.speed * safeDt;
+        }
 
+        let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
+        
+        // EKRAN DIŞI KONTROL
+        if (c.y > cvs.height + 100) {
+            Game.r.cars.splice(i, 1);
+            continue; 
+        }
+
+        drawCar(drawX, c.y, c.color, false); // isPlayer=false
+        
+        if(!c.hit) {
+            ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
+            ctx.fillText(c.val, drawX, c.y + 70); 
+        }
+
+        // ÇARPIŞMA MANTIĞI
         if(Game.r.isWaveActive && !c.hit && c.y+90 > py && c.y < py+90 && Math.abs(px - drawX) < 50) {
-            Game.r.isWaveActive = false; Game.r.inputLocked = true;
-            const k = `${Game.currQ.n1}x${Game.currQ.n2}`; const db = DATA.racer.db; if(!db[k]) db[k]={score:0};
+            
+            Game.r.isWaveActive = false; // BU DALGADA BAŞKA ÇARPIŞMA OLAMAZ
+            Game.r.inputLocked = true;   // INPUT KİLİTLE (Şeritte kal)
+
+            const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
+            const db = DATA.racer.db;
+            if(!db[k]) db[k]={score:0};
 
             if(c.isCorrect) {
-                spawnParticles(drawX, c.y + 45, c.color); Game.r.cars.splice(i, 1); 
-                Game.times.push((Date.now()-Game.startT)/1000); Game.idx++; AudioSys.playCorrect();
-                if(db[k].score > 0) db[k].score--; Game.score += Game.unitScore;
+                // DOĞRU
+                spawnParticles(drawX, c.y + 45, c.color);
+                Game.r.cars.splice(i, 1); 
+                Game.times.push((Date.now()-Game.startT)/1000);
+                Game.idx++;
+                AudioSys.playCorrect();
+                
+                if(db[k].score > 0) db[k].score--; 
+
+                // YENİ PUANLAMA: Tam puan ekle
+                Game.score += Game.unitScore;
+
+                // Hemen yeni soru
                 setTimeout(spawnRacerQ, 800); 
+
             } else {
-                c.hit = true; c.x = drawX; c.driftX = (drawX < px) ? -8 : 8; c.driftY = Game.r.speed * 1.2; 
-                shakeScreen(); spawnParticles(px, py + 45, "#ef4444"); AudioSys.playWrong();
-                Game.r.lives--; Game.errors++; db[k].score += 2; document.getElementById('r-lives').innerText = Game.r.lives;
-                if(Game.r.lives <= 0) { spawnParticles(px, py, "#10b981"); setTimeout(endGame, 1000); } else { Game.idx++; setTimeout(spawnRacerQ, 1500); }
+                // YANLIŞ
+                c.hit = true;
+                c.x = drawX; 
+                c.driftX = (drawX < px) ? -8 : 8; // Yana savrul
+                c.driftY = Game.r.speed * 1.2; 
+
+                shakeScreen(); // SARSINTI & KIRMIZI EFEKT
+                spawnParticles(px, py + 45, "#ef4444");
+                AudioSys.playWrong();
+
+                Game.r.lives--;
+                Game.errors++; 
+                db[k].score += 2; // Yanlış puanı (Hata listesi için, değişmedi)
+                
+                document.getElementById('r-lives').innerText = Game.r.lives;
+
+                if(Game.r.lives <= 0) {
+                    spawnParticles(px, py, "#10b981"); // Oyuncu patlar
+                    setTimeout(endGame, 1000);
+                } else {
+                    Game.idx++;
+                    setTimeout(spawnRacerQ, 1500); 
+                }
             }
-            if(db[k].score <= 0) delete db[k]; localStorage.setItem('carptrik_racer_db', JSON.stringify(db)); renderLists();
+            if(db[k].score <= 0) delete db[k];
+            localStorage.setItem('carptrik_racer_db', JSON.stringify(db));
+            renderLists();
         }
     }
+    
     Game.r.loop = requestAnimationFrame(racerLoop);
 }
 
 function racerInput(d) {
-    if(Game.r.inputLocked || Game.isPaused) return; 
+    if(Game.r.inputLocked || Game.isPaused) return; // KİLİTLİYSE HAREKET ETME
     let n = Game.r.lane + d; if(n>=0 && n<=3) Game.r.lane = n;
 }
 
 window.addEventListener('keydown', e => {
     if(Game.type === 'racer') {
-        const k = e.key.toLowerCase(); 
-        if(k === 'arrowleft' || k === 'a') racerInput(-1); if(k === 'arrowright' || k === 'd') racerInput(1);
+        const k = e.key.toLowerCase(); // CAPS LOCK FIX
+        if(k === 'arrowleft' || k === 'a') racerInput(-1);
+        if(k === 'arrowright' || k === 'd') racerInput(1);
     }
 });
 
+/* LISTS & GRAPH */
 function renderLists() {
+    // Determine active data set based on mode
     const activeData = DATA[DATA.mode];
+    
     const el = document.getElementById('list-errors');
     if(Object.keys(activeData.db).length === 0) el.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].liste_temiz}</div>`;
     else {
@@ -1315,23 +1625,29 @@ function renderLists() {
     
     const hl = document.getElementById('list-history');
     const graphBox = document.getElementById('score-graph');
+    
     if(activeData.history.length === 0) {
-        hl.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].gecmis_yok}</div>`; graphBox.innerHTML = "";
+        hl.innerHTML=`<div style="text-align:center; padding:10px;">${TEXT[DATA.lang].gecmis_yok}</div>`;
+        graphBox.innerHTML = "";
     } else {
         let h = "";
         const points = activeData.history.slice(0, 10).reverse().map(x => x.score);
+        
         if(points.length > 1) {
-            const w = graphBox.offsetWidth; const hg = graphBox.offsetHeight;
-            if(w > 0 && hg > 0) { // GÜNCELLEME: Sadece görünürse çiz
-                let d = `M 0 ${hg - (points[0]/100 * hg)}`; const step = w / (points.length - 1);
-                let circles = "";
-                points.forEach((p, i) => {
-                    const x = i * step; const y = hg - (p/100 * hg);
-                    d += ` L ${x} ${y}`; circles += `<circle cx="${x}" cy="${y}" class="chart-dot" />`;
-                });
-                graphBox.innerHTML = `<svg><path d="${d}" class="chart-line" />${circles}</svg>`;
-            }
+            const w = graphBox.offsetWidth;
+            const hg = graphBox.offsetHeight;
+            let d = `M 0 ${hg - (points[0]/100 * hg)}`;
+            const step = w / (points.length - 1);
+            let circles = "";
+            points.forEach((p, i) => {
+                const x = i * step;
+                const y = hg - (p/100 * hg);
+                d += ` L ${x} ${y}`;
+                circles += `<circle cx="${x}" cy="${y}" class="chart-dot" />`;
+            });
+            graphBox.innerHTML = `<svg><path d="${d}" class="chart-line" />${circles}</svg>`;
         }
+
         activeData.history.forEach(x => {
             h += `<div class="grid-row"><span class="col" style="color:var(--primary);font-weight:bold">${x.score}</span><span class="col">${x.speed}s</span><span class="col" style="color:${x.errors>0?'var(--danger)':'#666'}">${x.errors}</span><span class="col">${x.q}</span></div>`;
         });
@@ -1339,10 +1655,23 @@ function renderLists() {
     }
 }
 
-function clearHistory() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA[DATA.mode].history = []; localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify([])); renderLists(); }); }
-function resetData() { modal(TEXT[DATA.lang].confirm_sil, () => { DATA[DATA.mode].db = {}; localStorage.removeItem(`carptrik_${DATA.mode}_db`); renderLists(); }); }
+function clearHistory() { 
+    modal(TEXT[DATA.lang].confirm_sil, () => { 
+        DATA[DATA.mode].history = []; 
+        localStorage.setItem(`carptrik_${DATA.mode}_history`, JSON.stringify([])); 
+        renderLists(); 
+    }); 
+}
+function resetData() { 
+    modal(TEXT[DATA.lang].confirm_sil, () => { 
+        DATA[DATA.mode].db = {}; 
+        localStorage.removeItem(`carptrik_${DATA.mode}_db`); 
+        renderLists(); 
+    }); 
+}
 
-calcTotal(); init();
+calcTotal(); 
+init();
 window.addEventListener('resize', ()=>{ 
     if(Game.type==='racer') { cvs.width=document.getElementById('racer-wrap').offsetWidth; cvs.height=document.getElementById('racer-wrap').offsetHeight; }
     renderLists();
