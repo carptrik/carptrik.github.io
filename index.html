@@ -657,7 +657,7 @@
             <button class="mini-btn" onclick="clearHistory(); AudioSys.playClick()" data-i18n="sil">SİL</button>
         </div>
         <div class="grid-header">
-            <span>P</span> <span>HZ</span> <span>HT</span> <span>SR</span>
+            <span data-i18n="tablo_puan">P</span> <span data-i18n="tablo_hiz">HZ</span> <span data-i18n="tablo_hata">HT</span> <span data-i18n="tablo_soru">SR</span>
         </div>
         <div class="list-content" id="list-history">
             <div style="text-align:center; padding:20px; color:#555;" data-i18n="gecmis_yok">Yok</div>
@@ -797,7 +797,7 @@ const TEXT = {
         mod_tekrar_1:"Tümünü", mod_tekrar_2:"kez", mod_limit_1:"Rastgele", soru_sayisi:"SORU SAYISI",
         baslat_klasik:"KLASİK BAŞLAT", baslat_yaris:"YARIŞ BAŞLAT", hata_listesi:"HATA LİSTESİ",
         hatalara_calis:"HATALARA ÇALIŞ", liste_temiz:"Hata listeniz temiz.", gecmis_skorlar:"GEÇMİŞ",
-        gecmisi_sil:"SİL", tablo_puan:"P", tablo_hiz:"HZ", tablo_hata:"H", tablo_soru:"S",
+        gecmisi_sil:"SİL", tablo_puan:"P", tablo_hiz:"HZ", tablo_hata:"HT", tablo_soru:"SR",
         gecmis_yok:"Kayıt yok.", geri:"GERİ", duraklat:"DURAKLAT", devam_et:"DEVAM ET", duraklatildi:"DURAKLATILDI", bitir:"BİTİR", seans_bitti:"SEANS BİTTİ", tamam_btn:"TAMAM",
         alert_sayi:"Lütfen en az bir sayı seçin!", alert_hata:"Hata listeniz temiz.",
         confirm_bitir:"Bitirmek istediğinize emin misiniz?", confirm_sil:"Silmek istiyor musunuz?",
@@ -812,7 +812,7 @@ const TEXT = {
         mod_tekrar_1:"All", mod_tekrar_2:"times", mod_limit_1:"Random", soru_sayisi:"QUESTION COUNT",
         baslat_klasik:"START CLASSIC", baslat_yaris:"START RACER", hata_listesi:"ERRORS",
         hatalara_calis:"PRACTICE ERRORS", liste_temiz:"Clean.", gecmis_skorlar:"HISTORY",
-        gecmisi_sil:"DEL", tablo_puan:"S", tablo_hiz:"SP", tablo_hata:"E", tablo_soru:"Q",
+        gecmisi_sil:"DEL", tablo_puan:"S", tablo_hiz:"SP", tablo_hata:"ER", tablo_soru:"Q",
         gecmis_yok:"Empty.", geri:"BACK", duraklat:"PAUSE", devam_et:"RESUME", duraklatildi:"PAUSED", bitir:"FINISH", seans_bitti:"FINISHED", tamam_btn:"OK",
         alert_sayi:"Select numbers first!", alert_hata:"No errors recorded.",
         confirm_bitir:"Are you sure?", confirm_sil:"Delete all?",
@@ -1539,7 +1539,7 @@ function updateRacerState() {
         if(Game.r.isWaveActive && !c.hit && c.y+90 > py && c.y < py+90 && Math.abs(px - drawX) < 50) {
             
             Game.r.isWaveActive = false; 
-            Game.r.inputLocked = true;   
+            Game.r.inputLocked = true;    
 
             const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
             const db = DATA.racer.db;
