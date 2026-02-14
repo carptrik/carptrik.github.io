@@ -1003,7 +1003,7 @@ function handleKeyAction(action) {
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
     slowLimit: 0, isPaused: false, pauseStart: 0,
-    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false, lastTime: 0 } 
+    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false, lastTime: 0, accumulator: 0, step: 1/60 } 
 };
 
 function startGame() {
@@ -1103,8 +1103,6 @@ function pauseGame() {
          document.querySelector('#racer-wrap').style.filter = 'blur(30px)';
          if(Game.r.loop) cancelAnimationFrame(Game.r.loop);
          AudioSys.stopEngine();
-         // Reset delta time on pause so we don't jump when resuming
-         Game.r.lastTime = 0; 
     }
 }
 
@@ -1131,7 +1129,11 @@ function resumeGame() {
     } else if(Game.type === 'racer') {
         document.querySelector('#racer-wrap').style.filter = 'none';
         AudioSys.startEngine();
-        Game.r.lastTime = 0; // Reset for fresh DT
+        
+        // RESET TIMER FOR FIXED STEP
+        Game.r.lastTime = performance.now();
+        Game.r.accumulator = 0;
+        
         Game.r.loop = requestAnimationFrame(racerLoop);
     }
 }
@@ -1305,7 +1307,10 @@ function initRacer() {
     
     Game.r.cars=[]; Game.r.particles=[]; 
     Game.r.inputLocked = false; 
-    Game.r.lastTime = 0; // Reset timer for new game
+
+    // INIT FIXED TIME STEP
+    Game.r.lastTime = performance.now();
+    Game.r.accumulator = 0;
     
     AudioSys.startEngine(); // Start Engine Sound
     
@@ -1365,6 +1370,40 @@ function spawnParticles(x, y, color) {
     }
 }
 
+/* === ÇİZİM İŞLEMLERİ (SADECE GÖRÜNTÜ) === */
+function drawRacerState() {
+    ctx.clearRect(0,0,cvs.width, cvs.height);
+    const lw = cvs.width/4;
+    
+    // YOL
+    ctx.fillStyle = "#1e293b"; ctx.fillRect(0,0,cvs.width,cvs.height);
+    ctx.strokeStyle = "#334155"; ctx.lineWidth=2; ctx.setLineDash([20,30]);
+    for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
+    
+    // OYUNCU
+    const px = Game.r.currX; const py = cvs.height - 120;
+    drawCar(px, py, "#10b981", true); 
+
+    // PARÇACIKLAR
+    for(let i=0; i<Game.r.particles.length; i++) {
+        let p = Game.r.particles[i];
+        ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.life/5, p.life/5);
+    }
+
+    // DÜŞMANLAR
+    for(let i=0; i<Game.r.cars.length; i++) {
+        let c = Game.r.cars[i];
+        let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
+        
+        drawCar(drawX, c.y, c.color, false); 
+        
+        if(!c.hit) {
+            ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
+            ctx.fillText(c.val, drawX, c.y + 70); 
+        }
+    }
+}
+
 function drawCar(x, y, color, isPlayer=false) {
     const w = 70; const h = 90;
     
@@ -1376,11 +1415,9 @@ function drawCar(x, y, color, isPlayer=false) {
         ctx.moveTo(x - (w/2) + 10, y);
         ctx.lineTo(x - (w/2) - 15, y - 200);
         ctx.lineTo(x - (w/2) + 35, y - 200);
-        // Daha şeffaf (0.08)
         ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
         ctx.fill();
 
-        // Sağ Beam (Can > 1 ise yanar)
         if (Game.r.lives > 1) {
             ctx.beginPath();
             ctx.moveTo(x + (w/2) - 10, y);
@@ -1411,57 +1448,40 @@ function drawCar(x, y, color, isPlayer=false) {
         }
     }
 
-    // Tavan (Genişletildi)
+    // Tavan
     ctx.fillStyle = "rgba(0,0,0,0.3)"; 
     ctx.beginPath(); ctx.roundRect(x - (w/2)+5, y + 45, w-10, 35, 5); ctx.fill();
     
     // Far Noktaları
     ctx.fillStyle = "#fff";
-    ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); // Sol
+    ctx.beginPath(); ctx.arc(x - (w/2) + 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); 
     
     if (!isPlayer || Game.r.lives > 1) {
-        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); // Sağ
+        ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill(); 
     } else {
-        ctx.fillStyle = "#333"; // Sönük
+        ctx.fillStyle = "#333"; 
         ctx.beginPath(); ctx.arc(x + (w/2) - 10, y + 5, 4, 0, Math.PI*2); ctx.fill();
     }
 }
 
-/* === DELTA TIME FIX === */
-function racerLoop(timestamp) {
-    if(Game.type !== 'racer' || Game.isPaused) return; 
-    
-    // Calculate Delta Time (Normalized to 60fps)
-    if (!Game.r.lastTime) Game.r.lastTime = timestamp;
-    const dt = (timestamp - Game.r.lastTime) / 16.67; 
-    Game.r.lastTime = timestamp;
-
-    // Cap dt to prevent huge jumps if tab was inactive
-    const safeDt = Math.min(dt, 3);
-
-    ctx.clearRect(0,0,cvs.width, cvs.height);
+/* === FİZİK İŞLEMLERİ (SABİT 60 HZ) === */
+function updateRacerState() {
     const lw = cvs.width/4;
     
-    // YOL
-    ctx.fillStyle = "#1e293b"; ctx.fillRect(0,0,cvs.width,cvs.height);
-    ctx.strokeStyle = "#334155"; ctx.lineWidth=2; ctx.setLineDash([20,30]);
-    for(let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(i*lw,0); ctx.lineTo(i*lw,cvs.height); ctx.stroke(); }
-    
-    // OYUNCU HAREKET (Delta time applied)
+    // OYUNCU HAREKET
     const tx = (Game.r.lane * lw) + (lw/2);
-    // Smooth transition logic with dt
-    Game.r.currX += (tx - Game.r.currX) * (0.2 * safeDt);
-    const px = Game.r.currX; const py = cvs.height - 120;
+    // Sabit hızda her update'de yaklaş
+    Game.r.currX += (tx - Game.r.currX) * 0.2; 
     
-    drawCar(px, py, "#10b981", true); 
+    const px = Game.r.currX; 
+    const py = cvs.height - 120;
 
-    // PARÇACIKLAR (Delta time applied)
+    // PARÇACIKLAR
     for(let i=Game.r.particles.length-1; i>=0; i--) {
         let p = Game.r.particles[i];
-        p.x += p.vx * safeDt; 
-        p.y += p.vy * safeDt; 
-        p.life -= 1 * safeDt;
-        ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.life/5, p.life/5);
+        p.x += p.vx; 
+        p.y += p.vy; 
+        p.life -= 1;
         if(p.life <= 0) Game.r.particles.splice(i,1);
     }
 
@@ -1470,11 +1490,10 @@ function racerLoop(timestamp) {
         let c = Game.r.cars[i];
         
         if (c.hit) {
-            c.x += c.driftX * safeDt;
-            c.y += c.driftY * safeDt; 
+            c.x += c.driftX;
+            c.y += c.driftY; 
         } else {
-            // Apply speed multiplied by Delta Time
-            c.y += Game.r.speed * safeDt;
+            c.y += Game.r.speed; // Sabit hız (pixel/tick)
         }
 
         let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
@@ -1485,25 +1504,17 @@ function racerLoop(timestamp) {
             continue; 
         }
 
-        drawCar(drawX, c.y, c.color, false); // isPlayer=false
-        
-        if(!c.hit) {
-            ctx.fillStyle = "#fff"; ctx.font="900 24px Arial"; ctx.textAlign="center"; 
-            ctx.fillText(c.val, drawX, c.y + 70); 
-        }
-
         // ÇARPIŞMA MANTIĞI
         if(Game.r.isWaveActive && !c.hit && c.y+90 > py && c.y < py+90 && Math.abs(px - drawX) < 50) {
             
-            Game.r.isWaveActive = false; // BU DALGADA BAŞKA ÇARPIŞMA OLAMAZ
-            Game.r.inputLocked = true;   // INPUT KİLİTLE (Şeritte kal)
+            Game.r.isWaveActive = false; 
+            Game.r.inputLocked = true;   
 
             const k = `${Game.currQ.n1}x${Game.currQ.n2}`;
             const db = DATA.racer.db;
             if(!db[k]) db[k]={score:0};
 
             if(c.isCorrect) {
-                // DOĞRU
                 spawnParticles(drawX, c.y + 45, c.color);
                 Game.r.cars.splice(i, 1); 
                 Game.times.push((Date.now()-Game.startT)/1000);
@@ -1511,32 +1522,28 @@ function racerLoop(timestamp) {
                 AudioSys.playCorrect();
                 
                 if(db[k].score > 0) db[k].score--; 
-
-                // YENİ PUANLAMA: Tam puan ekle
                 Game.score += Game.unitScore;
 
-                // Hemen yeni soru
                 setTimeout(spawnRacerQ, 800); 
 
             } else {
-                // YANLIŞ
                 c.hit = true;
                 c.x = drawX; 
-                c.driftX = (drawX < px) ? -8 : 8; // Yana savrul
+                c.driftX = (drawX < px) ? -8 : 8; 
                 c.driftY = Game.r.speed * 1.2; 
 
-                shakeScreen(); // SARSINTI & KIRMIZI EFEKT
+                shakeScreen(); 
                 spawnParticles(px, py + 45, "#ef4444");
                 AudioSys.playWrong();
 
                 Game.r.lives--;
                 Game.errors++; 
-                db[k].score += 2; // Yanlış puanı (Hata listesi için, değişmedi)
+                db[k].score += 2; 
                 
                 document.getElementById('r-lives').innerText = Game.r.lives;
 
                 if(Game.r.lives <= 0) {
-                    spawnParticles(px, py, "#10b981"); // Oyuncu patlar
+                    spawnParticles(px, py, "#10b981"); 
                     setTimeout(endGame, 1000);
                 } else {
                     Game.idx++;
@@ -1548,18 +1555,42 @@ function racerLoop(timestamp) {
             renderLists();
         }
     }
+}
+
+/* === OYUN DÖNGÜSÜ (FIXED TIMESTEP) === */
+function racerLoop(timestamp) {
+    if(Game.type !== 'racer' || Game.isPaused) return; 
+    
+    // Delta Time hesapla (Saniye cinsinden)
+    let now = performance.now();
+    let dt = (now - Game.r.lastTime) / 1000;
+    
+    // Eğer tarayıcı sekmesi inaktif kalırsa çok büyük dt oluşur, bunu engelle (max 0.25sn)
+    if (dt > 0.25) dt = 0.25;
+
+    Game.r.lastTime = now;
+    Game.r.accumulator += dt;
+
+    // Sabit adım (1/60) kadar birikmiş zamanı tüket
+    while (Game.r.accumulator >= Game.r.step) {
+        updateRacerState();
+        Game.r.accumulator -= Game.r.step;
+    }
+
+    // Her karede çizim yap
+    drawRacerState();
     
     Game.r.loop = requestAnimationFrame(racerLoop);
 }
 
 function racerInput(d) {
-    if(Game.r.inputLocked || Game.isPaused) return; // KİLİTLİYSE HAREKET ETME
+    if(Game.r.inputLocked || Game.isPaused) return; 
     let n = Game.r.lane + d; if(n>=0 && n<=3) Game.r.lane = n;
 }
 
 window.addEventListener('keydown', e => {
     if(Game.type === 'racer') {
-        const k = e.key.toLowerCase(); // CAPS LOCK FIX
+        const k = e.key.toLowerCase(); 
         if(k === 'arrowleft' || k === 'a') racerInput(-1);
         if(k === 'arrowright' || k === 'd') racerInput(1);
     }
