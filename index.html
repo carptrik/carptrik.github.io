@@ -366,7 +366,11 @@
             /* --- OYUN MODU --- */
             .r-stat { font-size: 16px; padding: 4px 10px; }
             .r-q-box { font-size: 20px; padding: 5px 15px; }
-            #racer-wrap { margin: 15px; height: 40vh; min-height: 300px; } 
+            
+            /* DÜZELTME: MOBİLDE YOLU UZATMA */
+            #racer-wrap { 
+                margin: 15px; height: 40vh; min-height: 300px; 
+            } 
             .mob-ctrl { display: flex; } .q-text { font-size: 80px; } .num-grid { grid-template-columns: repeat(4, 1fr); }
             .ans-inp { font-size: 40px; padding: 15px; }
 
@@ -397,6 +401,21 @@
             .key-btn.k-end { background: var(--danger); color: #fff; }
             .key-btn.k-sound { font-size: 20px; }
             .key-btn.k-sound.muted { opacity: 0.5; text-decoration: line-through; }
+            
+            /* DÜZELTME: MOBİLDE DAHA KOMPAKT YAPI */
+            #racer-wrap {
+                margin: 10px 15px 5px 15px; /* Alt boşluk azaltıldı */
+                flex: 1; /* Mevcut alanı kaplasın */
+                min-height: 0;
+            }
+            .mob-ctrl {
+                padding: 5px 25px 5px 25px; /* Dikey boşluk azaltıldı */
+                height: 80px; /* Tuş alanı yüksekliği azaltıldı */
+                margin-bottom: 5px;
+            }
+            .foot-btns {
+                padding: 10px 25px 25px 25px;
+            }
         }
     </style>
 </head>
@@ -1003,7 +1022,7 @@ function handleKeyAction(action) {
 let Game = {
     type: null, qList:[], total:0, idx:0, score:0, unitScore:0, errors:0, times:[], startT:0, currQ:null,
     slowLimit: 0, isPaused: false, pauseStart: 0,
-    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false, lastTime: 0, accumulator: 0, step: 1/60 } 
+    r: { loop:null, lane:1, x:0, cars:[], speed:6, lives:3, particles:[], isWaveActive:true, inputLocked: false, lastTime: 0, accumulator: 0, step: 1/60, speedFactor: 0 } 
 };
 
 function startGame() {
@@ -1296,8 +1315,15 @@ function initRacer() {
     cvs.width = document.getElementById('racer-wrap').offsetWidth;
     cvs.height = document.getElementById('racer-wrap').offsetHeight;
     
+    // HIZ MANTIĞINI DEĞİŞTİR: Hız artık piksel değil, ekran yüksekliğinin yüzdesi
     const spdOpt = document.querySelector('input[name="rSpeed"]:checked').value;
-    Game.r.speed = parseFloat(spdOpt) || 2.5;
+    const rawSpeed = parseFloat(spdOpt) || 2.5;
+    
+    // 600px referans yüksekliğe göre oranla
+    // 2.5px / 600px = ~0.004 (Yavaş)
+    // 4.5px / 600px = ~0.0075 (Normal)
+    // 7.0px / 600px = ~0.012 (Hızlı)
+    Game.r.speedFactor = rawSpeed / 600;
 
     Game.r.lives=3; Game.r.lane=1;
     // Auto adjust player X on init
@@ -1350,7 +1376,8 @@ function spawnRacerQ() {
     // Araçlar
     for(let i=0; i<4; i++) {
         Game.r.cars.push({
-            lane: i, y: -300, 
+            lane: i, 
+            y: -0.5 * cvs.height, // Ekrana göreceli başlangıç (Ekranın yarısı kadar yukarıdan)
             val: opts[i], isCorrect: opts[i]===ans,
             color: colors[Math.floor(Math.random()*colors.length)],
             hit: false, driftX: 0, driftY: 0 
@@ -1476,6 +1503,10 @@ function updateRacerState() {
     const px = Game.r.currX; 
     const py = cvs.height - 120;
 
+    // HIZ HESAPLA (Piksel Cinsinden)
+    // Her karede ekranın %SpeedFactor kadarı gidilecek
+    const currentPixelSpeed = Game.r.speedFactor * cvs.height;
+
     // PARÇACIKLAR
     for(let i=Game.r.particles.length-1; i>=0; i--) {
         let p = Game.r.particles[i];
@@ -1493,7 +1524,7 @@ function updateRacerState() {
             c.x += c.driftX;
             c.y += c.driftY; 
         } else {
-            c.y += Game.r.speed; // Sabit hız (pixel/tick)
+            c.y += currentPixelSpeed; // Ekrana Göreceli Hız
         }
 
         let drawX = c.hit ? c.x : (c.lane * lw) + (lw/2);
@@ -1530,7 +1561,7 @@ function updateRacerState() {
                 c.hit = true;
                 c.x = drawX; 
                 c.driftX = (drawX < px) ? -8 : 8; 
-                c.driftY = Game.r.speed * 1.2; 
+                c.driftY = currentPixelSpeed * 1.2; 
 
                 shakeScreen(); 
                 spawnParticles(px, py + 45, "#ef4444");
